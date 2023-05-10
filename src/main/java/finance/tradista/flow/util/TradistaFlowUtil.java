@@ -28,6 +28,12 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.    */
 
+/**
+ * An general Util class for the project.
+ * 
+ * @author Olivier Asuncion
+ *
+ */
 public final class TradistaFlowUtil {
 
 	private static Function<Object, Object> clone = x -> (x instanceof TradistaFlowObject)
@@ -41,6 +47,12 @@ public final class TradistaFlowUtil {
 	private static Function<Map.Entry<?, ?>, Object> cloneMapEntryValue = x -> x
 			.getValue() instanceof TradistaFlowObject ? ((TradistaFlowObject) x.getValue()).clone() : x.getValue();
 
+	/**
+	 * Creates a deep copy of a map.
+	 * 
+	 * @param originalMap the map to copy
+	 * @return a deep copy of the map
+	 */
 	public static Map<?, ?> deepCopy(Map<?, ?> originalMap) {
 		if (originalMap == null) {
 			return null;
@@ -50,6 +62,12 @@ public final class TradistaFlowUtil {
 		return copy;
 	}
 
+	/**
+	 * Creates a deep copy of a TradistaFlowObject list.
+	 * 
+	 * @param originalList the list to copy
+	 * @return a deep copy of the list
+	 */
 	public static List<?> deepCopy(List<? extends TradistaFlowObject> originalList) {
 		if (originalList == null) {
 			return null;
@@ -58,6 +76,12 @@ public final class TradistaFlowUtil {
 		return copy;
 	}
 
+	/**
+	 * Creates a deep copy of a TradistaFlowObject set.
+	 * 
+	 * @param originalSet the set to copy
+	 * @return a deep copy of the set
+	 */
 	public static Set<?> deepCopy(Set<? extends TradistaFlowObject> originalSet) {
 		if (originalSet == null) {
 			return null;
@@ -66,6 +90,12 @@ public final class TradistaFlowUtil {
 		return copy;
 	}
 
+	/**
+	 * Clones a TradistaFlow object
+	 * 
+	 * @param the TradistaFlow object to clone
+	 * @return a clone of the TradistaFlow object
+	 */
 	@SuppressWarnings("unchecked")
 	public static <T extends TradistaFlowObject> T clone(T tradistaFlowObject) {
 		if (tradistaFlowObject == null) {

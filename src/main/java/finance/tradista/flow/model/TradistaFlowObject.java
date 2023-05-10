@@ -26,6 +26,13 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.    */
 
+/**
+ * Abstract class for classes part of the Tradista Flow model.
+ * 
+ * @author Olivier Asuncion
+ *
+ */
+
 @MappedSuperclass
 public abstract class TradistaFlowObject implements Serializable, Cloneable {
 

@@ -24,7 +24,7 @@ specific language governing permissions and limitations
 under the License.    */
 
 /**
- * Test Class only
+ * Test Class only.
  * 
  * @author OA
  *
