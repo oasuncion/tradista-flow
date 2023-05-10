@@ -130,6 +130,9 @@
 						<version>1.6.0</version>
 						<configuration>
 							<jreleaser>
+								<project>
+									<copyright>2023 Olivier Asuncion</copyright>
+								</project>
 								<signing>
 									<active>ALWAYS</active>
 									<armored>true</armored>
