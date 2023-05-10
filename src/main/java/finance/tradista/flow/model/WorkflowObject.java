@@ -22,8 +22,9 @@ under the License.    */
 
 /**
  * 
- * Used to mark a type as manageable in a Workflow
- *
+ * Used to mark a type as manageable in a Workflow.
+ * 
+ * @author Olivier Asuncion
  */
 public interface WorkflowObject {
 

@@ -35,11 +35,25 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.    */
 
+/**
+ * 
+ * Facade for Tradista Flow services.
+ * 
+ * @author Olivier Asuncion
+ */
+
 public final class WorkflowManager {
 
 	public static final EntityManagerFactory entityManagerFactory = Persistence
 			.createEntityManagerFactory("tradista-flow-persistence-unit");
 
+	/**
+	 * Saves a workflow.
+	 * 
+	 * @param workflow the workflow to be saved
+	 * @return the id of the saved workflow
+	 * @throws TradistaFlowBusinessException if the workflow is not valid
+	 */
 	public static long saveWorkflow(Workflow workflow) throws TradistaFlowBusinessException {
 		if (!isValid(workflow)) {
 			throw new TradistaFlowBusinessException(
@@ -59,6 +73,12 @@ public final class WorkflowManager {
 		return workflow.getId();
 	}
 
+	/**
+	 * Checks whether the entityManager is a JTA or a RESOURCE_LOCAL one.
+	 * 
+	 * @param entityManager the entityManager to be checked
+	 * @return true if the entityManager is JTA, false otherwise
+	 */
 	private static boolean isJTA(EntityManager entityManager) {
 		try {
 			entityManager.getTransaction();
@@ -68,6 +88,11 @@ public final class WorkflowManager {
 		return false;
 	}
 
+	/**
+	 * Gets all workflows of the system.
+	 * 
+	 * @return all workflows of the system in a set
+	 */
 	public static Set<Workflow> getAllWorkflows() {
 		Set<Workflow> workflows = null;
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
@@ -80,6 +105,12 @@ public final class WorkflowManager {
 		return workflows;
 	}
 
+	/**
+	 * Deletes a workflow given its id.
+	 * 
+	 * @param id the id of the workflow to be deleted
+	 * @throws TradistaFlowBusinessException if the workflow doesn't exist
+	 */
 	public static void deleteWorkflow(long id) throws TradistaFlowBusinessException {
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
 		Workflow wkf = entityManager.find(Workflow.class, id);
@@ -98,18 +129,44 @@ public final class WorkflowManager {
 		entityManager.close();
 	}
 
-	public static boolean isValid(Workflow wkf) throws TradistaFlowBusinessException {
-		if (wkf == null) {
+	/**
+	 * Checks if the workflow is valid. A valid workflow is a connected graph, with
+	 * a single start status and no cycle
+	 * 
+	 * @param workflow the workflow to be checked
+	 * @return true if the workflow is valid, false otherwise
+	 * @throws TradistaFlowBusinessException if the workflow is null
+	 */
+	public static boolean isValid(Workflow workflow) throws TradistaFlowBusinessException {
+		if (workflow == null) {
 			throw new TradistaFlowBusinessException("The workflow cannot be null.");
 		}
-		return wkf.isValid();
+		return workflow.isValid();
 	}
 
+	/**
+	 * Applies an action to an object.
+	 * 
+	 * @param object the object to update
+	 * @param action the action to apply
+	 * @throws TradistaFlowBusinessException if the object or action is null, if the
+	 *                                       object workflow doesn't exist or if the
+	 *                                       action is invalid.
+	 */
 	public static void applyAction(WorkflowObject object, Action action) throws TradistaFlowBusinessException {
+		if (object == null) {
+			throw new TradistaFlowBusinessException("The object is null");
+		}
 		Workflow wkf = getWorkflowByName(object.getWorkflow());
+		StringBuilder errMsg = new StringBuilder();
+		if (action == null) {
+			errMsg.append("The action is null");
+		}
 		if (wkf == null) {
-			throw new TradistaFlowBusinessException(
-					String.format("The workflow %s doesn't exist.", object.getWorkflow()));
+			errMsg.append(String.format("The workflow %s doesn't exist.", object.getWorkflow()));
+		}
+		if (errMsg.length() > 0) {
+			throw new TradistaFlowBusinessException(errMsg.toString());
 		}
 		if (!isValidAction(wkf, object.getStatus(), action)) {
 			throw new TradistaFlowBusinessException(
@@ -119,6 +176,13 @@ public final class WorkflowManager {
 		object.setStatus(wkf.getTargetStatus(action));
 	}
 
+	/**
+	 * Gets a workflow given its name.
+	 * 
+	 * @param name the name of the workflow to search
+	 * @return the found workflow
+	 * @throws TradistaFlowBusinessException if the name is empty
+	 */
 	private static Workflow getWorkflowByName(String name) throws TradistaFlowBusinessException {
 		if (StringUtils.isEmpty(name)) {
 			throw new TradistaFlowBusinessException("The name is mandatory.");
@@ -133,6 +197,14 @@ public final class WorkflowManager {
 		return res;
 	}
 
+	/**
+	 * Checks whether an action is valid from a given status.
+	 * 
+	 * @param workflow the concerned workflow
+	 * @param status   the start status
+	 * @param action   the action to be checked
+	 * @return true if an action is valid from the given status
+	 */
 	private static boolean isValidAction(Workflow workflow, Status status, Action action) {
 		Set<Action> availableActions = null;
 		try {
