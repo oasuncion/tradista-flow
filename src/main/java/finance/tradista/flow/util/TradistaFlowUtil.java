@@ -93,7 +93,7 @@ public final class TradistaFlowUtil {
 	/**
 	 * Clones a TradistaFlow object
 	 * 
-	 * @param the TradistaFlow object to clone
+	 * @param tradistaFlowObject the TradistaFlow object to clone
 	 * @return a clone of the TradistaFlow object
 	 */
 	@SuppressWarnings("unchecked")
