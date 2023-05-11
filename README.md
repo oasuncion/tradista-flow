@@ -5,7 +5,7 @@ Tradista Flow allows to create/update/delete workflows and execute them.
 
 Tradista Flow is available in Maven Central, it can be added to your project by adding this in your pom.xml file:
 
-```
+```xml
 <dependency>
   <groupId>finance.tradista.flow</groupId>
   <artifactId>tradista-flow</artifactId>
@@ -15,7 +15,7 @@ Tradista Flow is available in Maven Central, it can be added to your project by 
 
 Create and save a workflow very easily:
 
-```
+```java
 Workflow wkf = new Workflow("SampleWorkflow");
 Status statusOne = new Status(wkf, "s1");
 Status statusTwo = new Status(wkf, "s2");
@@ -25,7 +25,7 @@ WorkflowManager.saveWorkflow(wkf);
 
 Link your objects to a workflow thanks to the WorkflowObject interface:
 
-```
+```java
 public class MyObject implements WorkflowObject {
 
 	private Status status;
@@ -60,7 +60,7 @@ public class MyObject implements WorkflowObject {
 
 Execute a workflow action on your objects:
 
-```
+```java
 MyObject obj = new MyObject();
 obj.setWorkflow("SampleWorkflow");
 obj.setStatus(s2);
@@ -71,7 +71,7 @@ Tradista Flow is based on JPA. It can be used in JTA or non JTA mode.
 It can be configured using a persistence.xml file in your classpath, please find below a sample in non JTA mode (JTA mode is commented),
 using Hibernate and Derby:
 
-```
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence xmlns="https://jakarta.ee/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.0">
     <persistence-unit name="tradista-flow-persistence-unit" transaction-type="RESOURCE_LOCAL">
@@ -112,6 +112,6 @@ Tradista Flow is made possible using powerful third party tools:
 - [Apache Derby](https://db.apache.org/derby/) as database provider for test of the persistence layer
 - [Apache Maven](https://maven.apache.org/) for the build
 - [Hibernate](https://hibernate.org/) as JPA provider for test of the persistence layer
-- [JUnit](https://junit.org/junit5) for unit testing
 - [JGraphT](https://jgrapht.org) for graph modeling
 - [JReleaser](https://jreleaser.org) for publication of the releases on Maven Central 
+- [JUnit](https://junit.org/junit5) for unit testing
