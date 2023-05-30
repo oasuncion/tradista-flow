@@ -21,7 +21,7 @@ under the License.    */
 
 /**
  * Process Test Class. This test process sets the WorkflowObject's workflow to
- * "wkf".
+ * "Wkf".
  * 
  * @author OA
  *
