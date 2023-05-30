@@ -2,12 +2,15 @@ package finance.tradista.flow.service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
 import finance.tradista.flow.exception.TradistaFlowBusinessException;
 import finance.tradista.flow.model.Action;
+import finance.tradista.flow.model.ConditionalAction;
+import finance.tradista.flow.model.SimpleAction;
 import finance.tradista.flow.model.Status;
 import finance.tradista.flow.model.Workflow;
 import finance.tradista.flow.model.WorkflowObject;
@@ -173,7 +176,33 @@ public final class WorkflowManager {
 					String.format("The action %s is not a valid one from status %s in workflow %s.", action,
 							object.getStatus(), object.getWorkflow()));
 		}
-		object.setStatus(wkf.getTargetStatus(action));
+		if (action.getGuard() != null) {
+			if (!action.getGuard().test(object)) {
+				return;
+			}
+		}
+
+		if (action instanceof SimpleAction) {
+			// Perform process
+			finance.tradista.flow.model.Process process = ((SimpleAction) action).getProcess();
+			if (process != null) {
+				process.apply(object);
+			}
+			object.setStatus(wkf.getTargetStatus(action));
+		} else {
+			ConditionalAction condAction = ((ConditionalAction) action);
+			int res = ((ConditionalAction) action).getCondition().apply(object);
+			Status arrivalStatus = condAction.getArrivalStatusByResult(res);
+			// Perform process
+			Map<Status, finance.tradista.flow.model.Process> condProcesses = condAction.getConditionalProcesses();
+			if (condProcesses != null) {
+				finance.tradista.flow.model.Process process = condProcesses.get(arrivalStatus);
+				if (process != null) {
+					process.apply(object);
+				}
+			}
+			object.setStatus(arrivalStatus);
+		}
 	}
 
 	/**
@@ -183,7 +212,7 @@ public final class WorkflowManager {
 	 * @return the found workflow
 	 * @throws TradistaFlowBusinessException if the name is empty
 	 */
-	private static Workflow getWorkflowByName(String name) throws TradistaFlowBusinessException {
+	public static Workflow getWorkflowByName(String name) throws TradistaFlowBusinessException {
 		if (StringUtils.isEmpty(name)) {
 			throw new TradistaFlowBusinessException("The name is mandatory.");
 		}
@@ -192,6 +221,7 @@ public final class WorkflowManager {
 				.setParameter("name", name).getSingleResult();
 		if (res != null) {
 			res.syncGraph();
+			res.syncProcesses();
 		}
 		entityManager.close();
 		return res;

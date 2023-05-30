@@ -1,32 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<persistence xmlns="https://jakarta.ee/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.0">
-    <persistence-unit name="tradista-flow-persistence-unit" transaction-type="RESOURCE_LOCAL">
-        <description>This is a the unique persistence unit of the tradista flow project.</description>
-        <class>finance.tradista.flow.model.Workflow</class>
-        <class>finance.tradista.flow.model.Action</class>
-        <class>finance.tradista.flow.model.Status</class>
-        <class>finance.tradista.flow.model.TradistaFlowObject</class>
-        <properties>
-            <property name="jakarta.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver" />
-            <property name="jakarta.persistence.jdbc.url" value="jdbc:derby:memory:TradistaFlow;create=true" />
-            <property name="jakarta.persistence.jdbc.user" value="app" />
-            <property name="jakarta.persistence.jdbc.password" value="app" />
-            <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyDialect"/>
-            <property name="hibernate.show_sql" value="true"/>
-            <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
-        </properties>
-    </persistence-unit>
-    <!--<persistence-unit name="tradista-flow-persistence-unit" transaction-type="JTA">
-        <description>This is a the unique persistence unit of the tradista flow project.</description>
-        <class>finance.tradista.flow.model.Workflow</class>
-        <class>finance.tradista.flow.model.Action</class>
-        <class>finance.tradista.flow.model.Status</class>
-        <class>finance.tradista.flow.model.TradistaFlowObject</class>
-        <jta-data-source>java:/myAppDS</jta-data-source>
-        <properties>
-            <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyDialect"/>
-            <property name="hibernate.show_sql" value="true"/>
-            <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
-        </properties>
-    </persistence-unit>-->
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.0">
+	<persistence-unit
+		name="tradista-flow-persistence-unit"
+		transaction-type="RESOURCE_LOCAL">
+		<description>This is a the unique persistence unit of the tradista
+			flow project.
+		</description>
+		<class>finance.tradista.flow.model.Workflow</class>
+		<class>finance.tradista.flow.model.Action</class>
+		<class>finance.tradista.flow.model.SimpleAction</class>
+		<class>finance.tradista.flow.model.ConditionalAction</class>
+		<class>finance.tradista.flow.model.Condition</class>
+		<class>finance.tradista.flow.model.Guard</class>
+		<class>finance.tradista.flow.model.Process</class>
+		<class>finance.tradista.flow.model.Status</class>
+		<class>finance.tradista.flow.model.TradistaFlowObject</class>
+		<properties>
+			<property name="jakarta.persistence.jdbc.driver"
+				value="org.apache.derby.jdbc.EmbeddedDriver" />
+			<property name="jakarta.persistence.jdbc.url"
+				value="jdbc:derby:memory:TradistaFlow;create=true" />
+			<property name="jakarta.persistence.jdbc.user" value="app" />
+			<property name="jakarta.persistence.jdbc.password"
+				value="app" />
+			<property name="hibernate.dialect"
+				value="org.hibernate.dialect.DerbyDialect" />
+			<property name="hibernate.show_sql" value="true" />
+			<property
+				name="jakarta.persistence.schema-generation.scripts.create-target"
+				value="C:/Softwares/create.sql" />
+			<property
+				name="jakarta.persistence.schema-generation.scripts.drop-target"
+				value="C:/Softwares/drop.sql" />
+			<property
+				name="javax.persistence.schema-generation.database.action"
+				value="drop-and-create" />
+		</properties>
+	</persistence-unit>
+	<!--<persistence-unit name="tradista-flow-persistence-unit" transaction-type="JTA"> 
+		<description>This is a the unique persistence unit of the tradista flow project.</description> 
+		<class>finance.tradista.flow.model.Workflow</class> <class>finance.tradista.flow.model.Action</class> 
+		<class>finance.tradista.flow.model.SimpleAction</class> <class>finance.tradista.flow.model.ConditionalAction</class> 
+		<class>finance.tradista.flow.model.Condition</class> <class>finance.tradista.flow.model.Guard</class> 
+		<class>finance.tradista.flow.model.Process</class> <class>finance.tradista.flow.model.Status</class> 
+		<class>finance.tradista.flow.model.TradistaFlowObject</class> <jta-data-source>java:/myAppDS</jta-data-source> 
+		<properties> <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyDialect"/> 
+		<property name="hibernate.show_sql" value="true"/> <property name="javax.persistence.schema-generation.database.action" 
+		value="drop-and-create"/> </properties> </persistence-unit> -->
 </persistence>
