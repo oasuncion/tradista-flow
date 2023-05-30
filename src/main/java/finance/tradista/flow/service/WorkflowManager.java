@@ -102,7 +102,7 @@ public final class WorkflowManager {
 		List<Workflow> res = entityManager.createQuery("Select w from Workflow w", Workflow.class).getResultList();
 		if (res != null) {
 			workflows = new HashSet<>(res);
-			workflows.forEach(w -> w.syncGraph());
+			workflows.forEach(w -> w.syncModel());
 		}
 		entityManager.close();
 		return workflows;
@@ -210,7 +210,8 @@ public final class WorkflowManager {
 	 * 
 	 * @param name the name of the workflow to search
 	 * @return the found workflow
-	 * @throws TradistaFlowBusinessException if the name is empty
+	 * @throws TradistaFlowBusinessException  if the name is empty
+	 * @throws TradistaFlowTechncialException if there was a technical problem
 	 */
 	public static Workflow getWorkflowByName(String name) throws TradistaFlowBusinessException {
 		if (StringUtils.isEmpty(name)) {
@@ -220,8 +221,7 @@ public final class WorkflowManager {
 		Workflow res = entityManager.createQuery("Select w from Workflow w where w.name = :name", Workflow.class)
 				.setParameter("name", name).getSingleResult();
 		if (res != null) {
-			res.syncGraph();
-			res.syncProcesses();
+			res.syncModel();
 		}
 		entityManager.close();
 		return res;

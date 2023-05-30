@@ -256,7 +256,7 @@ public class WorkflowManagerTest {
 		Status s1 = new Status(wkf, "s1");
 		Status s2 = new Status(wkf, "s2");
 		TestProcessOK process = new TestProcessOK();
-		Action a1 = new SimpleAction(wkf, "a1", s1, s2, process);
+		new SimpleAction(wkf, "a1", s1, s2, process);
 		WorkflowTestObject obj = new WorkflowTestObject();
 		try {
 			WorkflowManager.saveWorkflow(wkf);
@@ -285,7 +285,7 @@ public class WorkflowManagerTest {
 		Status s1 = new Status(wkf, "s1");
 		Status s2 = new Status(wkf, "s2");
 		TestProcessKO process = new TestProcessKO();
-		Action a1 = new SimpleAction(wkf, "a1", s1, s2, process);
+		new SimpleAction(wkf, "a1", s1, s2, process);
 		WorkflowTestObject obj = new WorkflowTestObject();
 		try {
 			WorkflowManager.saveWorkflow(wkf);

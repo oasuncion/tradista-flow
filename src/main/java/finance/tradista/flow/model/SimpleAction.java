@@ -43,10 +43,10 @@ public class SimpleAction extends Action {
 	@ManyToOne(cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "arrival_status_id")
 	private Status arrivalStatus;
-	
+
 	@OneToOne(cascade = CascadeType.ALL)
 	private Process process;
-	
+
 	private void init(Workflow workflow, Status arrivalStatus) {
 		StringBuilder errMsg = new StringBuilder();
 		if (arrivalStatus.getWorkflow() == null || !arrivalStatus.getWorkflow().equals(workflow)) {
@@ -63,18 +63,19 @@ public class SimpleAction extends Action {
 		super(workflow, name, departureStatus, guard);
 		init(workflow, arrivalStatus);
 	}
-	
+
 	public SimpleAction(Workflow workflow, String name, Status departureStatus, Status arrivalStatus) {
 		super(workflow, name, departureStatus, null);
 		init(workflow, arrivalStatus);
 	}
-	
-	public SimpleAction(Workflow workflow, String name, Status departureStatus, Status arrivalStatus, Guard guard, Process process) {
+
+	public SimpleAction(Workflow workflow, String name, Status departureStatus, Status arrivalStatus, Guard guard,
+			Process process) {
 		super(workflow, name, departureStatus, guard);
 		init(workflow, arrivalStatus);
 		this.process = process;
 	}
-	
+
 	public SimpleAction(Workflow workflow, String name, Status departureStatus, Status arrivalStatus, Process process) {
 		super(workflow, name, departureStatus, null);
 		init(workflow, arrivalStatus);

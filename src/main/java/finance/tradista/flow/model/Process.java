@@ -1,6 +1,5 @@
 package finance.tradista.flow.model;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 
 import finance.tradista.flow.exception.TradistaFlowBusinessException;
@@ -91,19 +90,6 @@ public class Process extends TradistaFlowObject {
 			return false;
 		Process other = (Process) obj;
 		return Objects.equals(name, other.name);
-	}
-
-	public static Process get(String name, Long id) {
-		Process process = null;
-		try {
-			process = (Process) Class.forName(name).getDeclaredConstructor().newInstance();
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-				| NoSuchMethodException | SecurityException | ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		process.setId(id);
-		return process;
 	}
 
 }

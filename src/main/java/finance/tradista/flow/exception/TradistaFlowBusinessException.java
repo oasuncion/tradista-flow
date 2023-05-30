@@ -28,13 +28,10 @@ under the License.    */
  */
 public class TradistaFlowBusinessException extends Exception {
 
+	private static final long serialVersionUID = 376484241701427322L;
+
 	public TradistaFlowBusinessException(String msg) {
 		super(msg);
 	}
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 376484241701427322L;
 
 }

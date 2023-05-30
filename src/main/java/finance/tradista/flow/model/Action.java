@@ -45,7 +45,7 @@ public abstract class Action extends TradistaFlowObject {
 	private static final long serialVersionUID = 6966194265379717568L;
 
 	private String name;
-	
+
 	@OneToOne(cascade = CascadeType.ALL)
 	private Guard guard;
 

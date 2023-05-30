@@ -1,6 +1,4 @@
-package finance.tradista.flow.test;
-
-import finance.tradista.flow.model.Guard;
+package finance.tradista.flow.exception;
 
 /*
  * Copyright 2023 Olivier Asuncion
@@ -23,20 +21,21 @@ specific language governing permissions and limitations
 under the License.    */
 
 /**
- * Guard Test Class. This test guard return true, so never blocks.
+ * Exception used for Technical errors in Tradista Flow.
  * 
- * @author OA
+ * @author Olivier Asuncion
  *
  */
+public class TradistaFlowTechnicalException extends RuntimeException {
 
-public class TestGuardOK extends Guard {
+	private static final long serialVersionUID = -3974129445297394798L;
 
-	private static final long serialVersionUID = -4945718662266443702L;
+	public TradistaFlowTechnicalException(String msg) {
+		super(msg);
+	}
 
-	public TestGuardOK() {
-		setPredicate(obj -> {
-			return true;
-		});
+	public TradistaFlowTechnicalException(Exception e) {
+		super(e);
 	}
 
 }

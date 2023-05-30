@@ -38,7 +38,7 @@ public class Condition extends TradistaFlowObject {
 	private static final long serialVersionUID = -8970069804519725007L;
 
 	private String name;
-	
+
 	@Transient
 	private Function<WorkflowObject, Integer> function;
 
@@ -53,7 +53,7 @@ public class Condition extends TradistaFlowObject {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public Function<WorkflowObject, Integer> getFunction() {
 		return function;
 	}
@@ -65,7 +65,7 @@ public class Condition extends TradistaFlowObject {
 	public String toString() {
 		return name;
 	}
-	
+
 	public int apply(WorkflowObject obj) {
 		return function.apply(obj);
 	}
