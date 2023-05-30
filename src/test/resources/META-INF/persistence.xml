@@ -28,12 +28,6 @@
 				value="org.hibernate.dialect.DerbyDialect" />
 			<property name="hibernate.show_sql" value="true" />
 			<property
-				name="jakarta.persistence.schema-generation.scripts.create-target"
-				value="C:/Softwares/create.sql" />
-			<property
-				name="jakarta.persistence.schema-generation.scripts.drop-target"
-				value="C:/Softwares/drop.sql" />
-			<property
 				name="javax.persistence.schema-generation.database.action"
 				value="drop-and-create" />
 		</properties>
