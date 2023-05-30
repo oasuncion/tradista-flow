@@ -43,7 +43,7 @@ public class Guard extends TradistaFlowObject {
 	private Predicate<WorkflowObject> predicate;
 
 	public Guard() {
-		this.name = this.getClass().getSimpleName();
+		this.name = this.getClass().getName();
 	}
 
 	public String getName() {

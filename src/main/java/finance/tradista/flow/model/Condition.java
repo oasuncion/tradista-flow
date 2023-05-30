@@ -43,7 +43,7 @@ public class Condition extends TradistaFlowObject {
 	private Function<WorkflowObject, Integer> function;
 
 	public Condition() {
-		this.name = this.getClass().getSimpleName();
+		this.name = this.getClass().getName();
 	}
 
 	public String getName() {
