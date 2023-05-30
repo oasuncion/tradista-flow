@@ -1,4 +1,6 @@
-package finance.tradista.flow.exception;
+package finance.tradista.flow.test;
+
+import finance.tradista.flow.model.Condition;
 
 /*
  * Copyright 2023 Olivier Asuncion
@@ -21,17 +23,28 @@ specific language governing permissions and limitations
 under the License.    */
 
 /**
- * Exception used for Business errors in Tradista Flow.
+ * Condition Test Class. This test condition returns the second letter of the
+ * object status as an integer. Example: if the object status is "s1", the
+ * condition returns 1.
  * 
- * @author Olivier Asuncion
+ * @author OA
  *
  */
-public class TradistaFlowBusinessException extends Exception {
 
-	private static final long serialVersionUID = 376484241701427322L;
+public class TestCondition extends Condition {
 
-	public TradistaFlowBusinessException(String msg) {
-		super(msg);
+	private static final long serialVersionUID = -4945718662266443702L;
+
+	public TestCondition() {
+		setFunction(obj -> {
+			int ret = 0;
+			try {
+				ret = Integer.parseInt(obj.getStatus().getName().substring(1, 2));
+			} catch (NumberFormatException nfe) {
+			}
+
+			return ret;
+		});
 	}
 
 }

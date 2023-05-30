@@ -21,17 +21,21 @@ specific language governing permissions and limitations
 under the License.    */
 
 /**
- * Exception used for Business errors in Tradista Flow.
+ * Exception used for Technical errors in Tradista Flow.
  * 
  * @author Olivier Asuncion
  *
  */
-public class TradistaFlowBusinessException extends Exception {
+public class TradistaFlowTechnicalException extends RuntimeException {
 
-	private static final long serialVersionUID = 376484241701427322L;
+	private static final long serialVersionUID = -3974129445297394798L;
 
-	public TradistaFlowBusinessException(String msg) {
+	public TradistaFlowTechnicalException(String msg) {
 		super(msg);
+	}
+
+	public TradistaFlowTechnicalException(Exception e) {
+		super(e);
 	}
 
 }

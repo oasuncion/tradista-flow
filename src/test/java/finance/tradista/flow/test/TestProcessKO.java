@@ -1,4 +1,6 @@
-package finance.tradista.flow.exception;
+package finance.tradista.flow.test;
+
+import finance.tradista.flow.exception.TradistaFlowBusinessException;
 
 /*
  * Copyright 2023 Olivier Asuncion
@@ -21,17 +23,20 @@ specific language governing permissions and limitations
 under the License.    */
 
 /**
- * Exception used for Business errors in Tradista Flow.
+ * Process Test Class. This test process throws a TradistaFlowBusinessException.
  * 
- * @author Olivier Asuncion
+ * @author OA
  *
  */
-public class TradistaFlowBusinessException extends Exception {
 
-	private static final long serialVersionUID = 376484241701427322L;
+public class TestProcessKO extends finance.tradista.flow.model.Process {
 
-	public TradistaFlowBusinessException(String msg) {
-		super(msg);
+	private static final long serialVersionUID = -5097243928471620584L;
+
+	public TestProcessKO() {
+		setTask(obj -> {
+			throw new TradistaFlowBusinessException("Process KO");
+		});
 	}
 
 }

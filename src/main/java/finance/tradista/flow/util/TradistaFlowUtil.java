@@ -1,11 +1,13 @@
 package finance.tradista.flow.util;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import finance.tradista.flow.exception.TradistaFlowTechnicalException;
 import finance.tradista.flow.model.TradistaFlowObject;
 
 /*
@@ -102,6 +104,28 @@ public final class TradistaFlowUtil {
 			return null;
 		}
 		return (T) tradistaFlowObject.clone();
+	}
+
+	/**
+	 * Creates a TradistaFlowObject from a name and an id
+	 * 
+	 * @param name the class name of the TradistaFlowObject to create
+	 * @param id   the id of the TradistaFlowObject to create
+	 * @return a TradistaFlowObject from a name and an id
+	 * @throws a TradistaFlowTechnicalException if the TradistaFlowObject cannot be
+	 *           created
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T extends TradistaFlowObject> T get(String name, Long id) {
+		T object = null;
+		try {
+			object = (T) Class.forName(name).getDeclaredConstructor().newInstance();
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException | ClassNotFoundException e) {
+			throw new TradistaFlowTechnicalException(e);
+		}
+		object.setId(id);
+		return object;
 	}
 
 }

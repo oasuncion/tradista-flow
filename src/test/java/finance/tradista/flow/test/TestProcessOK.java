@@ -1,5 +1,4 @@
-package finance.tradista.flow.exception;
-
+package finance.tradista.flow.test;
 /*
  * Copyright 2023 Olivier Asuncion
  * 
@@ -21,17 +20,20 @@ specific language governing permissions and limitations
 under the License.    */
 
 /**
- * Exception used for Business errors in Tradista Flow.
+ * Process Test Class. This test process sets the WorkflowObject's workflow to
+ * "Wkf".
  * 
- * @author Olivier Asuncion
+ * @author OA
  *
  */
-public class TradistaFlowBusinessException extends Exception {
+public class TestProcessOK extends finance.tradista.flow.model.Process {
 
-	private static final long serialVersionUID = 376484241701427322L;
+	private static final long serialVersionUID = -5097243928471620584L;
 
-	public TradistaFlowBusinessException(String msg) {
-		super(msg);
+	public TestProcessOK() {
+		setTask(obj -> {
+			((WorkflowTestObject) obj).setWorkflow("Wkf");
+		});
 	}
 
 }
