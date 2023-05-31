@@ -31,8 +31,8 @@ A workflow with a guard:
 
 ![Guarded Workflow](./guardedWkf.png)
 
-```java
 Define the guard: 
+```java
 public class OrderValidated extends Guard {
 
 	private static final long serialVersionUID = -4945718662266443702L;
