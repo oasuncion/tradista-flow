@@ -15,7 +15,7 @@ Tradista Flow is available in Maven Central, it can be added to your project by 
 
 Create and save a workflow very easily:
 
-![Dashboard](./simpleWkf.PNG)
+![Simple Workflow](./simpleWkf.png)
 
 ```java
 Workflow wkf = new Workflow("SampleWorkflow");
