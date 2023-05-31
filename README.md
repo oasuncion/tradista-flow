@@ -51,6 +51,7 @@ Define the workflow:
 Workflow wkf = new Workflow("SampleWorkflow");
 Status statusOne = new Status(wkf, "s1");
 Status statusTwo = new Status(wkf, "s2");
+OrderValidated orderValidated = new OrderValidated();
 Action actionOne = new Action(wkf, "a1", statusOne, statusTwo, orderValidated);
 WorkflowManager.saveWorkflow(wkf);
 ```
