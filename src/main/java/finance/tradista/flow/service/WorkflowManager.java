@@ -211,7 +211,6 @@ public final class WorkflowManager {
 	 * @param name the name of the workflow to search
 	 * @return the found workflow
 	 * @throws TradistaFlowBusinessException  if the name is empty
-	 * @throws TradistaFlowTechnicalException if there was a technical problem
 	 */
 	public static Workflow getWorkflowByName(String name) throws TradistaFlowBusinessException {
 		if (StringUtils.isEmpty(name)) {
