@@ -112,7 +112,7 @@ public final class TradistaFlowUtil {
 	 * @param name the class name of the TradistaFlowObject to create
 	 * @param id   the id of the TradistaFlowObject to create
 	 * @return a TradistaFlowObject from a name and an id
-	 * @throws a TradistaFlowTechnicalException if the TradistaFlowObject cannot be
+	 * @throws TradistaFlowTechnicalException if the TradistaFlowObject cannot be
 	 *           created
 	 */
 	@SuppressWarnings("unchecked")
