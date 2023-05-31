@@ -15,6 +15,8 @@ Tradista Flow is available in Maven Central, it can be added to your project by 
 
 Create and save a workflow very easily:
 
+A simple workflow:
+
 ![Simple Workflow](./simpleWkf.png)
 
 ```java
@@ -22,6 +24,34 @@ Workflow wkf = new Workflow("SampleWorkflow");
 Status statusOne = new Status(wkf, "s1");
 Status statusTwo = new Status(wkf, "s2");
 Action actionOne = new Action(wkf, "a1", statusOne, statusTwo);
+WorkflowManager.saveWorkflow(wkf);
+```
+
+A workflow with a guard:
+
+![Guarded Workflow](./guardedWkf.png)
+
+```java
+Define the guard: 
+public class OrderValidated extends Guard {
+
+	private static final long serialVersionUID = -4945718662266443702L;
+
+	public OrderValidated() {
+		setPredicate(obj -> {
+			((Order)obj).isValidated();
+		});
+	}
+
+}
+```
+Define the workflow:
+
+```
+Workflow wkf = new Workflow("SampleWorkflow");
+Status statusOne = new Status(wkf, "s1");
+Status statusTwo = new Status(wkf, "s2");
+Action actionOne = new Action(wkf, "a1", statusOne, statusTwo, orderValidated);
 WorkflowManager.saveWorkflow(wkf);
 ```
 
