@@ -238,7 +238,7 @@ public final class WorkflowManager {
 	private static boolean isValidAction(Workflow workflow, Status status, Action action) {
 		Set<Action> availableActions = null;
 		try {
-			availableActions = workflow.availableActionsFromStatus(status);
+			availableActions = workflow.getAvailableActionsFromStatus(status);
 		} catch (IllegalArgumentException iae) {
 			return false;
 		}

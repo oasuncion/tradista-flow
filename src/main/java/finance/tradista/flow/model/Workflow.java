@@ -228,7 +228,7 @@ public class Workflow extends TradistaFlowObject {
 		return graph.outDegreeOf(status) == 0;
 	}
 
-	public Set<Action> availableActionsFromStatus(Status status) {
+	public Set<Action> getAvailableActionsFromStatus(Status status) {
 		return graph.outgoingEdgesOf(status);
 	}
 
