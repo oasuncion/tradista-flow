@@ -77,9 +77,14 @@ using Hibernate and Derby:
     <persistence-unit name="tradista-flow-persistence-unit" transaction-type="RESOURCE_LOCAL">
         <description>This is a the unique persistence unit of the tradista flow project.</description>
         <class>finance.tradista.flow.model.Workflow</class>
-        <class>finance.tradista.flow.model.Action</class>
-        <class>finance.tradista.flow.model.Status</class>
-        <class>finance.tradista.flow.model.TradistaFlowObject</class>
+	<class>finance.tradista.flow.model.Action</class>
+	<class>finance.tradista.flow.model.SimpleAction</class>
+	<class>finance.tradista.flow.model.ConditionalAction</class>
+	<class>finance.tradista.flow.model.Condition</class>
+	<class>finance.tradista.flow.model.Guard</class>
+	<class>finance.tradista.flow.model.Process</class>
+	<class>finance.tradista.flow.model.Status</class>
+	<class>finance.tradista.flow.model.TradistaFlowObject</class>
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver" />
             <property name="jakarta.persistence.jdbc.url" value="jdbc:derby:memory:TradistaFlow;create=true" />
@@ -93,9 +98,14 @@ using Hibernate and Derby:
     <!--<persistence-unit name="tradista-flow-persistence-unit" transaction-type="JTA">
         <description>This is a the unique persistence unit of the tradista flow project.</description>
         <class>finance.tradista.flow.model.Workflow</class>
-        <class>finance.tradista.flow.model.Action</class>
-        <class>finance.tradista.flow.model.Status</class>
-        <class>finance.tradista.flow.model.TradistaFlowObject</class>
+	<class>finance.tradista.flow.model.Action</class>
+	<class>finance.tradista.flow.model.SimpleAction</class>
+	<class>finance.tradista.flow.model.ConditionalAction</class>
+	<class>finance.tradista.flow.model.Condition</class>
+	<class>finance.tradista.flow.model.Guard</class>
+	<class>finance.tradista.flow.model.Process</class>
+	<class>finance.tradista.flow.model.Status</class>
+	<class>finance.tradista.flow.model.TradistaFlowObject</class>
         <jta-data-source>java:/myAppDS</jta-data-source>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyDialect"/>
