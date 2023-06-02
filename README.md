@@ -54,7 +54,7 @@ public class OrderValidated extends Guard {
 ```
 Define the workflow:
 
-```
+```java
 Workflow wkf = new Workflow("SampleWorkflow");
 Status initiated = new Status(wkf, "Initiated");
 Status confirmed = new Status(wkf, "Confirmed");
@@ -63,7 +63,8 @@ Action actionOne = new Action(wkf, "Confirm", initiated, confirmed, orderValidat
 WorkflowManager.saveWorkflow(wkf);
 ```
 
-Link your objects to a workflow thanks to the WorkflowObject interface:
+### Link your objects to a workflow thanks to the WorkflowObject interface:
+<br/>
 
 ```java
 public class MyObject implements WorkflowObject {
@@ -98,7 +99,8 @@ public class MyObject implements WorkflowObject {
 }
 ```
 
-Execute a workflow action on your objects:
+### Execute a workflow action on your objects:
+<br/>
 
 ```java
 MyObject obj = new MyObject();
