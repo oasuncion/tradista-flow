@@ -13,9 +13,11 @@ Tradista Flow is available in Maven Central, it can be added to your project by 
 </dependency>
 ```
 
-Create and save a workflow very easily:
+## Create and save a workflow very easily:
 
-A simple workflow:
+
+### A simple workflow:
+<br/>
 
 ![Simple Workflow](./simpleWkf.png)
 
@@ -27,7 +29,12 @@ Action actionOne = new Action(wkf, "a1", statusOne, statusTwo);
 WorkflowManager.saveWorkflow(wkf);
 ```
 
-A workflow with a guard:
+### A workflow with a guard:
+<br/>
+It is possible with Tradista Flow to define conditions linked to actions, it is the concept of "guard".
+The objects go to the target status only if the condition defined in the guard is OK.
+<br/>
+<br/>
 
 ![Guarded Workflow](./guardedWkf.png)
 
@@ -49,10 +56,10 @@ Define the workflow:
 
 ```
 Workflow wkf = new Workflow("SampleWorkflow");
-Status statusOne = new Status(wkf, "s1");
-Status statusTwo = new Status(wkf, "s2");
+Status initiated = new Status(wkf, "Initiated");
+Status confirmed = new Status(wkf, "Confirmed");
 OrderValidated orderValidated = new OrderValidated();
-Action actionOne = new Action(wkf, "a1", statusOne, statusTwo, orderValidated);
+Action actionOne = new Action(wkf, "Confirm", initiated, confirmed, orderValidated);
 WorkflowManager.saveWorkflow(wkf);
 ```
 
