@@ -63,6 +63,50 @@ Action actionOne = new Action(wkf, "Confirm", initiated, confirmed, orderValidat
 WorkflowManager.saveWorkflow(wkf);
 ```
 
+### A workflow with a condition:
+<br/>
+You can also define branching in your workflows, as illustrated in the example below.
+<br/>
+<br/>
+
+![Workflow with condition](./condWkf.png)
+
+Define the condition:
+
+```java
+public class OrderCondition extends Condition {
+
+	private static final long serialVersionUID = -4945718662266443702L;
+
+	public OrderCondition() {
+		setFunction(obj -> {
+			Order order = ((Order)obj);
+			if (order.isValidated()) {
+				return 1;
+			} else {
+				return 2;
+			}			
+		});
+	}
+
+}
+```
+
+Define the workflow:
+
+```java
+Workflow wkf = new Workflow("SampleWorkflow");
+Status initiated = new Status(wkf, "Initiated");
+Status confirmed = new Status(wkf, "Confirmed");
+Status incorrect = new Status(wkf, "Incorrect");
+OrderCondition orderCondition = new OrderCondition();
+Map<Integer, Status> conditionalRouting = new HashMap<Integer, Status>();
+conditionalRouting.put(1, confirmed);
+conditionalRouting.put(2, incorrect);
+Action action = new ConditionalAction(wkf, initiated, "Confirm", orderCondition, conditionalRouting, confirmed, incorrect);
+WorkflowManager.saveWorkflow(wkf);
+```
+
 ### Link your objects to a workflow thanks to the WorkflowObject interface:
 <br/>
 
