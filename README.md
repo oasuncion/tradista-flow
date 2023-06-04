@@ -108,9 +108,10 @@ WorkflowManager.saveWorkflow(wkf);
 ```
 ### A workflow with a process:
 <br/>
-You can also add process to an action. Processes are executed when an action is applied (if the action has a guard, the process is executed after the guard condition execution, and only if condition is Ok).
+You can also add process to an action. Processes are executed when an action is applied (if the action has a guard, the process is executed after the guard condition execution, and only if the condition is Ok).
 <br/>
 <br/>
+
 ![Workflow with condition](./img/processWkf.png)
 
 Define the process: 
