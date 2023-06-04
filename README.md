@@ -106,12 +106,42 @@ conditionalRouting.put(2, incorrect);
 Action action = new ConditionalAction(wkf, initiated, "Confirm", orderCondition, conditionalRouting, confirmed, incorrect);
 WorkflowManager.saveWorkflow(wkf);
 ```
+### A workflow with a process:
+<br/>
+You can also add process to an action. Processes are executed when an action is applied (if the action has a guard, the process is executed after the guard condition execution, and only if condition is Ok).
+<br/>
+<br/>
+![Workflow with condition](./processWkf.png)
 
+Define the process: 
+```java
+public class OrderConfirmation extends Process {
+
+	private static final long serialVersionUID = -4945718662266443702L;
+
+	public OrderConfirmation() {
+		setTask(obj -> {
+			((Order) obj).setConfirmationDate(LocalDateTime.now());
+		});
+	}
+
+}
+```
+Define the workflow:
+
+```java
+Workflow wkf = new Workflow("SampleWorkflow");
+Status initiated = new Status(wkf, "Initiated");
+Status confirmed = new Status(wkf, "Confirmed");
+OrderConfirmation orderConfirmation = new OrderConfirmation();
+Action action = new ConditionalAction(wkf, "Confirm", initiated, confirmed, orderConfirmation);
+WorkflowManager.saveWorkflow(wkf);
+```
 ### Link your objects to a workflow thanks to the WorkflowObject interface:
 <br/>
 
 ```java
-public class MyObject implements WorkflowObject {
+public class Order implements WorkflowObject {
 
 	private Status status;
 	
@@ -147,10 +177,10 @@ public class MyObject implements WorkflowObject {
 <br/>
 
 ```java
-MyObject obj = new MyObject();
-obj.setWorkflow("SampleWorkflow");
-obj.setStatus(s2);
-WorkflowManager.applyAction(obj, a1);
+Order order = new Order();
+order.setWorkflow("SampleWorkflow");
+order.setStatus(initiated);
+WorkflowManager.applyAction(order, confirm);
 ```
 
 Tradista Flow is based on JPA. It can be used in JTA or non JTA mode.
