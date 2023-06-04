@@ -19,7 +19,7 @@ Tradista Flow is available in Maven Central, it can be added to your project by 
 ### A simple workflow:
 <br/>
 
-![Simple Workflow](./simpleWkf.png)
+![Simple Workflow](./img/simpleWkf.png)
 
 ```java
 Workflow wkf = new Workflow("SampleWorkflow");
@@ -36,7 +36,7 @@ The objects go to the target status only if the condition defined in the guard i
 <br/>
 <br/>
 
-![Guarded Workflow](./guardedWkf.png)
+![Guarded Workflow](./img/guardedWkf.png)
 
 Define the guard: 
 ```java
@@ -69,7 +69,7 @@ You can also define branching in your workflows, as illustrated in the example b
 <br/>
 <br/>
 
-![Workflow with condition](./condWkf.png)
+![Workflow with condition](./img/condWkf.png)
 
 Define the condition:
 
@@ -111,7 +111,7 @@ WorkflowManager.saveWorkflow(wkf);
 You can also add process to an action. Processes are executed when an action is applied (if the action has a guard, the process is executed after the guard condition execution, and only if condition is Ok).
 <br/>
 <br/>
-![Workflow with condition](./processWkf.png)
+![Workflow with condition](./img/processWkf.png)
 
 Define the process: 
 ```java
