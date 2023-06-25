@@ -120,7 +120,6 @@ public class WorkflowManagerTest {
 		conditionalRouting.put(1, s2);
 		conditionalRouting.put(2, s3);
 		new ConditionalAction(wkf, s1, "a1", c1, conditionalRouting, s2, s3);
-		;
 		try {
 			Assertions.assertTrue(WorkflowManager.isValid(wkf));
 		} catch (TradistaFlowBusinessException tfbe) {
@@ -155,7 +154,6 @@ public class WorkflowManagerTest {
 		conditionalRouting.put(1, s2);
 		conditionalRouting.put(2, s3);
 		new ConditionalAction(wkf, s1, "a1", c1, conditionalRouting, s2, s3);
-		;
 		new Status(wkf, "s4");
 		try {
 			Assertions.assertFalse(WorkflowManager.isValid(wkf));
@@ -168,14 +166,14 @@ public class WorkflowManagerTest {
 	@DisplayName("Cycle detection")
 	void testCycle() {
 		Workflow wkf = new Workflow("TestCycle");
+		Status s0 = new Status(wkf, "s0");
 		Status s1 = new Status(wkf, "s1");
+		new SimpleAction(wkf, "a0", s0, s1);
 		Status s2 = new Status(wkf, "s2");
 		new SimpleAction(wkf, "a1", s1, s2);
 		Status s3 = new Status(wkf, "s3");
 		new SimpleAction(wkf, "a2", s2, s3);
-		Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			new SimpleAction(wkf, "a3", s3, s1);
-		});
+		new SimpleAction(wkf, "a3", s3, s1);
 		try {
 			Assertions.assertTrue(WorkflowManager.isValid(wkf));
 		} catch (TradistaFlowBusinessException tfbe) {
@@ -187,19 +185,18 @@ public class WorkflowManagerTest {
 	@DisplayName("Cycle detection with a conditional action")
 	void testCycleCondition() {
 		Workflow wkf = new Workflow("TestCycle");
+		Status s0 = new Status(wkf, "s0");
 		Status s1 = new Status(wkf, "s1");
+		new SimpleAction(wkf, "a0", s0, s1);
 		Status s2 = new Status(wkf, "s2");
 		new SimpleAction(wkf, "a1", s1, s2);
 		Status s3 = new Status(wkf, "s3");
 		new SimpleAction(wkf, "a2", s2, s3);
-		Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			TestCondition c1 = new TestCondition();
-			Map<Integer, Status> conditionalRouting = new HashMap<Integer, Status>();
-			conditionalRouting.put(1, s2);
-			conditionalRouting.put(2, s3);
-			new ConditionalAction(wkf, s3, "a1", c1, conditionalRouting, s1);
-			;
-		});
+		TestCondition c1 = new TestCondition();
+		Map<Integer, Status> conditionalRouting = new HashMap<Integer, Status>();
+		conditionalRouting.put(1, s2);
+		conditionalRouting.put(2, s3);
+		new ConditionalAction(wkf, s3, "a1", c1, conditionalRouting, s1);
 		try {
 			Assertions.assertTrue(WorkflowManager.isValid(wkf));
 		} catch (TradistaFlowBusinessException tfbe) {
