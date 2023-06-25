@@ -8,7 +8,7 @@ import java.util.Set;
 
 import org.jgrapht.Graph;
 import org.jgrapht.GraphTests;
-import org.jgrapht.graph.DirectedAcyclicGraph;
+import org.jgrapht.graph.DirectedPseudograph;
 
 import finance.tradista.flow.util.TradistaFlowUtil;
 import jakarta.persistence.CascadeType;
@@ -65,7 +65,7 @@ public class Workflow extends TradistaFlowObject {
 	public Workflow() {
 		actions = new HashSet<>();
 		status = new HashSet<>();
-		graph = new DirectedAcyclicGraph<>(Action.class);
+		graph = new DirectedPseudograph<>(Action.class);
 	}
 
 	public Workflow(String name) {
