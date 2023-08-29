@@ -1,6 +1,7 @@
 package finance.tradista.flow.test;
 
 import finance.tradista.flow.exception.TradistaFlowBusinessException;
+import jakarta.persistence.Entity;
 
 /*
  * Copyright 2023 Olivier Asuncion
@@ -28,7 +29,7 @@ under the License.    */
  * @author OA
  *
  */
-
+@Entity
 public class TestProcessKO extends finance.tradista.flow.model.Process {
 
 	private static final long serialVersionUID = -5097243928471620584L;

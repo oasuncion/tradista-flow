@@ -37,21 +37,14 @@ public class Condition extends TradistaFlowObject {
 
 	private static final long serialVersionUID = -8970069804519725007L;
 
-	private String name;
-
 	@Transient
 	private Function<WorkflowObject, Integer> function;
 
 	public Condition() {
-		this.name = this.getClass().getName();
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+	public final String getName() {
+		return getClass().getSimpleName();
 	}
 
 	public Function<WorkflowObject, Integer> getFunction() {
@@ -63,7 +56,7 @@ public class Condition extends TradistaFlowObject {
 	}
 
 	public String toString() {
-		return name;
+		return getName();
 	}
 
 	public int apply(WorkflowObject obj) {
@@ -72,7 +65,7 @@ public class Condition extends TradistaFlowObject {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(name);
+		return Objects.hash(getName());
 	}
 
 	@Override
@@ -84,7 +77,7 @@ public class Condition extends TradistaFlowObject {
 		if (getClass() != obj.getClass())
 			return false;
 		Condition other = (Condition) obj;
-		return Objects.equals(name, other.name);
+		return Objects.equals(getName(), other.getName());
 	}
 
 }

@@ -1,6 +1,7 @@
 package finance.tradista.flow.test;
 
 import finance.tradista.flow.model.Condition;
+import jakarta.persistence.Entity;
 
 /*
  * Copyright 2023 Olivier Asuncion
@@ -30,7 +31,7 @@ under the License.    */
  * @author OA
  *
  */
-
+@Entity
 public class TestCondition extends Condition {
 
 	private static final long serialVersionUID = -4945718662266443702L;

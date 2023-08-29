@@ -37,8 +37,6 @@ public class Process extends TradistaFlowObject {
 
 	private static final long serialVersionUID = -9106790274567211638L;
 
-	private String name;
-
 	@FunctionalInterface
 	public interface Task<W extends WorkflowObject> {
 		void apply(W obj) throws TradistaFlowBusinessException;
@@ -48,15 +46,10 @@ public class Process extends TradistaFlowObject {
 	private Task<WorkflowObject> task;
 
 	public Process() {
-		this.name = this.getClass().getName();
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+	public final String getName() {
+		return getClass().getSimpleName();
 	}
 
 	public Task<WorkflowObject> getPredicate() {
@@ -68,7 +61,7 @@ public class Process extends TradistaFlowObject {
 	}
 
 	public String toString() {
-		return name;
+		return getName();
 	}
 
 	public void apply(WorkflowObject obj) throws TradistaFlowBusinessException {
@@ -77,7 +70,7 @@ public class Process extends TradistaFlowObject {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(name);
+		return Objects.hash(getName());
 	}
 
 	@Override
@@ -89,7 +82,7 @@ public class Process extends TradistaFlowObject {
 		if (getClass() != obj.getClass())
 			return false;
 		Process other = (Process) obj;
-		return Objects.equals(name, other.name);
+		return Objects.equals(getName(), other.getName());
 	}
 
 }
