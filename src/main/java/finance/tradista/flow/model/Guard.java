@@ -37,21 +37,14 @@ public class Guard extends TradistaFlowObject {
 
 	private static final long serialVersionUID = 3817044564143531144L;
 
-	private String name;
-
 	@Transient
 	private Predicate<WorkflowObject> predicate;
 
 	public Guard() {
-		this.name = this.getClass().getName();
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+	public final String getName() {
+		return getClass().getSimpleName();
 	}
 
 	public Predicate<WorkflowObject> getPredicate() {
@@ -63,7 +56,7 @@ public class Guard extends TradistaFlowObject {
 	}
 
 	public String toString() {
-		return name;
+		return getName();
 	}
 
 	public boolean test(WorkflowObject obj) {
@@ -72,7 +65,7 @@ public class Guard extends TradistaFlowObject {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(name);
+		return Objects.hash(getName());
 	}
 
 	@Override
@@ -84,7 +77,7 @@ public class Guard extends TradistaFlowObject {
 		if (getClass() != obj.getClass())
 			return false;
 		Guard other = (Guard) obj;
-		return Objects.equals(name, other.name);
+		return Objects.equals(getName(), other.getName());
 	}
 
 }

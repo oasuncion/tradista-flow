@@ -1,8 +1,6 @@
 package finance.tradista.flow.model;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -109,62 +107,9 @@ public class Workflow extends TradistaFlowObject {
 		}
 	}
 
-	private void syncGraph() {
+	public void syncModel() {
 		setStatus(status);
 		setActions(actions);
-	}
-
-	private void syncProcesses() {
-		if (actions != null && !actions.isEmpty()) {
-			actions.stream().forEach(action -> {
-				if (action instanceof SimpleAction) {
-					Process process = ((SimpleAction) action).getProcess();
-					if (process != null) {
-						((SimpleAction) action).setProcess(TradistaFlowUtil.get(process.getName(), process.getId()));
-					}
-				} else if (action instanceof ConditionalAction) {
-					Map<Status, Process> processesMap = ((ConditionalAction) action).getConditionalProcesses();
-					if (processesMap != null && !processesMap.isEmpty()) {
-						Map<Status, Process> newProcessesMap = new HashMap<>(processesMap.size());
-						for (Map.Entry<Status, Process> entry : processesMap.entrySet()) {
-							newProcessesMap.put(entry.getKey(),
-									TradistaFlowUtil.get(entry.getValue().getName(), entry.getValue().getId()));
-						}
-						((ConditionalAction) action).setConditionalProcesses(processesMap);
-					}
-				}
-			});
-		}
-	}
-
-	private void syncGuards() {
-		if (actions != null && !actions.isEmpty()) {
-			actions.stream().forEach(action -> {
-				Guard guard = action.getGuard();
-				if (guard != null) {
-					action.setGuard(TradistaFlowUtil.get(guard.getName(), guard.getId()));
-				}
-			});
-		}
-	}
-
-	private void syncConditions() {
-		if (actions != null && !actions.isEmpty()) {
-			actions.stream().forEach(action -> {
-				if (action instanceof ConditionalAction) {
-					Condition condition = ((ConditionalAction) action).getCondition();
-					((ConditionalAction) action)
-							.setCondition(TradistaFlowUtil.get(condition.getName(), condition.getId()));
-				}
-			});
-		}
-	}
-
-	public void syncModel() {
-		syncGraph();
-		syncProcesses();
-		syncGuards();
-		syncConditions();
 	}
 
 	@SuppressWarnings("unchecked")

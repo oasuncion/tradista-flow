@@ -32,7 +32,7 @@ under the License.    */
 public class WorkflowTestObject implements WorkflowObject {
 
 	private Status status;
-	
+
 	private String workflow;
 
 	@Override
@@ -44,7 +44,7 @@ public class WorkflowTestObject implements WorkflowObject {
 	public String getWorkflow() {
 		return workflow;
 	}
-	
+
 	public void setWorkflow(String name) {
 		this.workflow = name;
 	}

@@ -4,7 +4,7 @@
 	<persistence-unit
 		name="tradista-flow-persistence-unit"
 		transaction-type="RESOURCE_LOCAL">
-		<description>This is a the unique persistence unit of the tradista
+		<description>This is the unique persistence unit of the tradista
 			flow project.
 		</description>
 		<class>finance.tradista.flow.model.Workflow</class>
@@ -28,7 +28,7 @@
 				value="org.hibernate.dialect.DerbyDialect" />
 			<property name="hibernate.show_sql" value="true" />
 			<property
-				name="javax.persistence.schema-generation.database.action"
+				name="jakarta.persistence.schema-generation.database.action"
 				value="drop-and-create" />
 		</properties>
 	</persistence-unit>

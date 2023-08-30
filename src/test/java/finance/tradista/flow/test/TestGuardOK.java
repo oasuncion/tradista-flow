@@ -1,6 +1,7 @@
 package finance.tradista.flow.test;
 
 import finance.tradista.flow.model.Guard;
+import jakarta.persistence.Entity;
 
 /*
  * Copyright 2023 Olivier Asuncion
@@ -28,7 +29,7 @@ under the License.    */
  * @author OA
  *
  */
-
+@Entity
 public class TestGuardOK extends Guard {
 
 	private static final long serialVersionUID = -4945718662266443702L;
