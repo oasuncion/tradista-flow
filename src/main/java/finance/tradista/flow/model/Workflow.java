@@ -3,6 +3,7 @@ package finance.tradista.flow.model;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jgrapht.Graph;
 import org.jgrapht.GraphTests;
@@ -196,6 +197,23 @@ public class Workflow extends TradistaFlowObject {
 			return false;
 		Workflow other = (Workflow) obj;
 		return Objects.equals(name, other.name);
+	}
+
+	public Status getInitialStatus() {
+		Status status = null;
+		if (this.status != null) {
+			status = this.status.stream().filter(s -> isInitialStatus(s)).findFirst().get();
+		}
+		return status;
+	}
+
+	public Set<Status> getFinalStatus() {
+		Set<Status> status = null;
+		if (this.status != null) {
+			status = new HashSet<Status>();
+			status = this.status.stream().filter(s -> isFinalStatus(s)).collect(Collectors.toSet());
+		}
+		return status;
 	}
 
 }

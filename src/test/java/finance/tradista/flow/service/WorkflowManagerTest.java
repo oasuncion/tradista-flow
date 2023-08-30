@@ -205,7 +205,7 @@ public class WorkflowManagerTest {
 	}
 
 	@Test
-	@DisplayName("Initial status")
+	@DisplayName("Is initial status")
 	void testIsInitialStatus() {
 		Workflow wkf = new Workflow("testIsInitialStatus");
 		Status s1 = new Status(wkf, "s1");
@@ -215,13 +215,46 @@ public class WorkflowManagerTest {
 	}
 
 	@Test
-	@DisplayName("Final status")
+	@DisplayName("Is final status")
 	void testIsFinalStatus() {
 		Workflow wkf = new Workflow("testIsFinalStatus");
 		Status s1 = new Status(wkf, "s1");
 		Status s2 = new Status(wkf, "s2");
 		new SimpleAction(wkf, "a1", s1, s2);
 		Assertions.assertTrue(wkf.isFinalStatus(s2));
+	}
+
+	@Test
+	@DisplayName("Get initial status")
+	void testGetInitialStatus() {
+		Workflow wkf = new Workflow("testGetInitialStatus");
+		Status s1 = new Status(wkf, "s1");
+		Status s2 = new Status(wkf, "s2");
+		new SimpleAction(wkf, "a1", s1, s2);
+		Assertions.assertTrue(wkf.getInitialStatus().equals(s1));
+	}
+
+	@Test
+	@DisplayName("Get final status")
+	void testGetFinalStatus() {
+		Workflow wkf = new Workflow("testGetFinalStatus");
+		Status s1 = new Status(wkf, "s1");
+		Status s2 = new Status(wkf, "s2");
+		new SimpleAction(wkf, "a1", s1, s2);
+		Assertions.assertTrue(wkf.getFinalStatus().contains(s2));
+		Assertions.assertFalse(wkf.getFinalStatus().contains(s1));
+		Assertions.assertTrue(wkf.getFinalStatus().size() == 1);
+
+		wkf = new Workflow("testGetSeveralFinalStatus");
+		s1 = new Status(wkf, "s1");
+		s2 = new Status(wkf, "s2");
+		Status s3 = new Status(wkf, "s3");
+		new SimpleAction(wkf, "a1", s1, s2);
+		new SimpleAction(wkf, "a1", s1, s3);
+		Assertions.assertTrue(wkf.getFinalStatus().contains(s2));
+		Assertions.assertTrue(wkf.getFinalStatus().contains(s3));
+		Assertions.assertFalse(wkf.getFinalStatus().contains(s1));
+		Assertions.assertTrue(wkf.getFinalStatus().size() == 2);
 	}
 
 	@Test
