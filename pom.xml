@@ -41,7 +41,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.1.0</version>
+				<version>3.1.2</version>
 			</plugin>
 		</plugins>
 	</build>
@@ -54,7 +54,7 @@
 		<dependency>
 			<groupId>org.hibernate.orm</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>6.2.3.Final</version>
+			<version>6.2.7.Final</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -78,7 +78,7 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter</artifactId>
-			<version>5.9.3</version>
+			<version>5.10.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -90,7 +90,7 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.12.0</version>
+			<version>3.13.0</version>
 		</dependency>
 	</dependencies>
 	<profiles>
@@ -127,7 +127,7 @@
 					<plugin>
 						<groupId>org.jreleaser</groupId>
 						<artifactId>jreleaser-maven-plugin</artifactId>
-						<version>1.6.0</version>
+						<version>1.7.0</version>
 						<configuration>
 							<jreleaser>
 								<project>
