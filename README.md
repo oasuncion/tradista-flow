@@ -216,7 +216,7 @@ using Hibernate and Derby:
         </properties>
     </persistence-unit>
     <!--<persistence-unit name="tradista-flow-persistence-unit" transaction-type="JTA">
-        <description>This is a the unique persistence unit of the tradista flow project.</description>
+        <description>This is the unique persistence unit of the tradista flow project.</description>
         <jta-data-source>java:/myAppDS</jta-data-source>
         <class>finance.tradista.flow.model.Workflow</class>
 	<class>finance.tradista.flow.model.Action</class>
