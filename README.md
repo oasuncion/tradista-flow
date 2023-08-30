@@ -9,7 +9,7 @@ Tradista Flow is available in Maven Central, it can be added to your project by 
 <dependency>
   <groupId>finance.tradista.flow</groupId>
   <artifactId>tradista-flow</artifactId>
-  <version>2.0.1</version>
+  <version>2.1.0</version>
 </dependency>
 ```
 
@@ -40,6 +40,7 @@ The objects go to the target status only if the condition defined in the guard i
 
 Define the guard: 
 ```java
+@Entity
 public class OrderValidated extends Guard {
 
 	private static final long serialVersionUID = -4945718662266443702L;
@@ -74,6 +75,7 @@ You can also define branching in your workflows, as illustrated in the example b
 Define the condition:
 
 ```java
+@Entity
 public class OrderCondition extends Condition {
 
 	private static final long serialVersionUID = -4945718662266443702L;
@@ -116,6 +118,7 @@ You can also add process to an action. Processes are executed when an action is 
 
 Define the process: 
 ```java
+@Entity
 public class OrderConfirmation extends Process {
 
 	private static final long serialVersionUID = -4945718662266443702L;
@@ -192,7 +195,7 @@ using Hibernate and Derby:
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence xmlns="https://jakarta.ee/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.0">
     <persistence-unit name="tradista-flow-persistence-unit" transaction-type="RESOURCE_LOCAL">
-        <description>This is a the unique persistence unit of the tradista flow project.</description>
+        <description>This is the unique persistence unit of the tradista flow project.</description>
         <class>finance.tradista.flow.model.Workflow</class>
 	<class>finance.tradista.flow.model.Action</class>
 	<class>finance.tradista.flow.model.SimpleAction</class>
@@ -209,7 +212,7 @@ using Hibernate and Derby:
             <property name="jakarta.persistence.jdbc.password" value="xxxxx" />
             <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyDialect"/>
             <property name="hibernate.show_sql" value="true"/>
-            <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+            <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
         </properties>
     </persistence-unit>
     <!--<persistence-unit name="tradista-flow-persistence-unit" transaction-type="JTA">
@@ -227,7 +230,7 @@ using Hibernate and Derby:
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyDialect"/>
             <property name="hibernate.show_sql" value="true"/>
-            <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+            <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
         </properties>
     </persistence-unit>-->
 </persistence>
