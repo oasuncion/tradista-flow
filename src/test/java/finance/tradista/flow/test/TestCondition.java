@@ -1,6 +1,7 @@
 package finance.tradista.flow.test;
 
 import finance.tradista.flow.model.Condition;
+import finance.tradista.flow.model.WorkflowObject;
 import jakarta.persistence.Entity;
 
 /*
@@ -32,7 +33,7 @@ under the License.    */
  *
  */
 @Entity
-public class TestCondition extends Condition {
+public class TestCondition extends Condition<WorkflowObject> {
 
 	private static final long serialVersionUID = -4945718662266443702L;
 
@@ -47,5 +48,6 @@ public class TestCondition extends Condition {
 			return ret;
 		});
 	}
+
 
 }

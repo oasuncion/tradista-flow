@@ -1,4 +1,8 @@
 package finance.tradista.flow.test;
+
+import finance.tradista.flow.model.WorkflowObject;
+import jakarta.persistence.Entity;
+
 /*
  * Copyright 2023 Olivier Asuncion
  * 
@@ -19,8 +23,6 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.    */
 
-import jakarta.persistence.Entity;
-
 /**
  * Process Test Class. This test process sets the WorkflowObject's workflow to
  * "Wkf".
@@ -29,7 +31,7 @@ import jakarta.persistence.Entity;
  *
  */
 @Entity
-public class TestProcessOK extends finance.tradista.flow.model.Process {
+public class TestProcessOK extends finance.tradista.flow.model.Process<WorkflowObject> {
 
 	private static final long serialVersionUID = -5097243928471620584L;
 

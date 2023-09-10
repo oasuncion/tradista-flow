@@ -45,7 +45,7 @@ public class SimpleAction extends Action {
 	private Status arrivalStatus;
 
 	@OneToOne(cascade = CascadeType.ALL)
-	private Process process;
+	private Process<WorkflowObject> process;
 
 	private void init(Workflow workflow, Status arrivalStatus) {
 		StringBuilder errMsg = new StringBuilder();
@@ -59,7 +59,7 @@ public class SimpleAction extends Action {
 		workflow.addAction(this);
 	}
 
-	public SimpleAction(Workflow workflow, String name, Status departureStatus, Status arrivalStatus, Guard guard) {
+	public SimpleAction(Workflow workflow, String name, Status departureStatus, Status arrivalStatus, Guard<WorkflowObject> guard) {
 		super(workflow, name, departureStatus, guard);
 		init(workflow, arrivalStatus);
 	}
@@ -69,14 +69,14 @@ public class SimpleAction extends Action {
 		init(workflow, arrivalStatus);
 	}
 
-	public SimpleAction(Workflow workflow, String name, Status departureStatus, Status arrivalStatus, Guard guard,
-			Process process) {
+	public SimpleAction(Workflow workflow, String name, Status departureStatus, Status arrivalStatus, Guard<WorkflowObject> guard,
+			Process<WorkflowObject> process) {
 		super(workflow, name, departureStatus, guard);
 		init(workflow, arrivalStatus);
 		this.process = process;
 	}
 
-	public SimpleAction(Workflow workflow, String name, Status departureStatus, Status arrivalStatus, Process process) {
+	public SimpleAction(Workflow workflow, String name, Status departureStatus, Status arrivalStatus, Process<WorkflowObject> process) {
 		super(workflow, name, departureStatus, null);
 		init(workflow, arrivalStatus);
 		this.process = process;
@@ -93,11 +93,11 @@ public class SimpleAction extends Action {
 		this.arrivalStatus = arrivalStatus;
 	}
 
-	public Process getProcess() {
+	public Process<WorkflowObject> getProcess() {
 		return process;
 	}
 
-	public void setProcess(Process process) {
+	public void setProcess(Process<WorkflowObject> process) {
 		this.process = process;
 	}
 

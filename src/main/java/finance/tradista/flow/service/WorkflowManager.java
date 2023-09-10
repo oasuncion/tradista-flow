@@ -184,7 +184,7 @@ public final class WorkflowManager {
 
 		if (action instanceof SimpleAction) {
 			// Perform process
-			finance.tradista.flow.model.Process process = ((SimpleAction) action).getProcess();
+			finance.tradista.flow.model.Process<WorkflowObject> process = ((SimpleAction) action).getProcess();
 			if (process != null) {
 				process.apply(object);
 			}
@@ -194,9 +194,9 @@ public final class WorkflowManager {
 			int res = ((ConditionalAction) action).getCondition().apply(object);
 			Status arrivalStatus = condAction.getArrivalStatusByResult(res);
 			// Perform process
-			Map<Status, finance.tradista.flow.model.Process> condProcesses = condAction.getConditionalProcesses();
+			Map<Status, finance.tradista.flow.model.Process<WorkflowObject>> condProcesses = condAction.getConditionalProcesses();
 			if (condProcesses != null) {
-				finance.tradista.flow.model.Process process = condProcesses.get(arrivalStatus);
+				finance.tradista.flow.model.Process<WorkflowObject> process = condProcesses.get(arrivalStatus);
 				if (process != null) {
 					process.apply(object);
 				}

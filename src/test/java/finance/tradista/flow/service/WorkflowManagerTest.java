@@ -18,6 +18,7 @@ import finance.tradista.flow.model.Process;
 import finance.tradista.flow.model.SimpleAction;
 import finance.tradista.flow.model.Status;
 import finance.tradista.flow.model.Workflow;
+import finance.tradista.flow.model.WorkflowObject;
 import finance.tradista.flow.test.TestCondition;
 import finance.tradista.flow.test.TestGuardKO;
 import finance.tradista.flow.test.TestGuardOK;
@@ -66,7 +67,7 @@ public class WorkflowManagerTest {
 		Workflow wkf = new Workflow("TestSaveValidWorkflow");
 		Status s1 = new Status(wkf, "s1");
 		Status s2 = new Status(wkf, "s2");
-		Process process = new TestProcessOK();
+		Process<WorkflowObject> process = new TestProcessOK();
 		new SimpleAction(wkf, "a1", s1, s2, process);
 		try {
 			WorkflowManager.saveWorkflow(wkf);
@@ -341,7 +342,7 @@ public class WorkflowManagerTest {
 		Workflow wkf = new Workflow("testApplyActionGuardOK");
 		Status s1 = new Status(wkf, "s1");
 		Status s2 = new Status(wkf, "s2");
-		Guard guardOK = new TestGuardOK();
+		Guard<WorkflowObject> guardOK = new TestGuardOK();
 		Action a1 = new SimpleAction(wkf, "a1", s1, s2, guardOK);
 		WorkflowTestObject obj = new WorkflowTestObject();
 		try {
@@ -365,7 +366,7 @@ public class WorkflowManagerTest {
 		Workflow wkf = new Workflow("testApplyActionGuardKO");
 		Status s1 = new Status(wkf, "s1");
 		Status s2 = new Status(wkf, "s2");
-		Guard guardKO = new TestGuardKO();
+		Guard<WorkflowObject> guardKO = new TestGuardKO();
 		Action a1 = new SimpleAction(wkf, "a1", s1, s2, guardKO);
 		WorkflowTestObject obj = new WorkflowTestObject();
 		try {
@@ -440,12 +441,12 @@ public class WorkflowManagerTest {
 		Status s1 = new Status(wkf, "s1");
 		Status s2 = new Status(wkf, "s2");
 		Status s3 = new Status(wkf, "s3");
-		Condition c1 = new TestCondition();
-		Process process = new TestProcessOK();
+		Condition<WorkflowObject> c1 = new TestCondition();
+		Process<WorkflowObject> process = new TestProcessOK();
 		Map<Integer, Status> conditionalRouting = new HashMap<Integer, Status>();
 		conditionalRouting.put(1, s2);
 		conditionalRouting.put(2, s3);
-		Map<Status, Process> conditionalProcesses = new HashMap<Status, Process>();
+		Map<Status, Process<WorkflowObject>> conditionalProcesses = new HashMap<Status, Process<WorkflowObject>>();
 		conditionalProcesses.put(s2, process);
 		Action a1 = new ConditionalAction(wkf, s1, "a1", c1, conditionalRouting, conditionalProcesses, s2, s3);
 		WorkflowTestObject obj = new WorkflowTestObject();
@@ -477,12 +478,12 @@ public class WorkflowManagerTest {
 		Status s1 = new Status(wkf, "s1");
 		Status s2 = new Status(wkf, "s2");
 		Status s3 = new Status(wkf, "s3");
-		Condition c1 = new TestCondition();
-		Process process = new TestProcessKO();
+		Condition<WorkflowObject> c1 = new TestCondition();
+		Process<WorkflowObject> process = new TestProcessKO();
 		Map<Integer, Status> conditionalRouting = new HashMap<Integer, Status>();
 		conditionalRouting.put(1, s2);
 		conditionalRouting.put(2, s3);
-		Map<Status, Process> conditionalProcesses = new HashMap<Status, Process>();
+		Map<Status, Process<WorkflowObject>> conditionalProcesses = new HashMap<Status, Process<WorkflowObject>>();
 		conditionalProcesses.put(s2, process);
 		Action a1 = new ConditionalAction(wkf, s1, "a1", c1, conditionalRouting, conditionalProcesses, s2, s3);
 		WorkflowTestObject obj = new WorkflowTestObject();
