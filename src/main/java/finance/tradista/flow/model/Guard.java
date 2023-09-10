@@ -33,12 +33,12 @@ under the License.    */
  *
  */
 @Entity
-public class Guard extends TradistaFlowObject {
+public class Guard<X extends WorkflowObject> extends TradistaFlowObject {
 
 	private static final long serialVersionUID = 3817044564143531144L;
 
 	@Transient
-	private Predicate<WorkflowObject> predicate;
+	private Predicate<X> predicate;
 
 	public Guard() {
 	}
@@ -47,11 +47,11 @@ public class Guard extends TradistaFlowObject {
 		return getClass().getSimpleName();
 	}
 
-	public Predicate<WorkflowObject> getPredicate() {
+	public Predicate<X> getPredicate() {
 		return predicate;
 	}
 
-	public void setPredicate(Predicate<WorkflowObject> predicate) {
+	public void setPredicate(Predicate<X> predicate) {
 		this.predicate = predicate;
 	}
 
@@ -59,7 +59,7 @@ public class Guard extends TradistaFlowObject {
 		return getName();
 	}
 
-	public boolean test(WorkflowObject obj) {
+	public boolean test(X obj) {
 		return predicate.test(obj);
 	}
 
@@ -76,7 +76,7 @@ public class Guard extends TradistaFlowObject {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Guard other = (Guard) obj;
+		Guard<?> other = (Guard<?>) obj;
 		return Objects.equals(getName(), other.getName());
 	}
 

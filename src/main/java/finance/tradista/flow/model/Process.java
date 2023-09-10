@@ -33,17 +33,17 @@ under the License.    */
  *
  */
 @Entity
-public class Process extends TradistaFlowObject {
+public class Process<X extends WorkflowObject> extends TradistaFlowObject {
 
 	private static final long serialVersionUID = -9106790274567211638L;
 
 	@FunctionalInterface
-	public interface Task<W extends WorkflowObject> {
-		void apply(W obj) throws TradistaFlowBusinessException;
+	public interface Task<X> {
+		void apply(X obj) throws TradistaFlowBusinessException;
 	}
 
 	@Transient
-	private Task<WorkflowObject> task;
+	private Task<X> task;
 
 	public Process() {
 	}
@@ -52,11 +52,11 @@ public class Process extends TradistaFlowObject {
 		return getClass().getSimpleName();
 	}
 
-	public Task<WorkflowObject> getPredicate() {
+	public Task<X> getPredicate() {
 		return task;
 	}
 
-	public void setTask(Task<WorkflowObject> task) {
+	public void setTask(Task<X> task) {
 		this.task = task;
 	}
 
@@ -64,7 +64,7 @@ public class Process extends TradistaFlowObject {
 		return getName();
 	}
 
-	public void apply(WorkflowObject obj) throws TradistaFlowBusinessException {
+	public void apply(X obj) throws TradistaFlowBusinessException {
 		task.apply(obj);
 	}
 
@@ -81,7 +81,7 @@ public class Process extends TradistaFlowObject {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Process other = (Process) obj;
+		Process<?> other = (Process<?>) obj;
 		return Objects.equals(getName(), other.getName());
 	}
 

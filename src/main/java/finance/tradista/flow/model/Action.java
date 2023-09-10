@@ -47,7 +47,7 @@ public abstract class Action extends TradistaFlowObject {
 	private String name;
 
 	@OneToOne(cascade = CascadeType.ALL)
-	private Guard guard;
+	private Guard<WorkflowObject> guard;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "workflow_id")
@@ -57,7 +57,7 @@ public abstract class Action extends TradistaFlowObject {
 	@JoinColumn(name = "departure_status_id")
 	private Status departureStatus;
 
-	public Action(Workflow workflow, String name, Status departureStatus, Guard guard) {
+	public Action(Workflow workflow, String name, Status departureStatus, Guard<WorkflowObject> guard) {
 		this();
 		StringBuilder errMsg = new StringBuilder();
 		if (departureStatus.getWorkflow() == null || !departureStatus.getWorkflow().equals(workflow)) {
@@ -99,11 +99,11 @@ public abstract class Action extends TradistaFlowObject {
 		this.departureStatus = departureStatus;
 	}
 
-	public Guard getGuard() {
+	public Guard<WorkflowObject> getGuard() {
 		return guard;
 	}
 
-	public void setGuard(Guard guard) {
+	public void setGuard(Guard<WorkflowObject> guard) {
 		this.guard = guard;
 	}
 

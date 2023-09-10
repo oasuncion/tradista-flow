@@ -33,12 +33,12 @@ under the License.    */
  *
  */
 @Entity
-public class Condition extends TradistaFlowObject {
+public class Condition<X extends WorkflowObject> extends TradistaFlowObject {
 
 	private static final long serialVersionUID = -8970069804519725007L;
 
 	@Transient
-	private Function<WorkflowObject, Integer> function;
+	private Function<X, Integer> function;
 
 	public Condition() {
 	}
@@ -47,11 +47,11 @@ public class Condition extends TradistaFlowObject {
 		return getClass().getSimpleName();
 	}
 
-	public Function<WorkflowObject, Integer> getFunction() {
+	public Function<X, Integer> getFunction() {
 		return function;
 	}
 
-	public void setFunction(Function<WorkflowObject, Integer> function) {
+	public void setFunction(Function<X, Integer> function) {
 		this.function = function;
 	}
 
@@ -59,7 +59,7 @@ public class Condition extends TradistaFlowObject {
 		return getName();
 	}
 
-	public int apply(WorkflowObject obj) {
+	public int apply(X obj) {
 		return function.apply(obj);
 	}
 
@@ -76,7 +76,7 @@ public class Condition extends TradistaFlowObject {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Condition other = (Condition) obj;
+		Condition<?> other = (Condition<?>) obj;
 		return Objects.equals(getName(), other.getName());
 	}
 
