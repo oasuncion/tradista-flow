@@ -1,7 +1,6 @@
 package finance.tradista.flow.model;
 
 import java.util.Objects;
-import java.util.function.Function;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Transient;
@@ -37,8 +36,13 @@ public class Condition<X extends WorkflowObject> extends TradistaFlowObject {
 
 	private static final long serialVersionUID = -8970069804519725007L;
 
+	@FunctionalInterface
+	protected interface EXFunction<T, E extends Exception> {
+		Integer apply(T t) throws E;
+	}
+
 	@Transient
-	private Function<X, Integer> function;
+	private EXFunction<X, Exception> function;
 
 	public Condition() {
 	}
@@ -47,11 +51,7 @@ public class Condition<X extends WorkflowObject> extends TradistaFlowObject {
 		return getClass().getSimpleName();
 	}
 
-	public Function<X, Integer> getFunction() {
-		return function;
-	}
-
-	public void setFunction(Function<X, Integer> function) {
+	public void setFunction(EXFunction<X, Exception> function) {
 		this.function = function;
 	}
 
@@ -59,7 +59,7 @@ public class Condition<X extends WorkflowObject> extends TradistaFlowObject {
 		return getName();
 	}
 
-	public int apply(X obj) {
+	public int apply(X obj) throws Exception {
 		return function.apply(obj);
 	}
 

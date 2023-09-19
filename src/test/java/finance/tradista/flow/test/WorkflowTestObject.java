@@ -53,5 +53,9 @@ public class WorkflowTestObject implements WorkflowObject {
 	public Status getStatus() {
 		return status;
 	}
+	
+	public WorkflowObject clone() throws CloneNotSupportedException {
+		return (WorkflowObject) super.clone();
+	}
 
 }

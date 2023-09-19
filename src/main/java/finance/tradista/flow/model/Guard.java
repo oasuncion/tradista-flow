@@ -1,7 +1,6 @@
 package finance.tradista.flow.model;
 
 import java.util.Objects;
-import java.util.function.Predicate;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Transient;
@@ -37,8 +36,13 @@ public class Guard<X extends WorkflowObject> extends TradistaFlowObject {
 
 	private static final long serialVersionUID = 3817044564143531144L;
 
+	@FunctionalInterface
+	protected interface EXPredicate<T, E extends Exception> {
+		Boolean test(T t) throws E;
+	}
+
 	@Transient
-	private Predicate<X> predicate;
+	private EXPredicate<X, Exception> predicate;
 
 	public Guard() {
 	}
@@ -47,11 +51,7 @@ public class Guard<X extends WorkflowObject> extends TradistaFlowObject {
 		return getClass().getSimpleName();
 	}
 
-	public Predicate<X> getPredicate() {
-		return predicate;
-	}
-
-	public void setPredicate(Predicate<X> predicate) {
+	public void setPredicate(EXPredicate<X, Exception> predicate) {
 		this.predicate = predicate;
 	}
 
@@ -59,7 +59,7 @@ public class Guard<X extends WorkflowObject> extends TradistaFlowObject {
 		return getName();
 	}
 
-	public boolean test(X obj) {
+	public boolean test(X obj) throws Exception {
 		return predicate.test(obj);
 	}
 

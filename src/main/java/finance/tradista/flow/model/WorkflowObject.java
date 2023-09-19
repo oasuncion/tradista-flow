@@ -26,12 +26,14 @@ under the License.    */
  * 
  * @author Olivier Asuncion
  */
-public interface WorkflowObject {
+public interface WorkflowObject extends Cloneable {
 
 	Status getStatus();
 
 	String getWorkflow();
 
 	void setStatus(Status status);
+	
+	WorkflowObject clone() throws CloneNotSupportedException;
 
 }
