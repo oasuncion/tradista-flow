@@ -94,8 +94,8 @@ public class Workflow extends TradistaFlowObject {
 		this.actions = actions;
 		if (actions != null) {
 			for (Action action : actions) {
-				if (action instanceof SimpleAction) {
-					graph.addEdge(action.getDepartureStatus(), ((SimpleAction) action).getArrivalStatus(), action);
+				if (action instanceof SimpleAction simpleAction) {
+					graph.addEdge(action.getDepartureStatus(), simpleAction.getArrivalStatus(), action);
 				} else {
 					graph.addEdge(action.getDepartureStatus(), ((ConditionalAction) action).getChoicePseudoStatus(),
 							action);
@@ -135,8 +135,8 @@ public class Workflow extends TradistaFlowObject {
 	public void addAction(Action action) {
 		actions.add(action);
 		action.setWorkflow(this);
-		if (action instanceof SimpleAction) {
-			graph.addEdge(action.getDepartureStatus(), ((SimpleAction) action).getArrivalStatus(), action);
+		if (action instanceof SimpleAction simpleAction) {
+			graph.addEdge(action.getDepartureStatus(), simpleAction.getArrivalStatus(), action);
 		} else {
 			graph.addEdge(action.getDepartureStatus(), ((ConditionalAction) action).getChoicePseudoStatus(), action);
 			for (SimpleAction condAction : ((ConditionalAction) action).getConditionalActions()) {
@@ -163,7 +163,7 @@ public class Workflow extends TradistaFlowObject {
 	@Transient
 	public boolean isValid() {
 		return GraphTests.isConnected(graph)
-				&& graph.vertexSet().stream().filter(key -> graph.incomingEdgesOf(key).size() == 0).count() == 1;
+				&& graph.vertexSet().stream().filter(key -> graph.incomingEdgesOf(key).isEmpty()).count() == 1;
 	}
 
 	public boolean isInitialStatus(Status status) {
@@ -202,7 +202,7 @@ public class Workflow extends TradistaFlowObject {
 	public Status getInitialStatus() {
 		Status status = null;
 		if (this.status != null) {
-			status = this.status.stream().filter(s -> isInitialStatus(s)).findFirst().get();
+			status = this.status.stream().filter(this::isInitialStatus).findFirst().get();
 		}
 		return status;
 	}
@@ -210,8 +210,7 @@ public class Workflow extends TradistaFlowObject {
 	public Set<Status> getFinalStatus() {
 		Set<Status> status = null;
 		if (this.status != null) {
-			status = new HashSet<Status>();
-			status = this.status.stream().filter(s -> isFinalStatus(s)).collect(Collectors.toSet());
+			status = this.status.stream().filter(this::isFinalStatus).collect(Collectors.toSet());
 		}
 		return status;
 	}

@@ -57,8 +57,8 @@ public class ConditionalAction extends Action {
 	@OneToMany(cascade = CascadeType.ALL)
 	private Set<SimpleAction> conditionalActions;
 
-	private void init(Workflow workflow, Status departureStatus, String name, Condition<WorkflowObject> condition,
-			Map<Integer, Status> conditionalRouting, Status... arrivalStatus) {
+	private void init(Workflow workflow, Condition<WorkflowObject> condition, Map<Integer, Status> conditionalRouting,
+			Status... arrivalStatus) {
 		StringBuilder errMsg = new StringBuilder();
 		for (Status status : arrivalStatus) {
 			if (status.getWorkflow() == null || !status.getWorkflow().equals(workflow)) {
@@ -72,35 +72,36 @@ public class ConditionalAction extends Action {
 		this.condition = condition;
 		this.conditionalRouting = conditionalRouting;
 		choicePseudoStatus = new Status(workflow, UUID.randomUUID().toString());
-		this.conditionalActions = new HashSet<SimpleAction>(arrivalStatus.length);
+		this.conditionalActions = new HashSet<>(arrivalStatus.length);
 		workflow.addAction(this);
 	}
 
-	public ConditionalAction(Workflow workflow, Status departureStatus, String name, Condition<WorkflowObject> condition,
-			Map<Integer, Status> conditionalRouting, Guard<WorkflowObject> guard, Status... arrivalStatus) {
-		super(workflow, name, departureStatus, guard);
-		init(workflow, departureStatus, name, condition, conditionalRouting, arrivalStatus);
-		for (int num = 0; num < arrivalStatus.length; num++) {
-			conditionalActions.add(
-					new SimpleAction(workflow, UUID.randomUUID().toString(), choicePseudoStatus, arrivalStatus[num]));
-		}
-	}
-
-	public ConditionalAction(Workflow workflow, Status departureStatus, String name, Condition<WorkflowObject> condition,
-			Map<Integer, Status> conditionalRouting, Status... arrivalStatus) {
-		super(workflow, name, departureStatus, null);
-		init(workflow, departureStatus, name, condition, conditionalRouting, arrivalStatus);
-		for (int num = 0; num < arrivalStatus.length; num++) {
-			conditionalActions.add(
-					new SimpleAction(workflow, UUID.randomUUID().toString(), choicePseudoStatus, arrivalStatus[num]));
-		}
-	}
-
-	public ConditionalAction(Workflow workflow, Status departureStatus, String name, Condition<WorkflowObject> condition,
-			Map<Integer, Status> conditionalRouting, Map<Status, Process<WorkflowObject>> conditionalProcesses,
+	public ConditionalAction(Workflow workflow, Status departureStatus, String name,
+			Condition<WorkflowObject> condition, Map<Integer, Status> conditionalRouting, Guard<WorkflowObject> guard,
 			Status... arrivalStatus) {
+		super(workflow, name, departureStatus, guard);
+		init(workflow, condition, conditionalRouting, arrivalStatus);
+		for (int num = 0; num < arrivalStatus.length; num++) {
+			conditionalActions.add(
+					new SimpleAction(workflow, UUID.randomUUID().toString(), choicePseudoStatus, arrivalStatus[num]));
+		}
+	}
+
+	public ConditionalAction(Workflow workflow, Status departureStatus, String name,
+			Condition<WorkflowObject> condition, Map<Integer, Status> conditionalRouting, Status... arrivalStatus) {
 		super(workflow, name, departureStatus, null);
-		init(workflow, departureStatus, name, condition, conditionalRouting, arrivalStatus);
+		init(workflow, condition, conditionalRouting, arrivalStatus);
+		for (int num = 0; num < arrivalStatus.length; num++) {
+			conditionalActions.add(
+					new SimpleAction(workflow, UUID.randomUUID().toString(), choicePseudoStatus, arrivalStatus[num]));
+		}
+	}
+
+	public ConditionalAction(Workflow workflow, Status departureStatus, String name,
+			Condition<WorkflowObject> condition, Map<Integer, Status> conditionalRouting,
+			Map<Status, Process<WorkflowObject>> conditionalProcesses, Status... arrivalStatus) {
+		super(workflow, name, departureStatus, null);
+		init(workflow, condition, conditionalRouting, arrivalStatus);
 		this.conditionalProcesses = conditionalProcesses;
 		for (int num = 0; num < arrivalStatus.length; num++) {
 			conditionalActions.add(new SimpleAction(workflow, UUID.randomUUID().toString(), choicePseudoStatus,
@@ -108,11 +109,11 @@ public class ConditionalAction extends Action {
 		}
 	}
 
-	public ConditionalAction(Workflow workflow, Status departureStatus, String name, Condition<WorkflowObject> condition,
-			Map<Integer, Status> conditionalRouting, Guard<WorkflowObject> guard, Map<Status, Process<WorkflowObject>> conditionalProcesses,
-			Status... arrivalStatus) {
+	public ConditionalAction(Workflow workflow, Status departureStatus, String name,
+			Condition<WorkflowObject> condition, Map<Integer, Status> conditionalRouting, Guard<WorkflowObject> guard,
+			Map<Status, Process<WorkflowObject>> conditionalProcesses, Status... arrivalStatus) {
 		super(workflow, name, departureStatus, guard);
-		init(workflow, departureStatus, name, condition, conditionalRouting, arrivalStatus);
+		init(workflow, condition, conditionalRouting, arrivalStatus);
 		this.conditionalProcesses = conditionalProcesses;
 		for (int num = 0; num < arrivalStatus.length; num++) {
 			conditionalActions.add(new SimpleAction(workflow, UUID.randomUUID().toString(), choicePseudoStatus,

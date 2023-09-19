@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import finance.tradista.flow.model.TradistaFlowObject;
@@ -36,16 +37,16 @@ under the License.    */
  */
 public final class TradistaFlowUtil {
 
-	private static Function<Object, Object> clone = x -> (x instanceof TradistaFlowObject)
-			? ((TradistaFlowObject) x).clone()
-			: x;
+	private TradistaFlowUtil() {
+	}
 
-	private static Function<Map.Entry<?, ?>, Object> cloneMapEntryKey = x -> x.getKey() instanceof TradistaFlowObject
-			? ((TradistaFlowObject) x.getKey()).clone()
-			: x.getKey();
+	private static UnaryOperator<TradistaFlowObject> clone = x -> x.clone();
+
+	private static Function<Map.Entry<?, ?>, Object> cloneMapEntryKey = x -> x
+			.getKey() instanceof TradistaFlowObject tradistaFlowObject ? tradistaFlowObject.clone() : x.getKey();
 
 	private static Function<Map.Entry<?, ?>, Object> cloneMapEntryValue = x -> x
-			.getValue() instanceof TradistaFlowObject ? ((TradistaFlowObject) x.getValue()).clone() : x.getValue();
+			.getValue() instanceof TradistaFlowObject tradistaFlowObject ? tradistaFlowObject.clone() : x.getValue();
 
 	/**
 	 * Creates a deep copy of a map.
@@ -57,9 +58,7 @@ public final class TradistaFlowUtil {
 		if (originalMap == null) {
 			return null;
 		}
-		Map<?, ?> copy = originalMap.entrySet().stream()
-				.collect(Collectors.toMap(cloneMapEntryKey, cloneMapEntryValue));
-		return copy;
+		return originalMap.entrySet().stream().collect(Collectors.toMap(cloneMapEntryKey, cloneMapEntryValue));
 	}
 
 	/**
@@ -68,12 +67,11 @@ public final class TradistaFlowUtil {
 	 * @param originalList the list to copy
 	 * @return a deep copy of the list
 	 */
-	public static List<?> deepCopy(List<? extends TradistaFlowObject> originalList) {
+	public static List<? extends TradistaFlowObject> deepCopy(List<? extends TradistaFlowObject> originalList) {
 		if (originalList == null) {
 			return null;
 		}
-		List<?> copy = originalList.stream().map(clone).collect(Collectors.toList());
-		return copy;
+		return originalList.stream().map(clone).toList();
 	}
 
 	/**
@@ -82,12 +80,11 @@ public final class TradistaFlowUtil {
 	 * @param originalSet the set to copy
 	 * @return a deep copy of the set
 	 */
-	public static Set<?> deepCopy(Set<? extends TradistaFlowObject> originalSet) {
+	public static Set<? extends TradistaFlowObject> deepCopy(Set<? extends TradistaFlowObject> originalSet) {
 		if (originalSet == null) {
 			return null;
 		}
-		Set<?> copy = originalSet.stream().map(clone).collect(Collectors.toSet());
-		return copy;
+		return originalSet.stream().map(clone).collect(Collectors.toSet());
 	}
 
 	/**
