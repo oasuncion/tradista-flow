@@ -1,5 +1,6 @@
 package finance.tradista.flow.test;
 
+import finance.tradista.flow.exception.TradistaFlowBusinessException;
 import finance.tradista.flow.model.Condition;
 import finance.tradista.flow.model.WorkflowObject;
 import jakarta.persistence.Entity;
@@ -27,7 +28,8 @@ under the License.    */
 /**
  * Condition Test Class. This test condition returns the second letter of the
  * object status as an integer. Example: if the object status is "s1", the
- * condition returns 1.
+ * condition returns 1. If the second letter of the object status cannot be
+ * parsed as a number, a TradistaFlowBusinessException is thrown.
  * 
  * @author OA
  *
@@ -43,11 +45,13 @@ public class TestCondition extends Condition<WorkflowObject> {
 			try {
 				ret = Integer.parseInt(obj.getStatus().getName().substring(1, 2));
 			} catch (NumberFormatException nfe) {
+				throw new TradistaFlowBusinessException(
+						String.format("Condition %s - Could not parse the second letter of the object status : '%s'",
+								getName(), obj.getStatus()));
 			}
 
 			return ret;
 		});
 	}
-
 
 }

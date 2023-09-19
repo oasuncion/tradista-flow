@@ -8,6 +8,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 
 import finance.tradista.flow.exception.TradistaFlowBusinessException;
+import finance.tradista.flow.exception.TradistaFlowTechnicalException;
 import finance.tradista.flow.model.Action;
 import finance.tradista.flow.model.ConditionalAction;
 import finance.tradista.flow.model.SimpleAction;
@@ -152,16 +153,23 @@ public final class WorkflowManager {
 	 * 
 	 * @param object the object to update
 	 * @param action the action to apply
-	 * @throws TradistaFlowBusinessException if the object or action is null, if the
-	 *                                       object workflow doesn't exist or if the
-	 *                                       action is invalid.
+	 * @throws TradistaFlowBusinessException  if the object or action is null, if
+	 *                                        the object workflow doesn't exist, if
+	 *                                        the action is invalid or if a
+	 *                                        condition/guard/process raised a
+	 *                                        checked exception.
+	 * @throws TradistaFlowTechnicalException if a condition/guard/process raised a
+	 *                                        runtime exception.
 	 */
-	public static void applyAction(WorkflowObject object, Action action) throws TradistaFlowBusinessException {
+	@SuppressWarnings("unchecked")
+	public static <X extends WorkflowObject> X applyAction(X object, Action action)
+			throws TradistaFlowBusinessException {
 		if (object == null) {
 			throw new TradistaFlowBusinessException("The object is null");
 		}
 		Workflow wkf = getWorkflowByName(object.getWorkflow());
 		StringBuilder errMsg = new StringBuilder();
+		X objectDeepCopy = null;
 		if (action == null) {
 			errMsg.append("The action is null");
 		}
@@ -176,33 +184,42 @@ public final class WorkflowManager {
 					String.format("The action %s is not a valid one from status %s in workflow %s.", action,
 							object.getStatus(), object.getWorkflow()));
 		}
-		if (action.getGuard() != null) {
-			if (!action.getGuard().test(object)) {
-				return;
-			}
-		}
-
-		if (action instanceof SimpleAction) {
-			// Perform process
-			finance.tradista.flow.model.Process<WorkflowObject> process = ((SimpleAction) action).getProcess();
-			if (process != null) {
-				process.apply(object);
-			}
-			object.setStatus(wkf.getTargetStatus(action));
-		} else {
-			ConditionalAction condAction = ((ConditionalAction) action);
-			int res = ((ConditionalAction) action).getCondition().apply(object);
-			Status arrivalStatus = condAction.getArrivalStatusByResult(res);
-			// Perform process
-			Map<Status, finance.tradista.flow.model.Process<WorkflowObject>> condProcesses = condAction.getConditionalProcesses();
-			if (condProcesses != null) {
-				finance.tradista.flow.model.Process<WorkflowObject> process = condProcesses.get(arrivalStatus);
-				if (process != null) {
-					process.apply(object);
+		try {
+			objectDeepCopy = (X) object.clone();
+			if (action.getGuard() != null) {
+				if (!action.getGuard().test(objectDeepCopy)) {
+					return object;
 				}
 			}
-			object.setStatus(arrivalStatus);
+
+			if (action instanceof SimpleAction) {
+				// Perform process
+				finance.tradista.flow.model.Process<WorkflowObject> process = ((SimpleAction) action).getProcess();
+				if (process != null) {
+					process.apply(objectDeepCopy);
+				}
+				objectDeepCopy.setStatus(wkf.getTargetStatus(action));
+			} else {
+				ConditionalAction condAction = ((ConditionalAction) action);
+				int res = ((ConditionalAction) action).getCondition().apply(objectDeepCopy);
+				Status arrivalStatus = condAction.getArrivalStatusByResult(res);
+				// Perform process
+				Map<Status, finance.tradista.flow.model.Process<WorkflowObject>> condProcesses = condAction
+						.getConditionalProcesses();
+				if (condProcesses != null) {
+					finance.tradista.flow.model.Process<WorkflowObject> process = condProcesses.get(arrivalStatus);
+					if (process != null) {
+						process.apply(objectDeepCopy);
+					}
+				}
+				objectDeepCopy.setStatus(arrivalStatus);
+			}
+		} catch (RuntimeException | CloneNotSupportedException ex) {
+			throw new TradistaFlowTechnicalException(ex);
+		} catch (Exception ex) {
+			throw new TradistaFlowBusinessException(ex);
 		}
+		return objectDeepCopy;
 	}
 
 	/**

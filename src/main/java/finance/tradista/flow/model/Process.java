@@ -2,7 +2,6 @@ package finance.tradista.flow.model;
 
 import java.util.Objects;
 
-import finance.tradista.flow.exception.TradistaFlowBusinessException;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Transient;
 
@@ -38,12 +37,12 @@ public class Process<X extends WorkflowObject> extends TradistaFlowObject {
 	private static final long serialVersionUID = -9106790274567211638L;
 
 	@FunctionalInterface
-	public interface Task<X> {
-		void apply(X obj) throws TradistaFlowBusinessException;
+	public interface Task<X, E extends Exception> {
+		void apply(X obj) throws Exception;
 	}
 
 	@Transient
-	private Task<X> task;
+	private Task<X, Exception> task;
 
 	public Process() {
 	}
@@ -52,11 +51,7 @@ public class Process<X extends WorkflowObject> extends TradistaFlowObject {
 		return getClass().getSimpleName();
 	}
 
-	public Task<X> getPredicate() {
-		return task;
-	}
-
-	public void setTask(Task<X> task) {
+	public void setTask(Task<X, Exception> task) {
 		this.task = task;
 	}
 
@@ -64,7 +59,7 @@ public class Process<X extends WorkflowObject> extends TradistaFlowObject {
 		return getName();
 	}
 
-	public void apply(X obj) throws TradistaFlowBusinessException {
+	public void apply(X obj) throws Exception {
 		task.apply(obj);
 	}
 

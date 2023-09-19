@@ -34,4 +34,8 @@ public class TradistaFlowBusinessException extends Exception {
 		super(msg);
 	}
 
+	public TradistaFlowBusinessException(Exception ex) {
+		super(ex);
+	}
+
 }
