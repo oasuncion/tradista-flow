@@ -38,7 +38,7 @@ public class Process<X extends WorkflowObject> extends TradistaFlowObject {
 
 	@FunctionalInterface
 	public interface Task<X, E extends Exception> {
-		void apply(X obj) throws Exception;
+		void apply(X obj) throws E;
 	}
 
 	@Transient
