@@ -9,7 +9,7 @@ Tradista Flow is available in Maven Central, it can be added to your project by 
 <dependency>
   <groupId>finance.tradista.flow</groupId>
   <artifactId>tradista-flow</artifactId>
-  <version>2.1.0</version>
+  <version>2.2.0</version>
 </dependency>
 ```
 
@@ -41,13 +41,13 @@ The objects go to the target status only if the condition defined in the guard i
 Define the guard: 
 ```java
 @Entity
-public class OrderValidated extends Guard {
+public class OrderValidated extends Guard<Order> {
 
 	private static final long serialVersionUID = -4945718662266443702L;
 
 	public OrderValidated() {
-		setPredicate(obj -> {
-			((Order)obj).isValidated();
+		setPredicate(order -> {
+			order.isValidated();
 		});
 	}
 
@@ -76,13 +76,12 @@ Define the condition:
 
 ```java
 @Entity
-public class OrderCondition extends Condition {
+public class OrderCondition extends Condition<Order> {
 
 	private static final long serialVersionUID = -4945718662266443702L;
 
 	public OrderCondition() {
-		setFunction(obj -> {
-			Order order = ((Order)obj);
+		setFunction(order -> {
 			if (order.isValidated()) {
 				return 1;
 			} else {
@@ -119,13 +118,13 @@ You can also add process to an action. Processes are executed when an action is 
 Define the process: 
 ```java
 @Entity
-public class OrderConfirmation extends Process {
+public class OrderConfirmation extends Process<Order> {
 
 	private static final long serialVersionUID = -4945718662266443702L;
 
 	public OrderConfirmation() {
-		setTask(obj -> {
-			((Order) obj).setConfirmationDate(LocalDateTime.now());
+		setTask(order -> {
+			order.setConfirmationDate(LocalDateTime.now());
 		});
 	}
 
@@ -170,6 +169,11 @@ public class Order implements WorkflowObject {
 	@Override
 	public Status getStatus() {
 		return status;
+	}
+
+        @Override
+	public Order clone() throws CloneNotSupportedException {
+		// cloning code
 	} 
   
         ...  
@@ -184,7 +188,7 @@ public class Order implements WorkflowObject {
 Order order = new Order();
 order.setWorkflow("SampleWorkflow");
 order.setStatus(initiated);
-WorkflowManager.applyAction(order, confirm);
+order = WorkflowManager.applyAction(order, confirm);
 ```
 
 Tradista Flow is based on JPA. It can be used in JTA or non JTA mode.
