@@ -48,6 +48,9 @@ under the License.    */
 
 public final class WorkflowManager {
 
+	private WorkflowManager() {
+	}
+
 	public static final EntityManagerFactory entityManagerFactory = Persistence
 			.createEntityManagerFactory("tradista-flow-persistence-unit");
 
@@ -116,21 +119,21 @@ public final class WorkflowManager {
 	 * @throws TradistaFlowBusinessException if the workflow doesn't exist
 	 */
 	public static void deleteWorkflow(long id) throws TradistaFlowBusinessException {
-		EntityManager entityManager = entityManagerFactory.createEntityManager();
-		Workflow wkf = entityManager.find(Workflow.class, id);
-		if (wkf == null) {
-			throw new TradistaFlowBusinessException(String.format("The workflow %s doesn't exist.", id));
+		try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
+			Workflow wkf = entityManager.find(Workflow.class, id);
+			if (wkf == null) {
+				throw new TradistaFlowBusinessException(String.format("The workflow %s doesn't exist.", id));
+			}
+			if (isJTA(entityManager)) {
+				entityManager.joinTransaction();
+			} else {
+				entityManager.getTransaction().begin();
+			}
+			entityManager.remove(wkf);
+			if (!isJTA(entityManager)) {
+				entityManager.getTransaction().commit();
+			}
 		}
-		if (isJTA(entityManager)) {
-			entityManager.joinTransaction();
-		} else {
-			entityManager.getTransaction().begin();
-		}
-		entityManager.remove(wkf);
-		if (!isJTA(entityManager)) {
-			entityManager.getTransaction().commit();
-		}
-		entityManager.close();
 	}
 
 	/**
@@ -186,15 +189,13 @@ public final class WorkflowManager {
 		}
 		try {
 			objectDeepCopy = (X) object.clone();
-			if (action.getGuard() != null) {
-				if (!action.getGuard().test(objectDeepCopy)) {
-					return object;
-				}
+			if (action.getGuard() != null && (!action.getGuard().test(objectDeepCopy))) {
+				return object;
 			}
 
-			if (action instanceof SimpleAction) {
+			if (action instanceof SimpleAction simpleAction) {
 				// Perform process
-				finance.tradista.flow.model.Process<WorkflowObject> process = ((SimpleAction) action).getProcess();
+				finance.tradista.flow.model.Process<WorkflowObject> process = simpleAction.getProcess();
 				if (process != null) {
 					process.apply(objectDeepCopy);
 				}

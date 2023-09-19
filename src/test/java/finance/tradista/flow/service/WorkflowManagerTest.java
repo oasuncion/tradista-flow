@@ -236,7 +236,7 @@ public class WorkflowManagerTest {
 		Status s1 = new Status(wkf, "s1");
 		Status s2 = new Status(wkf, "s2");
 		new SimpleAction(wkf, "a1", s1, s2);
-		Assertions.assertTrue(wkf.getInitialStatus().equals(s1));
+		Assertions.assertEquals(s1, wkf.getInitialStatus());
 	}
 
 	@Test
@@ -248,7 +248,7 @@ public class WorkflowManagerTest {
 		new SimpleAction(wkf, "a1", s1, s2);
 		Assertions.assertTrue(wkf.getFinalStatus().contains(s2));
 		Assertions.assertFalse(wkf.getFinalStatus().contains(s1));
-		Assertions.assertTrue(wkf.getFinalStatus().size() == 1);
+		Assertions.assertEquals(1, wkf.getFinalStatus().size());
 
 		wkf = new Workflow("testGetSeveralFinalStatus");
 		s1 = new Status(wkf, "s1");
@@ -259,7 +259,7 @@ public class WorkflowManagerTest {
 		Assertions.assertTrue(wkf.getFinalStatus().contains(s2));
 		Assertions.assertTrue(wkf.getFinalStatus().contains(s3));
 		Assertions.assertFalse(wkf.getFinalStatus().contains(s1));
-		Assertions.assertTrue(wkf.getFinalStatus().size() == 2);
+		Assertions.assertEquals(2, wkf.getFinalStatus().size());
 	}
 
 	@Test
