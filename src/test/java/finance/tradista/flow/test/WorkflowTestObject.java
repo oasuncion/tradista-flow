@@ -54,8 +54,9 @@ public class WorkflowTestObject implements WorkflowObject {
 		return status;
 	}
 	
-	public WorkflowObject clone() throws CloneNotSupportedException {
-		return (WorkflowObject) super.clone();
+	@Override
+	public WorkflowTestObject clone() throws CloneNotSupportedException {
+		return (WorkflowTestObject) super.clone();
 	}
 
 }

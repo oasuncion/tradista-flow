@@ -1,5 +1,6 @@
 package finance.tradista.flow.service;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -254,10 +255,16 @@ public final class WorkflowManager {
 	 */
 	private static boolean isValidAction(Workflow workflow, Status status, Action action) {
 		Set<Action> availableActions = null;
+		Set<Action> departureActions = null;
 		try {
 			availableActions = workflow.getAvailableActionsFromStatus(status);
 		} catch (IllegalArgumentException iae) {
 			return false;
+		}
+		// In case of conditional action, we retrieve the related departure action
+		if (action instanceof ConditionalAction condAction) {
+			departureActions = condAction.getDepartureActions();
+			return (availableActions != null && !Collections.disjoint(availableActions, departureActions));
 		}
 		return (availableActions != null && availableActions.contains(action));
 	}

@@ -98,8 +98,7 @@ public class Workflow extends TradistaFlowObject {
 					graph.addEdge(action.getDepartureStatus(), simpleAction.getArrivalStatus(), action);
 				} else {
 					for (SimpleAction condAction : ((ConditionalAction) action).getConditionalActions()) {
-						graph.addEdge(((ConditionalAction) action).getDepartureStatus(), condAction.getArrivalStatus(),
-								condAction);
+						graph.addEdge(condAction.getDepartureStatus(), condAction.getArrivalStatus(), condAction);
 					}
 				}
 			}
@@ -136,10 +135,8 @@ public class Workflow extends TradistaFlowObject {
 		if (action instanceof SimpleAction simpleAction) {
 			graph.addEdge(action.getDepartureStatus(), simpleAction.getArrivalStatus(), action);
 		} else {
-			graph.addEdge(action.getDepartureStatus(), ((ConditionalAction) action).getChoicePseudoStatus(), action);
 			for (SimpleAction condAction : ((ConditionalAction) action).getConditionalActions()) {
-				graph.addEdge(((ConditionalAction) action).getChoicePseudoStatus(), condAction.getArrivalStatus(),
-						condAction);
+				graph.addEdge(condAction.getDepartureStatus(), condAction.getArrivalStatus(), condAction);
 			}
 		}
 	}
