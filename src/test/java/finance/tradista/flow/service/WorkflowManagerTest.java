@@ -343,7 +343,7 @@ public class WorkflowManagerTest {
 		}
 		assertEquals(s1, obj.getStatus());
 	}
-	
+
 	@Test
 	@DisplayName("Apply valid action with process KO Runtime Exception")
 	void testApplyValidActionWithProcessKORuntimeException() {
@@ -359,12 +359,12 @@ public class WorkflowManagerTest {
 			Assertions.fail(tfbe);
 		}
 		try {
-			final Workflow wkfTemp = WorkflowManager.getWorkflowByName("testApplyValidActionWithProcessKORuntimeException");
+			final Workflow wkfTemp = WorkflowManager
+					.getWorkflowByName("testApplyValidActionWithProcessKORuntimeException");
 			obj.setStatus(s1);
 			obj.setWorkflow(wkf.getName());
 			final Action action = wkfTemp.getActions().stream().findFirst().get();
-			assertThrows(TradistaFlowTechnicalException.class,
-					() -> WorkflowManager.applyAction(obj, action));
+			assertThrows(TradistaFlowTechnicalException.class, () -> WorkflowManager.applyAction(obj, action));
 			Assertions.assertNotEquals(s2, obj.getStatus());
 			Assertions.assertNotEquals("Wkf", obj.getWorkflow());
 		} catch (TradistaFlowBusinessException tfbe) {
@@ -472,6 +472,49 @@ public class WorkflowManagerTest {
 			Assertions.fail(tfbe);
 		}
 		Assertions.assertEquals(s2, res.getStatus());
+	}
+
+	@Test
+	@DisplayName("Apply valid junction action")
+	void testApplyValidJunctionAction() {
+		Workflow wkf = new Workflow("testApplyValidJunctionAction");
+		Status s1 = new Status(wkf, "s1");
+		Status s2 = new Status(wkf, "s2");
+		Status s2b = new Status(wkf, "s2b");
+		Status s3 = new Status(wkf, "s3");
+		Status s4 = new Status(wkf, "s4");
+		new SimpleAction(wkf, "a1", s1, s2);
+		new SimpleAction(wkf, "a1b", s1, s2b);
+		TestCondition c1 = new TestCondition();
+		Map<Integer, Status> conditionalRouting = new HashMap<Integer, Status>();
+		conditionalRouting.put(1, s3);
+		conditionalRouting.put(2, s4);
+		Map<Status, String> actionsMap = new HashMap<>();
+		actionsMap.put(s2, "a2");
+		actionsMap.put(s2b, "a2b");
+		Action a2 = new ConditionalAction(wkf, actionsMap, c1, conditionalRouting, s3, s4);
+		WorkflowTestObject obj = new WorkflowTestObject();
+		WorkflowObject res = null;
+		try {
+			WorkflowManager.saveWorkflow(wkf);
+		} catch (TradistaFlowBusinessException tfbe) {
+			Assertions.fail(tfbe);
+		}
+		obj.setStatus(s2);
+		obj.setWorkflow(wkf.getName());
+		try {
+			res = WorkflowManager.applyAction(obj, a2);
+		} catch (TradistaFlowBusinessException tfbe) {
+			Assertions.fail(tfbe);
+		}
+		Assertions.assertEquals(s4, res.getStatus());
+		obj.setStatus(s2b);
+		try {
+			res = WorkflowManager.applyAction(obj, a2);
+		} catch (TradistaFlowBusinessException tfbe) {
+			Assertions.fail(tfbe);
+		}
+		Assertions.assertEquals(s4, res.getStatus());
 	}
 
 	@Test

@@ -57,11 +57,13 @@ public abstract class Action extends TradistaFlowObject {
 	@JoinColumn(name = "departure_status_id")
 	private Status departureStatus;
 
-	public Action(Workflow workflow, String name, Status departureStatus, Guard<WorkflowObject> guard) {
+	protected Action(Workflow workflow, String name, Status departureStatus, Guard<WorkflowObject> guard) {
 		this();
 		StringBuilder errMsg = new StringBuilder();
-		if (departureStatus.getWorkflow() == null || !departureStatus.getWorkflow().equals(workflow)) {
-			errMsg.append(String.format("The departure status should have the same workflow %s", workflow));
+		if (departureStatus != null) {
+			if (departureStatus.getWorkflow() == null || !departureStatus.getWorkflow().equals(workflow)) {
+				errMsg.append(String.format("The departure status should have the same workflow %s", workflow));
+			}
 		}
 		if (!errMsg.isEmpty()) {
 			throw new IllegalArgumentException(errMsg.toString());
@@ -72,7 +74,7 @@ public abstract class Action extends TradistaFlowObject {
 		this.guard = guard;
 	}
 
-	public Action() {
+	protected Action() {
 	}
 
 	public String getName() {
