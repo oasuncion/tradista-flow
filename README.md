@@ -9,7 +9,7 @@ Tradista Flow is available in Maven Central, it can be added to your project by 
 <dependency>
   <groupId>finance.tradista.flow</groupId>
   <artifactId>tradista-flow</artifactId>
-  <version>2.2.0</version>
+  <version>2.3.0</version>
 </dependency>
 ```
 
@@ -105,6 +105,56 @@ Map<Integer, Status> conditionalRouting = new HashMap<Integer, Status>();
 conditionalRouting.put(1, confirmed);
 conditionalRouting.put(2, incorrect);
 Action action = new ConditionalAction(wkf, initiated, "Confirm", orderCondition, conditionalRouting, confirmed, incorrect);
+WorkflowManager.saveWorkflow(wkf);
+```
+
+### A workflow with a junction:
+<br/>
+There may be more complex branching actions: junctions with several inbound and outbound actions.
+This can also be covered with Tradista Flow, please see the example below.
+<br/>
+<br/>
+
+![Workflow with condition](./img/junctionWkf.png)
+
+Define the condition:
+
+```java
+@Entity
+public class CancellationCondition extends Condition<Order> {
+
+	private static final long serialVersionUID = -4945718662266443712L;
+
+	public CancellationCondition() {
+		setFunction(order -> {
+			if (order.isDirectlyCancellable()) {
+				return 1;
+			} else {
+				return 2;
+			}			
+		});
+	}
+
+}
+```
+
+Define the workflow:
+
+```java
+Workflow wkf = new Workflow("SampleWorkflow");
+...
+Status confirmed = new Status(wkf, "Confirmed");
+Status incorrect = new Status(wkf, "Incorrect");
+Status cancelled = new Status(wkf, "Cancelled");
+Status underInvestigation = new Status(wkf, "Under Investigation");
+CancellationCondition cancellationCondition = new CancellationCondition();
+Map<Integer, Status> conditionalRouting = new HashMap<Integer, Status>();
+conditionalRouting.put(1, cancelled);
+conditionalRouting.put(2, underInvestigation);
+Map<Status, String> departureActions = new HashMap<>();
+departureActions.put(confirmed, "Cancel");
+departureActions.put(incorrect, "Cancel");
+Action action = new ConditionalAction(wkf, departureActions, cancellationCondition, conditionalRouting, cancelled, underInvestigation);
 WorkflowManager.saveWorkflow(wkf);
 ```
 ### A workflow with a process:
