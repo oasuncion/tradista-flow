@@ -92,6 +92,16 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.13.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>2.22.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>2.22.1</version>
+		</dependency>
 	</dependencies>
 	<profiles>
 		<profile>
@@ -131,7 +141,7 @@
 						<configuration>
 							<jreleaser>
 								<project>
-									<copyright>2023 Olivier Asuncion</copyright>
+									<copyright>2024 Olivier Asuncion</copyright>
 								</project>
 								<signing>
 									<active>ALWAYS</active>
