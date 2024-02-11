@@ -203,11 +203,11 @@ public final class WorkflowManager {
 				objectDeepCopy.setStatus(wkf.getTargetStatus(simpleAction));
 			} else {
 				ConditionalAction condAction = ((ConditionalAction) action);
-				Guard<WorkflowObject> guard = condAction.getGuardByActionName(action.getName());
+				Guard<WorkflowObject> guard = condAction.getGuardByActionName(condAction.getName());
 				if (guard != null && (!guard.test(objectDeepCopy))) {
 					return object;
 				}
-				int res = ((ConditionalAction) action).getCondition().apply(objectDeepCopy);
+				int res = condAction.getCondition().apply(objectDeepCopy);
 				Status arrivalStatus = condAction.getArrivalStatusByResult(res);
 				// Perform process
 				Map<Status, finance.tradista.flow.model.Process<WorkflowObject>> condProcesses = condAction
