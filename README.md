@@ -9,7 +9,7 @@ Tradista Flow is available in Maven Central, it can be added to your project by 
 <dependency>
   <groupId>finance.tradista.flow</groupId>
   <artifactId>tradista-flow</artifactId>
-  <version>2.3.0</version>
+  <version>3.0.0</version>
 </dependency>
 ```
 
@@ -151,9 +151,9 @@ CancellationCondition cancellationCondition = new CancellationCondition();
 Map<Integer, Status> conditionalRouting = new HashMap<Integer, Status>();
 conditionalRouting.put(1, cancelled);
 conditionalRouting.put(2, underInvestigation);
-Map<Status, String> departureActions = new HashMap<>();
-departureActions.put(confirmed, "Cancel");
-departureActions.put(incorrect, "Cancel");
+Set<SimpleAction> departureActions = new HashSet<>();
+departureActions.add(new SimpleAction(wkf, "Cancel", confirmed));
+departureActions.add(new SimpleAction(wkf, "Cancel", incorrect));
 Action action = new ConditionalAction(wkf, departureActions, cancellationCondition, conditionalRouting, cancelled, underInvestigation);
 WorkflowManager.saveWorkflow(wkf);
 ```
@@ -258,6 +258,7 @@ using Hibernate and Derby:
 	<class>finance.tradista.flow.model.Guard</class>
 	<class>finance.tradista.flow.model.Process</class>
 	<class>finance.tradista.flow.model.Status</class>
+        <class>finance.tradista.flow.model.PseudoStatus</class>
 	<class>finance.tradista.flow.model.TradistaFlowObject</class>
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver" />
@@ -280,6 +281,7 @@ using Hibernate and Derby:
 	<class>finance.tradista.flow.model.Guard</class>
 	<class>finance.tradista.flow.model.Process</class>
 	<class>finance.tradista.flow.model.Status</class>
+	<class>finance.tradista.flow.model.PseudoStatus</class>
 	<class>finance.tradista.flow.model.TradistaFlowObject</class>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyDialect"/>
