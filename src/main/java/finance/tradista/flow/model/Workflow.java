@@ -95,7 +95,7 @@ public class Workflow extends TradistaFlowObject {
 		if (actions != null) {
 			for (Action action : actions) {
 				if (action instanceof SimpleAction simpleAction) {
-					graph.addEdge(action.getDepartureStatus(), simpleAction.getArrivalStatus(), action);
+					graph.addEdge(simpleAction.getDepartureStatus(), simpleAction.getArrivalStatus(), simpleAction);
 				} else {
 					for (SimpleAction condAction : ((ConditionalAction) action).getConditionalActions()) {
 						graph.addEdge(condAction.getDepartureStatus(), condAction.getArrivalStatus(), condAction);
@@ -130,10 +130,13 @@ public class Workflow extends TradistaFlowObject {
 	}
 
 	public void addAction(Action action) {
-		actions.add(action);
-		action.setWorkflow(this);
+		if (action instanceof ConditionalAction
+				|| ((SimpleAction) action).getArrivalStatus() != null && !action.isConnectedToPseudoStatus()) {
+			actions.add(action);
+			action.setWorkflow(this);
+		}
 		if (action instanceof SimpleAction simpleAction) {
-			graph.addEdge(action.getDepartureStatus(), simpleAction.getArrivalStatus(), action);
+			graph.addEdge(simpleAction.getDepartureStatus(), simpleAction.getArrivalStatus(), simpleAction);
 		} else {
 			for (SimpleAction condAction : ((ConditionalAction) action).getConditionalActions()) {
 				graph.addEdge(condAction.getDepartureStatus(), condAction.getArrivalStatus(), condAction);
@@ -170,10 +173,23 @@ public class Workflow extends TradistaFlowObject {
 	}
 
 	public Set<Action> getAvailableActionsFromStatus(Status status) {
-		return graph.outgoingEdgesOf(status);
+		Set<Action> actions = null;
+		if (this.actions != null) {
+			actions = this.actions.stream().filter(a -> a.isDepartureStatus(status)).collect(Collectors.toSet());
+		}
+		if (actions != null) {
+			for (Action a : actions) {
+				if (a instanceof ConditionalAction condAction) {
+					String actionName = condAction.getConditionalActions().stream()
+							.filter(action -> action.isDepartureStatus(status)).findAny().get().getName();
+					condAction.setName(actionName);
+				}
+			}
+		}
+		return actions;
 	}
 
-	public Status getTargetStatus(Action action) {
+	public Status getTargetStatus(SimpleAction action) {
 		return graph.getEdgeTarget(action);
 	}
 

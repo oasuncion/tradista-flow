@@ -1,6 +1,5 @@
 package finance.tradista.flow.service;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +11,7 @@ import finance.tradista.flow.exception.TradistaFlowBusinessException;
 import finance.tradista.flow.exception.TradistaFlowTechnicalException;
 import finance.tradista.flow.model.Action;
 import finance.tradista.flow.model.ConditionalAction;
+import finance.tradista.flow.model.Guard;
 import finance.tradista.flow.model.SimpleAction;
 import finance.tradista.flow.model.Status;
 import finance.tradista.flow.model.Workflow;
@@ -200,10 +200,14 @@ public final class WorkflowManager {
 				if (process != null) {
 					process.apply(objectDeepCopy);
 				}
-				objectDeepCopy.setStatus(wkf.getTargetStatus(action));
+				objectDeepCopy.setStatus(wkf.getTargetStatus(simpleAction));
 			} else {
 				ConditionalAction condAction = ((ConditionalAction) action);
-				int res = ((ConditionalAction) action).getCondition().apply(objectDeepCopy);
+				Guard<WorkflowObject> guard = condAction.getGuardByActionName(condAction.getName());
+				if (guard != null && (!guard.test(objectDeepCopy))) {
+					return object;
+				}
+				int res = condAction.getCondition().apply(objectDeepCopy);
 				Status arrivalStatus = condAction.getArrivalStatusByResult(res);
 				// Perform process
 				Map<Status, finance.tradista.flow.model.Process<WorkflowObject>> condProcesses = condAction
@@ -255,16 +259,10 @@ public final class WorkflowManager {
 	 */
 	private static boolean isValidAction(Workflow workflow, Status status, Action action) {
 		Set<Action> availableActions = null;
-		Set<Action> departureActions = null;
 		try {
 			availableActions = workflow.getAvailableActionsFromStatus(status);
 		} catch (IllegalArgumentException iae) {
 			return false;
-		}
-		// In case of conditional action, we retrieve the related departure action
-		if (action instanceof ConditionalAction condAction) {
-			departureActions = condAction.getDepartureActions();
-			return (availableActions != null && !Collections.disjoint(availableActions, departureActions));
 		}
 		return (availableActions != null && availableActions.contains(action));
 	}

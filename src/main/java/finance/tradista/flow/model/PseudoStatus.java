@@ -1,11 +1,11 @@
-package finance.tradista.flow.test;
+package finance.tradista.flow.model;
 
-import finance.tradista.flow.model.Guard;
-import finance.tradista.flow.model.WorkflowObject;
+import java.util.UUID;
+
 import jakarta.persistence.Entity;
 
 /*
- * Copyright 2023 Olivier Asuncion
+ * Copyright 2024 Olivier Asuncion
  * 
  * Licensed to the Apache Software Foundation (ASF) under one
 or more contributor license agreements.  See the NOTICE file
@@ -24,21 +24,16 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.    */
 
-/**
- * Guard Test Class. This test guard return false, so always blocks.
- * 
- * @author OA
- *
- */
 @Entity
-public class TestGuardKO extends Guard<WorkflowObject> {
+public class PseudoStatus extends Status {
 
-	private static final long serialVersionUID = -4945718662266443702L;
+	private static final long serialVersionUID = -8956303865604695993L;
 
-	public TestGuardKO() {
-		setPredicate(obj -> {
-			return false;
-		});
+	public PseudoStatus() {
+	}
+
+	public PseudoStatus(Workflow workflow) {
+		super(workflow, UUID.randomUUID().toString());
 	}
 
 }
