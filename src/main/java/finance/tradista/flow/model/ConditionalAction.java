@@ -105,22 +105,6 @@ public class ConditionalAction extends Action {
 		workflow.addAction(this);
 	}
 
-	public ConditionalAction(Workflow workflow, Set<SimpleAction> departureActions,
-			Map<Status, Guard<WorkflowObject>> guards, Condition<WorkflowObject> condition,
-			Map<Integer, Status> conditionalRouting, Status... arrivalStatus) {
-		super(workflow, null, null, null);
-		init(workflow, condition, conditionalRouting, arrivalStatus);
-		for (SimpleAction sa : departureActions) {
-			sa.setArrivalStatus(choicePseudoStatus);
-			conditionalActions.add(sa);
-		}
-		for (int num = 0; num < arrivalStatus.length; num++) {
-			conditionalActions.add(
-					new SimpleAction(workflow, UUID.randomUUID().toString(), choicePseudoStatus, arrivalStatus[num]));
-		}
-		workflow.addAction(this);
-	}
-
 	public ConditionalAction(Workflow workflow, Set<SimpleAction> departureActions, Condition<WorkflowObject> condition,
 			Map<Integer, Status> conditionalRouting, Status... arrivalStatus) {
 		super(workflow, null, null, null);
@@ -174,23 +158,6 @@ public class ConditionalAction extends Action {
 		init(workflow, condition, conditionalRouting, arrivalStatus);
 		this.conditionalProcesses = conditionalProcesses;
 		conditionalActions.add(new SimpleAction(workflow, name, departureStatus, choicePseudoStatus));
-		for (int num = 0; num < arrivalStatus.length; num++) {
-			conditionalActions.add(new SimpleAction(workflow, UUID.randomUUID().toString(), choicePseudoStatus,
-					arrivalStatus[num], conditionalProcesses.get(arrivalStatus[num])));
-		}
-		workflow.addAction(this);
-	}
-
-	public ConditionalAction(Workflow workflow, Set<SimpleAction> departureActions, Condition<WorkflowObject> condition,
-			Map<Integer, Status> conditionalRouting, Map<Status, Guard<WorkflowObject>> guards,
-			Map<Status, Process<WorkflowObject>> conditionalProcesses, Status... arrivalStatus) {
-		super(workflow, null, null, null);
-		init(workflow, condition, conditionalRouting, arrivalStatus);
-		this.conditionalProcesses = conditionalProcesses;
-		for (SimpleAction sa : departureActions) {
-			sa.setArrivalStatus(choicePseudoStatus);
-			conditionalActions.add(sa);
-		}
 		for (int num = 0; num < arrivalStatus.length; num++) {
 			conditionalActions.add(new SimpleAction(workflow, UUID.randomUUID().toString(), choicePseudoStatus,
 					arrivalStatus[num], conditionalProcesses.get(arrivalStatus[num])));
