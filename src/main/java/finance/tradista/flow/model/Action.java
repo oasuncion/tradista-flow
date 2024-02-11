@@ -68,7 +68,6 @@ public abstract class Action extends TradistaFlowObject {
 		if (!errMsg.isEmpty()) {
 			throw new IllegalArgumentException(errMsg.toString());
 		}
-		this.workflow = workflow;
 		this.name = name;
 		this.departureStatus = departureStatus;
 		this.guard = guard;
@@ -76,6 +75,8 @@ public abstract class Action extends TradistaFlowObject {
 
 	protected Action() {
 	}
+	
+	public abstract boolean isConnectedToPseudoStatus();
 
 	public String getName() {
 		return name;
@@ -108,6 +109,8 @@ public abstract class Action extends TradistaFlowObject {
 	public void setGuard(Guard<WorkflowObject> guard) {
 		this.guard = guard;
 	}
+	
+	public abstract boolean isDepartureStatus(Status status);
 
 	@Override
 	public Action clone() {

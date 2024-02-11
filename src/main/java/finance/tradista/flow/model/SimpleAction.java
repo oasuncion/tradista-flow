@@ -49,17 +49,23 @@ public class SimpleAction extends Action {
 
 	private void init(Workflow workflow, Status arrivalStatus) {
 		StringBuilder errMsg = new StringBuilder();
-		if (arrivalStatus.getWorkflow() == null || !arrivalStatus.getWorkflow().equals(workflow)) {
-			errMsg.append(String.format("The arrival status should have the same workflow %s", workflow));
+		if (arrivalStatus != null) {
+			if (arrivalStatus.getWorkflow() == null || !arrivalStatus.getWorkflow().equals(workflow)) {
+				errMsg.append(String.format("The arrival status should have the same workflow %s", workflow));
+			}
+			this.arrivalStatus = arrivalStatus;
+			if (!isConnectedToPseudoStatus()) {
+				workflow.addAction(this);
+				setWorkflow(workflow);
+			}
 		}
 		if (!errMsg.isEmpty()) {
 			throw new IllegalArgumentException(errMsg.toString());
 		}
-		this.arrivalStatus = arrivalStatus;
-		workflow.addAction(this);
 	}
 
-	public SimpleAction(Workflow workflow, String name, Status departureStatus, Status arrivalStatus, Guard<WorkflowObject> guard) {
+	public SimpleAction(Workflow workflow, String name, Status departureStatus, Status arrivalStatus,
+			Guard<WorkflowObject> guard) {
 		super(workflow, name, departureStatus, guard);
 		init(workflow, arrivalStatus);
 	}
@@ -69,17 +75,35 @@ public class SimpleAction extends Action {
 		init(workflow, arrivalStatus);
 	}
 
-	public SimpleAction(Workflow workflow, String name, Status departureStatus, Status arrivalStatus, Guard<WorkflowObject> guard,
-			Process<WorkflowObject> process) {
+	public SimpleAction(Workflow workflow, String name, Status departureStatus, Status arrivalStatus,
+			Guard<WorkflowObject> guard, Process<WorkflowObject> process) {
 		super(workflow, name, departureStatus, guard);
 		init(workflow, arrivalStatus);
 		this.process = process;
 	}
 
-	public SimpleAction(Workflow workflow, String name, Status departureStatus, Status arrivalStatus, Process<WorkflowObject> process) {
+	public SimpleAction(Workflow workflow, String name, Status departureStatus, Status arrivalStatus,
+			Process<WorkflowObject> process) {
 		super(workflow, name, departureStatus, null);
 		init(workflow, arrivalStatus);
 		this.process = process;
+	}
+
+	public SimpleAction(Workflow workflow, String name, Status departureStatus, Process<WorkflowObject> process) {
+		this(workflow, name, departureStatus, (Status) null, process);
+	}
+
+	public SimpleAction(Workflow workflow, String name, Status departureStatus, Guard<WorkflowObject> guard) {
+		this(workflow, name, departureStatus, null, guard);
+	}
+
+	public SimpleAction(Workflow workflow, String name, Status departureStatus) {
+		this(workflow, name, departureStatus, (Status) null);
+	}
+
+	public SimpleAction(Workflow workflow, String name, Status departureStatus, Guard<WorkflowObject> guard,
+			Process<WorkflowObject> process) {
+		this(workflow, name, departureStatus, (Status) null, guard, process);
 	}
 
 	public SimpleAction() {
@@ -125,6 +149,16 @@ public class SimpleAction extends Action {
 		return Objects.equals(arrivalStatus, other.arrivalStatus)
 				&& Objects.equals(getDepartureStatus(), other.getDepartureStatus())
 				&& Objects.equals(getName(), other.getName()) && Objects.equals(getWorkflow(), other.getWorkflow());
+	}
+
+	@Override
+	public boolean isConnectedToPseudoStatus() {
+		return this.getDepartureStatus() instanceof PseudoStatus || (this.getArrivalStatus() instanceof PseudoStatus);
+	}
+
+	@Override
+	public boolean isDepartureStatus(Status status) {
+		return getDepartureStatus().equals(status);
 	}
 
 }

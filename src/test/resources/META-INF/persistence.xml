@@ -15,6 +15,7 @@
 		<class>finance.tradista.flow.model.Guard</class>
 		<class>finance.tradista.flow.model.Process</class>
 		<class>finance.tradista.flow.model.Status</class>
+		<class>finance.tradista.flow.model.PseudoStatus</class>
 		<class>finance.tradista.flow.model.TradistaFlowObject</class>
 		<properties>
 			<property name="jakarta.persistence.jdbc.driver"
