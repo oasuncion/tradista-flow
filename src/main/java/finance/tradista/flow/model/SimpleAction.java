@@ -153,7 +153,7 @@ public class SimpleAction extends Action {
 
 	@Override
 	public boolean isConnectedToPseudoStatus() {
-		return this.getDepartureStatus() instanceof PseudoStatus || (this.getArrivalStatus() instanceof PseudoStatus);
+		return (this.getDepartureStatus() instanceof PseudoStatus || this.getArrivalStatus() instanceof PseudoStatus);
 	}
 
 	@Override
