@@ -9,7 +9,7 @@ Tradista Flow is available in Maven Central, it can be added to your project by 
 <dependency>
   <groupId>finance.tradista.flow</groupId>
   <artifactId>tradista-flow</artifactId>
-  <version>3.0.0</version>
+  <version>3.0.1</version>
 </dependency>
 ```
 
@@ -155,6 +155,7 @@ Set<SimpleAction> departureActions = new HashSet<>();
 departureActions.add(new SimpleAction(wkf, "Cancel", confirmed));
 departureActions.add(new SimpleAction(wkf, "Cancel", incorrect));
 Action action = new ConditionalAction(wkf, departureActions, cancellationCondition, conditionalRouting, cancelled, underInvestigation);
+action.setName("Cancel");
 WorkflowManager.saveWorkflow(wkf);
 ```
 ### A workflow with a process:
