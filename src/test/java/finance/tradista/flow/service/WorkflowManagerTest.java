@@ -257,6 +257,154 @@ public class WorkflowManagerTest {
 	}
 
 	@Test
+	@DisplayName("Get no available action")
+	void testGetNoAvailableAction() {
+		Workflow wkf = new Workflow("testGetNoAvailableAction");
+		Status s1 = new Status(wkf, "s1");
+		Status s2 = new Status(wkf, "s2");
+		final String actionName = "a1";
+		new SimpleAction(wkf, actionName, s1, s2);
+		Assertions.assertTrue(wkf.getAvailableActionsFromStatus(s2).isEmpty());
+	}
+
+	@Test
+	@DisplayName("Get a simple available action")
+	void testGetSimpleAvailableAction() {
+		Workflow wkf = new Workflow("testGetSimpleAvailableAction");
+		Status s1 = new Status(wkf, "s1");
+		Status s2 = new Status(wkf, "s2");
+		final String actionName = "a1";
+		Action action = new SimpleAction(wkf, actionName, s1, s2);
+		Set<Action> resAction = new HashSet<Action>();
+		resAction.add(action);
+		Assertions.assertEquals(resAction, wkf.getAvailableActionsFromStatus(s1));
+	}
+
+	@Test
+	@DisplayName("Get a conditional available action")
+	void testGetConditionalAvailableAction() {
+		Workflow wkf = new Workflow("testGetConditionalAvailableAction");
+		Status s1 = new Status(wkf, "s1");
+		Status s2 = new Status(wkf, "s2");
+		final String actionName = "a1";
+		Action action = new ConditionalAction(wkf, s1, actionName, new TestCondition(), (Map<Integer, Status>) null,
+				(Guard<WorkflowObject>) null, s2);
+		Set<Action> resAction = new HashSet<Action>();
+		resAction.add(action);
+		Assertions.assertEquals(resAction, wkf.getAvailableActionsFromStatus(s1));
+	}
+
+	@Test
+	@DisplayName("Get several available actions")
+	void testGetSeveralAvailableActions() {
+		Workflow wkf = new Workflow("testGetSeveralAvailableActions");
+		Status s1 = new Status(wkf, "s1");
+		Status s2 = new Status(wkf, "s2");
+		final String actionNameOne = "a1";
+		final String actionNameTwo = "a2";
+		final String actionNameThree = "a3";
+		Set<Action> actions = new HashSet<>();
+		actions.add(new ConditionalAction(wkf, s1, actionNameOne, new TestCondition(), (Map<Integer, Status>) null,
+				(Guard<WorkflowObject>) null, s2));
+		actions.add(new ConditionalAction(wkf, s1, actionNameTwo, new TestCondition(), (Map<Integer, Status>) null,
+				(Guard<WorkflowObject>) null, s2));
+		actions.add(new SimpleAction(wkf, actionNameThree, s1, s2));
+		Assertions.assertEquals(actions, wkf.getAvailableActionsFromStatus(s1));
+	}
+
+	@Test
+	@DisplayName("Get a conditional available action name with several inbound actions")
+	void testGetConditionalAvailableActionWithSeveralInboundActions() {
+		Workflow wkf = new Workflow("testGetConditionalAvailableActionWithSeveralInboundActions");
+		Status s1 = new Status(wkf, "s1");
+		Status s2 = new Status(wkf, "s2");
+		Status s3 = new Status(wkf, "s3");
+		final String actionNameOne = "a1";
+		final String actionNameTwo = "a2";
+		Map<Integer, Status> conditionalRouting = new HashMap<Integer, Status>();
+		conditionalRouting.put(1, s2);
+		conditionalRouting.put(2, s3);
+		Set<SimpleAction> actionsSet = new HashSet<>();
+		actionsSet.add(new SimpleAction(wkf, actionNameOne, s1));
+		actionsSet.add(new SimpleAction(wkf, actionNameTwo, s1));
+		Action condAction = new ConditionalAction(wkf, actionsSet, new TestCondition(), conditionalRouting, s2);
+		Set<Action> resAction = new HashSet<Action>();
+		resAction.add(condAction);
+		Assertions.assertEquals(resAction, wkf.getAvailableActionsFromStatus(s1));
+	}
+
+	@Test
+	@DisplayName("Get a simple available action name")
+	void testGetSimpleAvailableActionName() {
+		Workflow wkf = new Workflow("testGetSimpleAvailableActionName");
+		Status s1 = new Status(wkf, "s1");
+		Status s2 = new Status(wkf, "s2");
+		final String actionName = "a1";
+		new SimpleAction(wkf, actionName, s1, s2);
+		HashSet<String> resActionName = new HashSet<String>();
+		resActionName.add(actionName);
+		Assertions.assertEquals(resActionName, wkf.getAvailableActionNamesFromStatus(s1));
+	}
+
+	@Test
+	@DisplayName("Get a conditional available action name")
+	void testGetConditionalAvailableActionNames() {
+		Workflow wkf = new Workflow("testGetConditionalAvailableActionNames");
+		Status s1 = new Status(wkf, "s1");
+		Status s2 = new Status(wkf, "s2");
+		final String actionName = "a1";
+		new ConditionalAction(wkf, s1, actionName, new TestCondition(), (Map<Integer, Status>) null,
+				(Guard<WorkflowObject>) null, s2);
+		HashSet<String> resActionName = new HashSet<String>();
+		resActionName.add(actionName);
+		Assertions.assertEquals(resActionName, wkf.getAvailableActionNamesFromStatus(s1));
+	}
+
+	@Test
+	@DisplayName("Get several available action names")
+	void testGetSeveralAvailableActionNames() {
+		Workflow wkf = new Workflow("testGetSeveralAvailableActionNames");
+		Status s1 = new Status(wkf, "s1");
+		Status s2 = new Status(wkf, "s2");
+		final String actionNameOne = "a1";
+		final String actionNameTwo = "a2";
+		final String actionNameThree = "a3";
+		Set<Action> actions = new HashSet<>();
+		actions.add(new ConditionalAction(wkf, s1, actionNameOne, new TestCondition(), (Map<Integer, Status>) null,
+				(Guard<WorkflowObject>) null, s2));
+		actions.add(new ConditionalAction(wkf, s1, actionNameTwo, new TestCondition(), (Map<Integer, Status>) null,
+				(Guard<WorkflowObject>) null, s2));
+		actions.add(new SimpleAction(wkf, actionNameThree, s1, s2));
+		HashSet<String> resActionNames = new HashSet<String>();
+		resActionNames.add(actionNameOne);
+		resActionNames.add(actionNameTwo);
+		resActionNames.add(actionNameThree);
+		Assertions.assertEquals(resActionNames, wkf.getAvailableActionNamesFromStatus(s1));
+	}
+
+	@Test
+	@DisplayName("Get several available action names from Conditional")
+	void testGetSeveralAvailableActionNamesFromConditional() {
+		Workflow wkf = new Workflow("testGetSeveralAvailableActionNamesFromConditional");
+		Status s1 = new Status(wkf, "s1");
+		Status s2 = new Status(wkf, "s2");
+		Status s3 = new Status(wkf, "s3");
+		final String actionNameOne = "a1";
+		final String actionNameTwo = "a2";
+		Map<Integer, Status> conditionalRouting = new HashMap<Integer, Status>();
+		conditionalRouting.put(1, s2);
+		conditionalRouting.put(2, s3);
+		Set<SimpleAction> actionsSet = new HashSet<>();
+		actionsSet.add(new SimpleAction(wkf, actionNameOne, s1));
+		actionsSet.add(new SimpleAction(wkf, actionNameTwo, s1));
+		new ConditionalAction(wkf, actionsSet, new TestCondition(), conditionalRouting, s2);
+		HashSet<String> resActionNames = new HashSet<String>();
+		resActionNames.add(actionNameOne);
+		resActionNames.add(actionNameTwo);
+		Assertions.assertEquals(resActionNames, wkf.getAvailableActionNamesFromStatus(s1));
+	}
+
+	@Test
 	@DisplayName("Apply valid action")
 	void testApplyValidAction() {
 		String workflowName = "testApplyValidAction";
@@ -531,10 +679,12 @@ public class WorkflowManagerTest {
 		obj.setStatus(s2);
 		obj.setWorkflow(workflowName);
 		actionToApply = wkf.getAvailableActionsFromStatus(s2).stream().findAny().get();
+		actionToApply.setName("a2");
 		res = applyAction(obj, actionToApply);
 		Assertions.assertEquals(s2, res.getStatus());
 		obj.setStatus(s2b);
 		actionToApply = wkf.getAvailableActionsFromStatus(s2b).stream().findAny().get();
+		actionToApply.setName("a2b");
 		res = applyAction(obj, actionToApply);
 		Assertions.assertEquals(s4, res.getStatus());
 	}
