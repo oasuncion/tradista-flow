@@ -177,16 +177,31 @@ public class Workflow extends TradistaFlowObject {
 		if (this.actions != null) {
 			actions = this.actions.stream().filter(a -> a.isDepartureStatus(status)).collect(Collectors.toSet());
 		}
+		return actions;
+	}
+
+	public Set<String> getAvailableActionNamesFromStatus(Status status) {
+		Set<Action> actions = null;
+		Set<String> actionNames = null;
+		if (this.actions != null) {
+			actions = this.actions.stream().filter(a -> a.isDepartureStatus(status)).collect(Collectors.toSet());
+		}
 		if (actions != null) {
 			for (Action a : actions) {
+				if (actionNames == null) {
+					actionNames = new HashSet<>();
+				}
 				if (a instanceof ConditionalAction condAction) {
-					String actionName = condAction.getConditionalActions().stream()
-							.filter(action -> action.isDepartureStatus(status)).findAny().get().getName();
-					condAction.setName(actionName);
+					Set<String> aNames = condAction.getConditionalActions().stream()
+							.filter(action -> action.isDepartureStatus(status)).map(Action::getName)
+							.collect(Collectors.toSet());
+					actionNames.addAll(aNames);
+				} else {
+					actionNames.add(a.getName());
 				}
 			}
 		}
-		return actions;
+		return actionNames;
 	}
 
 	public Status getTargetStatus(SimpleAction action) {
