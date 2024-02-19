@@ -197,7 +197,7 @@ public class Workflow extends TradistaFlowObject {
 	}
 
 	public Status getTargetStatus(SimpleAction action) {
-		return graph.getEdgeTarget(action);
+		return TradistaFlowUtil.clone(graph.getEdgeTarget(action));
 	}
 
 	@Override
@@ -220,15 +220,17 @@ public class Workflow extends TradistaFlowObject {
 	public Status getInitialStatus() {
 		Status status = null;
 		if (this.status != null) {
-			status = this.status.stream().filter(this::isInitialStatus).findFirst().get();
+			status = TradistaFlowUtil.clone(this.status.stream().filter(this::isInitialStatus).findFirst().get());
 		}
 		return status;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Set<Status> getFinalStatus() {
 		Set<Status> status = null;
 		if (this.status != null) {
-			status = this.status.stream().filter(this::isFinalStatus).collect(Collectors.toSet());
+			status = (Set<Status>) TradistaFlowUtil
+					.deepCopy(this.status.stream().filter(this::isFinalStatus).collect(Collectors.toSet()));
 		}
 		return status;
 	}
