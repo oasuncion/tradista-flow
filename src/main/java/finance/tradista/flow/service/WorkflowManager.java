@@ -242,9 +242,8 @@ public final class WorkflowManager {
 		if (StringUtils.isEmpty(name)) {
 			throw new TradistaFlowBusinessException("The name is mandatory.");
 		}
-		EntityManager entityManager = entityManagerFactory.createEntityManager();
 		Workflow res;
-		try {
+		try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
 			res = entityManager.createQuery("Select w from Workflow w where w.name = :name", Workflow.class)
 					.setParameter("name", name).getSingleResult();
 			if (res != null) {
@@ -253,7 +252,7 @@ public final class WorkflowManager {
 		} catch (NoResultException nre) {
 			throw new TradistaFlowBusinessException(String.format("The workflow named %s doesn't exist.", name));
 		}
-		entityManager.close();
+
 		return res;
 	}
 
