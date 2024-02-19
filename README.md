@@ -296,6 +296,7 @@ using Hibernate and Derby:
 Tradista Flow is made possible using powerful third party tools:
 - [Apache Commons](https://commons.apache.org/) for various common needs
 - [Apache Derby](https://db.apache.org/derby/) as database provider for test of the persistence layer
+- [Apache Log4j](https://logging.apache.org/log4j/2.x/) for logging 
 - [Apache Maven](https://maven.apache.org/) for the build
 - [Hibernate](https://hibernate.org/) as JPA provider for test of the persistence layer
 - [JGraphT](https://jgrapht.org) for graph modeling
