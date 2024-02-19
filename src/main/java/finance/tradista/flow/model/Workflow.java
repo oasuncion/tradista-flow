@@ -234,14 +234,11 @@ public class Workflow extends TradistaFlowObject {
 	}
 
 	/**
-	 * Gets an Action object by its departure status and name. In case of
-	 * conditional action, the returned action gets the actionName parameter's value
-	 * as name.
+	 * Gets an Action object by its departure status and name.
 	 * 
-	 * @param status     The status from where actions are searched
+	 * @param status     the status from where actions are searched
 	 * @param actionName the name of the action to be searched
-	 * @return an Action object. In case of conditional action, the returned action
-	 *         gets the actionName parameter's value as name.
+	 * @return an Action object.
 	 */
 	public Action getActionByDepartureStatusAndName(Status status, String actionName) {
 		Set<Action> actions = null;
