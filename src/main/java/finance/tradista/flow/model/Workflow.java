@@ -172,15 +172,7 @@ public class Workflow extends TradistaFlowObject {
 		return graph.outDegreeOf(status) == 0;
 	}
 
-	public Set<Action> getAvailableActionsFromStatus(Status status) {
-		Set<Action> actions = null;
-		if (this.actions != null) {
-			actions = this.actions.stream().filter(a -> a.isDepartureStatus(status)).collect(Collectors.toSet());
-		}
-		return actions;
-	}
-
-	public Set<String> getAvailableActionNamesFromStatus(Status status) {
+	public Set<String> getAvailableActionsFromStatus(Status status) {
 		Set<Action> actions = null;
 		Set<String> actionNames = null;
 		if (this.actions != null) {
@@ -239,6 +231,40 @@ public class Workflow extends TradistaFlowObject {
 			status = this.status.stream().filter(this::isFinalStatus).collect(Collectors.toSet());
 		}
 		return status;
+	}
+
+	/**
+	 * Gets an Action object by its departure status and name. In case of
+	 * conditional action, the returned action gets the actionName parameter's value
+	 * as name.
+	 * 
+	 * @param status     The status from where actions are searched
+	 * @param actionName the name of the action to be searched
+	 * @return an Action object. In case of conditional action, the returned action
+	 *         gets the actionName parameter's value as name.
+	 */
+	public Action getActionByDepartureStatusAndName(Status status, String actionName) {
+		Set<Action> actions = null;
+		if (this.actions != null) {
+			actions = this.actions.stream().filter(a -> a.isDepartureStatus(status)).collect(Collectors.toSet());
+		}
+		if (actions != null) {
+			for (Action a : actions) {
+				if (a instanceof ConditionalAction condAction) {
+					boolean exists = condAction.getConditionalActions().stream()
+							.filter(act -> act.isDepartureStatus(status) && act.getName().equals(actionName))
+							.count() > 0;
+					if (exists) {
+						return a.clone();
+					}
+				} else {
+					if (a.getName().equals(actionName)) {
+						return a.clone();
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 }

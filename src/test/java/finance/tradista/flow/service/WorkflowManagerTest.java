@@ -94,6 +94,33 @@ public class WorkflowManagerTest {
 	}
 
 	@Test
+	@DisplayName("Get valid workflow")
+	void testGetValidWorkflow() {
+		final String workflowName = "TestGetValidWorkflow";
+		Workflow wkf = new Workflow(workflowName);
+		Status s1 = new Status(wkf, "s1");
+		Status s2 = new Status(wkf, "s2");
+		Process<WorkflowObject> process = new TestProcessOK();
+		Workflow loadedWorklow;
+		new SimpleAction(wkf, "a1", s1, s2, process);
+		saveWorkflow(wkf);
+		loadedWorklow = loadWorkflow(workflowName);
+		Assertions.assertEquals(wkf.getActions(), loadedWorklow.getActions());
+		Assertions.assertEquals(wkf.getStatus(), loadedWorklow.getStatus());
+		Assertions.assertEquals(wkf.getName(), loadedWorklow.getName());
+	}
+
+	@Test
+	@DisplayName("Workflow doesn't exist")
+	void testWorkflowDoesNotExist() {
+		try {
+			WorkflowManager.getWorkflowByName("DoesNotExist");
+			Assertions.fail();
+		} catch (TradistaFlowBusinessException tfbe) {
+		}
+	}
+
+	@Test
 	@DisplayName("Check valid workflow")
 	void testIsValid() {
 		Workflow wkf = new Workflow("TestIsValid");
@@ -264,92 +291,26 @@ public class WorkflowManagerTest {
 		Status s2 = new Status(wkf, "s2");
 		final String actionName = "a1";
 		new SimpleAction(wkf, actionName, s1, s2);
-		Assertions.assertTrue(wkf.getAvailableActionsFromStatus(s2).isEmpty());
+		Assertions.assertNull(wkf.getAvailableActionsFromStatus(s2));
 	}
 
 	@Test
 	@DisplayName("Get a simple available action")
-	void testGetSimpleAvailableAction() {
-		Workflow wkf = new Workflow("testGetSimpleAvailableAction");
-		Status s1 = new Status(wkf, "s1");
-		Status s2 = new Status(wkf, "s2");
-		final String actionName = "a1";
-		Action action = new SimpleAction(wkf, actionName, s1, s2);
-		Set<Action> resAction = new HashSet<Action>();
-		resAction.add(action);
-		Assertions.assertEquals(resAction, wkf.getAvailableActionsFromStatus(s1));
-	}
-
-	@Test
-	@DisplayName("Get a conditional available action")
-	void testGetConditionalAvailableAction() {
-		Workflow wkf = new Workflow("testGetConditionalAvailableAction");
-		Status s1 = new Status(wkf, "s1");
-		Status s2 = new Status(wkf, "s2");
-		final String actionName = "a1";
-		Action action = new ConditionalAction(wkf, s1, actionName, new TestCondition(), (Map<Integer, Status>) null,
-				(Guard<WorkflowObject>) null, s2);
-		Set<Action> resAction = new HashSet<Action>();
-		resAction.add(action);
-		Assertions.assertEquals(resAction, wkf.getAvailableActionsFromStatus(s1));
-	}
-
-	@Test
-	@DisplayName("Get several available actions")
-	void testGetSeveralAvailableActions() {
-		Workflow wkf = new Workflow("testGetSeveralAvailableActions");
-		Status s1 = new Status(wkf, "s1");
-		Status s2 = new Status(wkf, "s2");
-		final String actionNameOne = "a1";
-		final String actionNameTwo = "a2";
-		final String actionNameThree = "a3";
-		Set<Action> actions = new HashSet<>();
-		actions.add(new ConditionalAction(wkf, s1, actionNameOne, new TestCondition(), (Map<Integer, Status>) null,
-				(Guard<WorkflowObject>) null, s2));
-		actions.add(new ConditionalAction(wkf, s1, actionNameTwo, new TestCondition(), (Map<Integer, Status>) null,
-				(Guard<WorkflowObject>) null, s2));
-		actions.add(new SimpleAction(wkf, actionNameThree, s1, s2));
-		Assertions.assertEquals(actions, wkf.getAvailableActionsFromStatus(s1));
-	}
-
-	@Test
-	@DisplayName("Get a conditional available action name with several inbound actions")
-	void testGetConditionalAvailableActionWithSeveralInboundActions() {
-		Workflow wkf = new Workflow("testGetConditionalAvailableActionWithSeveralInboundActions");
-		Status s1 = new Status(wkf, "s1");
-		Status s2 = new Status(wkf, "s2");
-		Status s3 = new Status(wkf, "s3");
-		final String actionNameOne = "a1";
-		final String actionNameTwo = "a2";
-		Map<Integer, Status> conditionalRouting = new HashMap<Integer, Status>();
-		conditionalRouting.put(1, s2);
-		conditionalRouting.put(2, s3);
-		Set<SimpleAction> actionsSet = new HashSet<>();
-		actionsSet.add(new SimpleAction(wkf, actionNameOne, s1));
-		actionsSet.add(new SimpleAction(wkf, actionNameTwo, s1));
-		Action condAction = new ConditionalAction(wkf, actionsSet, new TestCondition(), conditionalRouting, s2);
-		Set<Action> resAction = new HashSet<Action>();
-		resAction.add(condAction);
-		Assertions.assertEquals(resAction, wkf.getAvailableActionsFromStatus(s1));
-	}
-
-	@Test
-	@DisplayName("Get a simple available action name")
 	void testGetSimpleAvailableActionName() {
-		Workflow wkf = new Workflow("testGetSimpleAvailableActionName");
+		Workflow wkf = new Workflow("testGetSimpleAvailableAction");
 		Status s1 = new Status(wkf, "s1");
 		Status s2 = new Status(wkf, "s2");
 		final String actionName = "a1";
 		new SimpleAction(wkf, actionName, s1, s2);
 		HashSet<String> resActionName = new HashSet<String>();
 		resActionName.add(actionName);
-		Assertions.assertEquals(resActionName, wkf.getAvailableActionNamesFromStatus(s1));
+		Assertions.assertEquals(resActionName, wkf.getAvailableActionsFromStatus(s1));
 	}
 
 	@Test
-	@DisplayName("Get a conditional available action name")
+	@DisplayName("Get a conditional available action")
 	void testGetConditionalAvailableActionNames() {
-		Workflow wkf = new Workflow("testGetConditionalAvailableActionNames");
+		Workflow wkf = new Workflow("testGetConditionalAvailableAction");
 		Status s1 = new Status(wkf, "s1");
 		Status s2 = new Status(wkf, "s2");
 		final String actionName = "a1";
@@ -357,13 +318,13 @@ public class WorkflowManagerTest {
 				(Guard<WorkflowObject>) null, s2);
 		HashSet<String> resActionName = new HashSet<String>();
 		resActionName.add(actionName);
-		Assertions.assertEquals(resActionName, wkf.getAvailableActionNamesFromStatus(s1));
+		Assertions.assertEquals(resActionName, wkf.getAvailableActionsFromStatus(s1));
 	}
 
 	@Test
-	@DisplayName("Get several available action names")
+	@DisplayName("Get several available actions")
 	void testGetSeveralAvailableActionNames() {
-		Workflow wkf = new Workflow("testGetSeveralAvailableActionNames");
+		Workflow wkf = new Workflow("testGetSeveralAvailableActions");
 		Status s1 = new Status(wkf, "s1");
 		Status s2 = new Status(wkf, "s2");
 		final String actionNameOne = "a1";
@@ -379,13 +340,13 @@ public class WorkflowManagerTest {
 		resActionNames.add(actionNameOne);
 		resActionNames.add(actionNameTwo);
 		resActionNames.add(actionNameThree);
-		Assertions.assertEquals(resActionNames, wkf.getAvailableActionNamesFromStatus(s1));
+		Assertions.assertEquals(resActionNames, wkf.getAvailableActionsFromStatus(s1));
 	}
 
 	@Test
-	@DisplayName("Get several available action names from Conditional")
+	@DisplayName("Get several available actions from Conditional")
 	void testGetSeveralAvailableActionNamesFromConditional() {
-		Workflow wkf = new Workflow("testGetSeveralAvailableActionNamesFromConditional");
+		Workflow wkf = new Workflow("testGetSeveralAvailableActionsFromConditional");
 		Status s1 = new Status(wkf, "s1");
 		Status s2 = new Status(wkf, "s2");
 		Status s3 = new Status(wkf, "s3");
@@ -401,7 +362,7 @@ public class WorkflowManagerTest {
 		HashSet<String> resActionNames = new HashSet<String>();
 		resActionNames.add(actionNameOne);
 		resActionNames.add(actionNameTwo);
-		Assertions.assertEquals(resActionNames, wkf.getAvailableActionNamesFromStatus(s1));
+		Assertions.assertEquals(resActionNames, wkf.getAvailableActionsFromStatus(s1));
 	}
 
 	@Test
@@ -411,15 +372,13 @@ public class WorkflowManagerTest {
 		Workflow wkf = new Workflow(workflowName);
 		Status s1 = new Status(wkf, "s1");
 		Status s2 = new Status(wkf, "s2");
-		new SimpleAction(wkf, "a1", s1, s2);
-		Action actionToApply;
+		final String actionName = "a1";
+		new SimpleAction(wkf, actionName, s1, s2);
 		WorkflowTestObject obj = new WorkflowTestObject();
 		saveWorkflow(wkf);
-		wkf = loadWorkflow(workflowName);
 		obj.setStatus(s1);
 		obj.setWorkflow(workflowName);
-		actionToApply = wkf.getAvailableActionsFromStatus(s1).stream().findAny().get();
-		applyAction(obj, actionToApply);
+		applyAction(obj, actionName);
 	}
 
 	@Test
@@ -430,14 +389,14 @@ public class WorkflowManagerTest {
 		Status s1 = new Status(wkf, "s1");
 		Status s2 = new Status(wkf, "s2");
 		TestProcessOK process = new TestProcessOK();
-		new SimpleAction(wkf, "a1", s1, s2, process);
+		final String actionName = "a1";
+		new SimpleAction(wkf, actionName, s1, s2, process);
 		WorkflowTestObject obj = new WorkflowTestObject();
 		WorkflowObject res = null;
 		saveWorkflow(wkf);
-		wkf = loadWorkflow(workflowName);
 		obj.setStatus(s1);
 		obj.setWorkflow(workflowName);
-		res = applyAction(obj, wkf.getActions().stream().findFirst().get());
+		res = applyAction(obj, actionName);
 		Assertions.assertEquals("Wkf", res.getWorkflow());
 		Assertions.assertNotEquals(s2, obj.getStatus());
 		Assertions.assertEquals(s2, res.getStatus());
@@ -451,15 +410,13 @@ public class WorkflowManagerTest {
 		Status s1 = new Status(wkf, "s1");
 		Status s2 = new Status(wkf, "s2");
 		TestProcessKOCheckedException process = new TestProcessKOCheckedException();
-		new SimpleAction(wkf, "a1", s1, s2, process);
+		final String actionName = "a1";
+		new SimpleAction(wkf, actionName, s1, s2, process);
 		WorkflowTestObject obj = new WorkflowTestObject();
 		saveWorkflow(wkf);
-
-		final Workflow wkfTemp = loadWorkflow(workflowName);
 		obj.setStatus(s1);
 		obj.setWorkflow(workflowName);
-		assertThrows(TradistaFlowBusinessException.class,
-				() -> WorkflowManager.applyAction(obj, wkfTemp.getActions().stream().findFirst().get()));
+		assertThrows(TradistaFlowBusinessException.class, () -> WorkflowManager.applyAction(obj, actionName));
 		Assertions.assertNotEquals(s2, obj.getStatus());
 		Assertions.assertNotEquals("Wkf", obj.getWorkflow());
 
@@ -474,14 +431,13 @@ public class WorkflowManagerTest {
 		Status s1 = new Status(wkf, "s1");
 		Status s2 = new Status(wkf, "s2");
 		TestProcessKORuntimeException process = new TestProcessKORuntimeException();
-		new SimpleAction(wkf, "a1", s1, s2, process);
+		final String actionName = "a1";
+		new SimpleAction(wkf, actionName, s1, s2, process);
 		WorkflowTestObject obj = new WorkflowTestObject();
 		saveWorkflow(wkf);
-		wkf = loadWorkflow(workflowName);
 		obj.setStatus(s1);
 		obj.setWorkflow(workflowName);
-		final Action action = wkf.getActions().stream().findFirst().get();
-		assertThrows(TradistaFlowTechnicalException.class, () -> WorkflowManager.applyAction(obj, action));
+		assertThrows(TradistaFlowTechnicalException.class, () -> WorkflowManager.applyAction(obj, actionName));
 		Assertions.assertNotEquals(s2, obj.getStatus());
 		Assertions.assertNotEquals("Wkf", obj.getWorkflow());
 
@@ -496,16 +452,14 @@ public class WorkflowManagerTest {
 		Status s1 = new Status(wkf, "s1");
 		Status s2 = new Status(wkf, "s2");
 		Guard<WorkflowObject> guardOK = new TestGuardOK();
-		new SimpleAction(wkf, "a1", s1, s2, guardOK);
+		final String actionName = "a1";
+		new SimpleAction(wkf, actionName, s1, s2, guardOK);
 		WorkflowTestObject obj = new WorkflowTestObject();
 		WorkflowObject res = null;
-		Action actionToApply;
 		saveWorkflow(wkf);
-		wkf = loadWorkflow(workflowName);
 		obj.setStatus(s1);
 		obj.setWorkflow(workflowName);
-		actionToApply = wkf.getAvailableActionsFromStatus(s1).stream().findAny().get();
-		res = applyAction(obj, actionToApply);
+		res = applyAction(obj, actionName);
 		Assertions.assertNotEquals(s2, obj.getStatus());
 		Assertions.assertEquals(s2, res.getStatus());
 	}
@@ -518,15 +472,13 @@ public class WorkflowManagerTest {
 		Status s1 = new Status(wkf, "s1");
 		Status s2 = new Status(wkf, "s2");
 		Guard<WorkflowObject> guardKO = new TestGuardKO();
-		new SimpleAction(wkf, "a1", s1, s2, guardKO);
+		final String actionName = "a1";
+		new SimpleAction(wkf, actionName, s1, s2, guardKO);
 		WorkflowTestObject obj = new WorkflowTestObject();
-		Action actionToApply;
 		saveWorkflow(wkf);
-		wkf = loadWorkflow(workflowName);
 		obj.setStatus(s1);
 		obj.setWorkflow(workflowName);
-		actionToApply = wkf.getAvailableActionsFromStatus(s1).stream().findAny().get();
-		applyAction(obj, actionToApply);
+		applyAction(obj, actionName);
 		Assertions.assertEquals(s1, obj.getStatus());
 	}
 
@@ -537,16 +489,14 @@ public class WorkflowManagerTest {
 		Workflow wkf = new Workflow(workflowName);
 		Status s1 = new Status(wkf, "s1");
 		Status s2 = new Status(wkf, "s2");
-		new SimpleAction(wkf, "a1", s1, s2);
+		final String actionName = "a1";
+		new SimpleAction(wkf, actionName, s1, s2);
 		WorkflowTestObject obj = new WorkflowTestObject();
-		Action actionToApply;
 		saveWorkflow(wkf);
-		wkf = loadWorkflow(workflowName);
 		obj.setWorkflow(workflowName);
 		obj.setStatus(s2);
-		actionToApply = wkf.getAvailableActionsFromStatus(s1).stream().findAny().get();
 		try {
-			WorkflowManager.applyAction(obj, actionToApply);
+			WorkflowManager.applyAction(obj, actionName);
 			Assertions.fail();
 		} catch (TradistaFlowBusinessException tfbe) {
 		}
@@ -564,16 +514,14 @@ public class WorkflowManagerTest {
 		Map<Integer, Status> conditionalRouting = new HashMap<Integer, Status>();
 		conditionalRouting.put(1, s2);
 		conditionalRouting.put(2, s3);
-		new ConditionalAction(wkf, s1, "a1", c1, conditionalRouting, s2, s3);
+		final String actionName = "a1";
+		new ConditionalAction(wkf, s1, actionName, c1, conditionalRouting, s2, s3);
 		WorkflowTestObject obj = new WorkflowTestObject();
 		WorkflowObject res = null;
-		Action actionToApply;
 		saveWorkflow(wkf);
-		wkf = loadWorkflow(workflowName);
 		obj.setStatus(s1);
 		obj.setWorkflow(workflowName);
-		actionToApply = wkf.getAvailableActionsFromStatus(s1).stream().findAny().get();
-		res = applyAction(obj, actionToApply);
+		res = applyAction(obj, actionName);
 		Assertions.assertEquals(s2, res.getStatus());
 	}
 
@@ -594,22 +542,20 @@ public class WorkflowManagerTest {
 		conditionalRouting.put(1, s3);
 		conditionalRouting.put(2, s4);
 		Set<SimpleAction> actionsSet = new HashSet<>();
-		actionsSet.add(new SimpleAction(wkf, "a2", s2));
-		actionsSet.add(new SimpleAction(wkf, "a2b", s2b));
+		final String actionNameTwo = "a2";
+		final String actionNameTwoB = "a2b";
+		actionsSet.add(new SimpleAction(wkf, actionNameTwo, s2));
+		actionsSet.add(new SimpleAction(wkf, actionNameTwoB, s2b));
 		new ConditionalAction(wkf, actionsSet, c1, conditionalRouting, s3, s4);
 		WorkflowTestObject obj = new WorkflowTestObject();
 		WorkflowObject res = null;
-		Action actionToApply;
 		saveWorkflow(wkf);
-		wkf = loadWorkflow(workflowName);
 		obj.setStatus(s2);
 		obj.setWorkflow(workflowName);
-		actionToApply = wkf.getAvailableActionsFromStatus(s2).stream().findAny().get();
-		res = applyAction(obj, actionToApply);
+		res = applyAction(obj, actionNameTwo);
 		Assertions.assertEquals(s4, res.getStatus());
 		obj.setStatus(s2b);
-		actionToApply = wkf.getAvailableActionsFromStatus(s2b).stream().findAny().get();
-		res = applyAction(obj, actionToApply);
+		res = applyAction(obj, actionNameTwoB);
 		Assertions.assertEquals(s4, res.getStatus());
 	}
 
@@ -631,22 +577,20 @@ public class WorkflowManagerTest {
 		conditionalRouting.put(2, s4);
 		Set<SimpleAction> actionsSet = new HashSet<>();
 		Guard<WorkflowObject> guardOK = new TestGuardOK();
-		actionsSet.add(new SimpleAction(wkf, "a2", s2, guardOK));
-		actionsSet.add(new SimpleAction(wkf, "a2b", s2b));
+		final String actionNameTwo = "a2";
+		final String actionNameTwoB = "a2b";
+		actionsSet.add(new SimpleAction(wkf, actionNameTwo, s2, guardOK));
+		actionsSet.add(new SimpleAction(wkf, actionNameTwoB, s2b));
 		new ConditionalAction(wkf, actionsSet, c1, conditionalRouting, s3, s4);
 		WorkflowTestObject obj = new WorkflowTestObject();
 		WorkflowObject res = null;
-		Action actionToApply;
 		saveWorkflow(wkf);
-		wkf = loadWorkflow(workflowName);
 		obj.setStatus(s2);
 		obj.setWorkflow(workflowName);
-		actionToApply = wkf.getAvailableActionsFromStatus(s2).stream().findFirst().get();
-		res = applyAction(obj, actionToApply);
+		res = applyAction(obj, actionNameTwo);
 		Assertions.assertEquals(s4, res.getStatus());
 		obj.setStatus(s2b);
-		actionToApply = wkf.getAvailableActionsFromStatus(s2b).stream().findAny().get();
-		res = applyAction(obj, actionToApply);
+		res = applyAction(obj, actionNameTwoB);
 		Assertions.assertEquals(s4, res.getStatus());
 	}
 
@@ -668,24 +612,20 @@ public class WorkflowManagerTest {
 		conditionalRouting.put(2, s4);
 		Set<SimpleAction> actionsSet = new HashSet<>();
 		Guard<WorkflowObject> guardKO = new TestGuardKO();
-		actionsSet.add(new SimpleAction(wkf, "a2", s2, guardKO));
-		actionsSet.add(new SimpleAction(wkf, "a2b", s2b));
+		final String actionNameTwo = "a2";
+		final String actionNameTwoB = "a2b";
+		actionsSet.add(new SimpleAction(wkf, actionNameTwo, s2, guardKO));
+		actionsSet.add(new SimpleAction(wkf, actionNameTwoB, s2b));
 		new ConditionalAction(wkf, actionsSet, c1, conditionalRouting, s3, s4);
 		WorkflowTestObject obj = new WorkflowTestObject();
 		WorkflowObject res = null;
-		Action actionToApply;
 		saveWorkflow(wkf);
-		wkf = loadWorkflow(workflowName);
 		obj.setStatus(s2);
 		obj.setWorkflow(workflowName);
-		actionToApply = wkf.getAvailableActionsFromStatus(s2).stream().findAny().get();
-		actionToApply.setName("a2");
-		res = applyAction(obj, actionToApply);
+		res = applyAction(obj, actionNameTwo);
 		Assertions.assertEquals(s2, res.getStatus());
 		obj.setStatus(s2b);
-		actionToApply = wkf.getAvailableActionsFromStatus(s2b).stream().findAny().get();
-		actionToApply.setName("a2b");
-		res = applyAction(obj, actionToApply);
+		res = applyAction(obj, actionNameTwoB);
 		Assertions.assertEquals(s4, res.getStatus());
 	}
 
@@ -701,15 +641,13 @@ public class WorkflowManagerTest {
 		Map<Integer, Status> conditionalRouting = new HashMap<Integer, Status>();
 		conditionalRouting.put(1, s2);
 		conditionalRouting.put(2, s3);
-		new ConditionalAction(wkf, s1, "a1", c1, conditionalRouting, s2, s3);
+		final String actionName = "a1";
+		new ConditionalAction(wkf, s1, actionName, c1, conditionalRouting, s2, s3);
 		WorkflowTestObject obj = new WorkflowTestObject();
-		Action actionToApply;
 		saveWorkflow(wkf);
-		wkf = loadWorkflow(workflowName);
 		obj.setStatus(s1);
 		obj.setWorkflow(workflowName);
-		actionToApply = wkf.getAvailableActionsFromStatus(s1).stream().findAny().get();
-		assertThrows(TradistaFlowBusinessException.class, () -> WorkflowManager.applyAction(obj, actionToApply));
+		assertThrows(TradistaFlowBusinessException.class, () -> WorkflowManager.applyAction(obj, actionName));
 		assertEquals(s1, obj.getStatus());
 	}
 
@@ -725,15 +663,13 @@ public class WorkflowManagerTest {
 		Map<Integer, Status> conditionalRouting = new HashMap<Integer, Status>();
 		conditionalRouting.put(1, s2);
 		conditionalRouting.put(2, s3);
-		new ConditionalAction(wkf, s1, "a1", c1, conditionalRouting, s2, s3);
+		final String actionName = "a1";
+		new ConditionalAction(wkf, s1, actionName, c1, conditionalRouting, s2, s3);
 		WorkflowTestObject obj = new WorkflowTestObject();
-		Action actionToApply;
 		saveWorkflow(wkf);
-		wkf = loadWorkflow(workflowName);
 		obj.setStatus(s1);
 		obj.setWorkflow(workflowName);
-		actionToApply = wkf.getAvailableActionsFromStatus(s1).stream().findAny().get();
-		assertThrows(TradistaFlowTechnicalException.class, () -> WorkflowManager.applyAction(obj, actionToApply));
+		assertThrows(TradistaFlowTechnicalException.class, () -> WorkflowManager.applyAction(obj, actionName));
 		assertEquals(s1, obj.getStatus());
 	}
 
@@ -752,16 +688,14 @@ public class WorkflowManagerTest {
 		conditionalRouting.put(2, s3);
 		Map<Status, Process<WorkflowObject>> conditionalProcesses = new HashMap<Status, Process<WorkflowObject>>();
 		conditionalProcesses.put(s2, process);
-		new ConditionalAction(wkf, s1, "a1", c1, conditionalRouting, conditionalProcesses, s2, s3);
+		final String actionName = "a1";
+		new ConditionalAction(wkf, s1, actionName, c1, conditionalRouting, conditionalProcesses, s2, s3);
 		WorkflowTestObject obj = new WorkflowTestObject();
 		WorkflowObject res = null;
-		Action actionToApply;
 		saveWorkflow(wkf);
-		wkf = loadWorkflow(workflowName);
 		obj.setStatus(s1);
 		obj.setWorkflow(workflowName);
-		actionToApply = wkf.getAvailableActionsFromStatus(s1).stream().findAny().get();
-		res = applyAction(obj, actionToApply);
+		res = applyAction(obj, actionName);
 		Assertions.assertEquals(s2, res.getStatus());
 	}
 
@@ -780,15 +714,13 @@ public class WorkflowManagerTest {
 		conditionalRouting.put(2, s3);
 		Map<Status, Process<WorkflowObject>> conditionalProcesses = new HashMap<Status, Process<WorkflowObject>>();
 		conditionalProcesses.put(s2, process);
-		new ConditionalAction(wkf, s1, "a1", c1, conditionalRouting, conditionalProcesses, s2, s3);
+		final String actionName = "a1";
+		new ConditionalAction(wkf, s1, actionName, c1, conditionalRouting, conditionalProcesses, s2, s3);
 		WorkflowTestObject obj = new WorkflowTestObject();
-		Action actionToApply;
 		saveWorkflow(wkf);
-		wkf = loadWorkflow(workflowName);
 		obj.setStatus(s1);
 		obj.setWorkflow(workflowName);
-		actionToApply = wkf.getAvailableActionsFromStatus(s1).stream().findAny().get();
-		assertThrows(TradistaFlowBusinessException.class, () -> WorkflowManager.applyAction(obj, actionToApply));
+		assertThrows(TradistaFlowBusinessException.class, () -> WorkflowManager.applyAction(obj, actionName));
 		Assertions.assertNotEquals(s2, obj.getStatus());
 		Assertions.assertNotEquals("Wkf", obj.getWorkflow());
 	}
@@ -811,7 +743,7 @@ public class WorkflowManagerTest {
 		return wkf;
 	}
 
-	private WorkflowObject applyAction(WorkflowTestObject obj, Action actionToApply) {
+	private WorkflowObject applyAction(WorkflowTestObject obj, String actionToApply) {
 		try {
 			obj = WorkflowManager.applyAction(obj, actionToApply);
 		} catch (TradistaFlowBusinessException tfbe) {
