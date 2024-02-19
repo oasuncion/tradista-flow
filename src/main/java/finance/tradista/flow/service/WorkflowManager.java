@@ -18,6 +18,7 @@ import finance.tradista.flow.model.Workflow;
 import finance.tradista.flow.model.WorkflowObject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.Persistence;
 
 /*
@@ -157,16 +158,17 @@ public final class WorkflowManager {
 	 * 
 	 * @param object the object to update
 	 * @param action the action to apply
-	 * @throws TradistaFlowBusinessException  if the object or action is null, if
-	 *                                        the object workflow doesn't exist, if
-	 *                                        the action is invalid or if a
+	 * @throws TradistaFlowBusinessException  if the object is null, the action is
+	 *                                        null or empty, if the object workflow
+	 *                                        doesn't exist, if the action is
+	 *                                        invalid or if a
 	 *                                        condition/guard/process raised a
 	 *                                        checked exception.
 	 * @throws TradistaFlowTechnicalException if a condition/guard/process raised a
 	 *                                        runtime exception.
 	 */
 	@SuppressWarnings("unchecked")
-	public static <X extends WorkflowObject> X applyAction(X object, Action action)
+	public static <X extends WorkflowObject> X applyAction(X object, String action)
 			throws TradistaFlowBusinessException {
 		if (object == null) {
 			throw new TradistaFlowBusinessException("The object is null");
@@ -174,8 +176,8 @@ public final class WorkflowManager {
 		Workflow wkf = getWorkflowByName(object.getWorkflow());
 		StringBuilder errMsg = new StringBuilder();
 		X objectDeepCopy = null;
-		if (action == null) {
-			errMsg.append("The action is null");
+		if (StringUtils.isEmpty(action)) {
+			errMsg.append("The action is null or empty.");
 		}
 		if (wkf == null) {
 			errMsg.append(String.format("The workflow %s doesn't exist.", object.getWorkflow()));
@@ -189,12 +191,13 @@ public final class WorkflowManager {
 							object.getStatus(), object.getWorkflow()));
 		}
 		try {
+			Action actionObject = wkf.getActionByDepartureStatusAndName(object.getStatus(), action);
 			objectDeepCopy = (X) object.clone();
-			if (action.getGuard() != null && (!action.getGuard().test(objectDeepCopy))) {
+			if (actionObject.getGuard() != null && (!actionObject.getGuard().test(objectDeepCopy))) {
 				return object;
 			}
 
-			if (action instanceof SimpleAction simpleAction) {
+			if (actionObject instanceof SimpleAction simpleAction) {
 				// Perform process
 				finance.tradista.flow.model.Process<WorkflowObject> process = simpleAction.getProcess();
 				if (process != null) {
@@ -202,8 +205,8 @@ public final class WorkflowManager {
 				}
 				objectDeepCopy.setStatus(wkf.getTargetStatus(simpleAction));
 			} else {
-				ConditionalAction condAction = ((ConditionalAction) action);
-				Guard<WorkflowObject> guard = condAction.getGuardByActionName(condAction.getName());
+				ConditionalAction condAction = ((ConditionalAction) actionObject);
+				Guard<WorkflowObject> guard = condAction.getGuardByActionName(action);
 				if (guard != null && (!guard.test(objectDeepCopy))) {
 					return object;
 				}
@@ -240,10 +243,15 @@ public final class WorkflowManager {
 			throw new TradistaFlowBusinessException("The name is mandatory.");
 		}
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
-		Workflow res = entityManager.createQuery("Select w from Workflow w where w.name = :name", Workflow.class)
-				.setParameter("name", name).getSingleResult();
-		if (res != null) {
-			res.syncModel();
+		Workflow res;
+		try {
+			res = entityManager.createQuery("Select w from Workflow w where w.name = :name", Workflow.class)
+					.setParameter("name", name).getSingleResult();
+			if (res != null) {
+				res.syncModel();
+			}
+		} catch (NoResultException nre) {
+			throw new TradistaFlowBusinessException(String.format("The workflow named %s doesn't exist.", name));
 		}
 		entityManager.close();
 		return res;
@@ -257,8 +265,8 @@ public final class WorkflowManager {
 	 * @param action   the action to be checked
 	 * @return true if an action is valid from the given status
 	 */
-	private static boolean isValidAction(Workflow workflow, Status status, Action action) {
-		Set<Action> availableActions = null;
+	private static boolean isValidAction(Workflow workflow, Status status, String action) {
+		Set<String> availableActions = null;
 		try {
 			availableActions = workflow.getAvailableActionsFromStatus(status);
 		} catch (IllegalArgumentException iae) {
