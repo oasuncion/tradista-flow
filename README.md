@@ -1,5 +1,7 @@
 # Tradista Flow
 
+![License](https://img.shields.io/badge/License-Apache_2.0-33ff99.svg?link=https://www.apache.org/licenses/LICENSE-2.0)
+
 Tradista Flow is a simple Java Workflow engine that can be included in any Java application.
 Tradista Flow allows to create/update/delete workflows and execute them.
 
