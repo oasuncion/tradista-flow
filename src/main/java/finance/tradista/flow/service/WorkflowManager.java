@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import finance.tradista.flow.exception.TradistaFlowBusinessException;
@@ -63,7 +64,7 @@ public final class WorkflowManager {
 	 * @return the id of the saved workflow
 	 * @throws TradistaFlowBusinessException if the workflow is not valid
 	 */
-	public static long saveWorkflow(Workflow workflow) throws TradistaFlowBusinessException {
+	public static long saveWorkflow(Workflow<? extends WorkflowObject> workflow) throws TradistaFlowBusinessException {
 		if (!isValid(workflow)) {
 			throw new TradistaFlowBusinessException(
 					String.format("The workflow %s is not valid. Please check.", workflow.getName()));
@@ -102,8 +103,9 @@ public final class WorkflowManager {
 	 * 
 	 * @return all workflows of the system in a set
 	 */
-	public static Set<Workflow> getAllWorkflows() {
-		Set<Workflow> workflows = null;
+	@SuppressWarnings("rawtypes")
+	public static <X extends WorkflowObject> Set<Workflow<X>> getAllWorkflows() {
+		Set<Workflow<X>> workflows = null;
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
 		List<Workflow> res = entityManager.createQuery("Select w from Workflow w", Workflow.class).getResultList();
 		if (res != null) {
@@ -120,9 +122,10 @@ public final class WorkflowManager {
 	 * @param id the id of the workflow to be deleted
 	 * @throws TradistaFlowBusinessException if the workflow doesn't exist
 	 */
+	@SuppressWarnings("unchecked")
 	public static void deleteWorkflow(long id) throws TradistaFlowBusinessException {
 		try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
-			Workflow wkf = entityManager.find(Workflow.class, id);
+			Workflow<? extends WorkflowObject> wkf = entityManager.find(Workflow.class, id);
 			if (wkf == null) {
 				throw new TradistaFlowBusinessException(String.format("The workflow %s doesn't exist.", id));
 			}
@@ -146,7 +149,7 @@ public final class WorkflowManager {
 	 * @return true if the workflow is valid, false otherwise
 	 * @throws TradistaFlowBusinessException if the workflow is null
 	 */
-	public static boolean isValid(Workflow workflow) throws TradistaFlowBusinessException {
+	public static boolean isValid(Workflow<? extends WorkflowObject> workflow) throws TradistaFlowBusinessException {
 		if (workflow == null) {
 			throw new TradistaFlowBusinessException("The workflow cannot be null.");
 		}
@@ -173,7 +176,7 @@ public final class WorkflowManager {
 		if (object == null) {
 			throw new TradistaFlowBusinessException("The object is null");
 		}
-		Workflow wkf = getWorkflowByName(object.getWorkflow());
+		Workflow<X> wkf = getWorkflowByName(object.getWorkflow());
 		StringBuilder errMsg = new StringBuilder();
 		X objectDeepCopy = null;
 		if (StringUtils.isEmpty(action)) {
@@ -191,10 +194,17 @@ public final class WorkflowManager {
 							object.getStatus(), object.getWorkflow()));
 		}
 		try {
-			Action actionObject = wkf.getActionByDepartureStatusAndName(object.getStatus(), action);
+			Action<X> actionObject = wkf.getActionByDepartureStatusAndName(object.getStatus(), action);
 			objectDeepCopy = (X) object.clone();
-			if (actionObject.getGuard() != null && (!actionObject.getGuard().test(objectDeepCopy))) {
-				return object;
+			Set<Guard> guards = actionObject.getGuards();
+			if (!ObjectUtils.isEmpty(guards)) {
+				for (Guard<X> guard : guards) {
+					if (!guard.test(objectDeepCopy)) {
+						return object;
+					}
+					// Reinitializing objectDeepCopy in case it has been modified by a guard
+					objectDeepCopy = (X) object.clone();
+				}
 			}
 
 			if (actionObject instanceof SimpleAction simpleAction) {
@@ -205,18 +215,23 @@ public final class WorkflowManager {
 				}
 				objectDeepCopy.setStatus(wkf.getTargetStatus(simpleAction));
 			} else {
-				ConditionalAction condAction = ((ConditionalAction) actionObject);
-				Guard<WorkflowObject> guard = condAction.getGuardByActionName(action);
-				if (guard != null && (!guard.test(objectDeepCopy))) {
-					return object;
+				ConditionalAction<X> condAction = ((ConditionalAction<X>) actionObject);
+				guards = condAction.getGuardsByActionName(action);
+				if (!ObjectUtils.isEmpty(guards)) {
+					for (Guard<X> guard : guards) {
+						if (!guard.test(objectDeepCopy)) {
+							return object;
+						}
+						// Reinitializing objectDeepCopy in case it has been modified by a guard
+						objectDeepCopy = (X) object.clone();
+					}
 				}
 				int res = condAction.getCondition().apply(objectDeepCopy);
-				Status arrivalStatus = condAction.getArrivalStatusByResult(res);
+				Status<X> arrivalStatus = condAction.getArrivalStatusByResult(res);
 				// Perform process
-				Map<Status, finance.tradista.flow.model.Process<WorkflowObject>> condProcesses = condAction
-						.getConditionalProcesses();
+				Map<Status, finance.tradista.flow.model.Process> condProcesses = condAction.getConditionalProcesses();
 				if (condProcesses != null) {
-					finance.tradista.flow.model.Process<WorkflowObject> process = condProcesses.get(arrivalStatus);
+					finance.tradista.flow.model.Process<X> process = condProcesses.get(arrivalStatus);
 					if (process != null) {
 						process.apply(objectDeepCopy);
 					}
@@ -238,11 +253,13 @@ public final class WorkflowManager {
 	 * @return the found workflow
 	 * @throws TradistaFlowBusinessException if the name is empty
 	 */
-	public static Workflow getWorkflowByName(String name) throws TradistaFlowBusinessException {
+	@SuppressWarnings("unchecked")
+	public static <X extends WorkflowObject> Workflow<X> getWorkflowByName(String name)
+			throws TradistaFlowBusinessException {
 		if (StringUtils.isEmpty(name)) {
 			throw new TradistaFlowBusinessException("The name is mandatory.");
 		}
-		Workflow res;
+		Workflow<X> res;
 		try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
 			res = entityManager.createQuery("Select w from Workflow w where w.name = :name", Workflow.class)
 					.setParameter("name", name).getSingleResult();
@@ -264,7 +281,8 @@ public final class WorkflowManager {
 	 * @param action   the action to be checked
 	 * @return true if an action is valid from the given status
 	 */
-	private static boolean isValidAction(Workflow workflow, Status status, String action) {
+	private static <X extends WorkflowObject> boolean isValidAction(Workflow<X> workflow, Status<X> status,
+			String action) {
 		Set<String> availableActions = null;
 		try {
 			availableActions = workflow.getAvailableActionsFromStatus(status);

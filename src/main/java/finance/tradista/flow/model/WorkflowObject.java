@@ -28,12 +28,12 @@ under the License.    */
  */
 public interface WorkflowObject extends Cloneable {
 
-	Status getStatus();
+	<X extends WorkflowObject> Status<X> getStatus();
 
 	String getWorkflow();
 
-	void setStatus(Status status);
-	
+	void setStatus(Status<? extends WorkflowObject> status);
+
 	WorkflowObject clone() throws CloneNotSupportedException;
 
 }

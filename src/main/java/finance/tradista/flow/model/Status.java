@@ -33,7 +33,7 @@ under the License.    */
  *
  */
 @Entity
-public class Status extends TradistaFlowObject {
+public class Status<X extends WorkflowObject> extends TradistaFlowObject {
 
 	private static final long serialVersionUID = -2572527032257168988L;
 
@@ -42,15 +42,15 @@ public class Status extends TradistaFlowObject {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Workflow workflow;
 
-	public Workflow getWorkflow() {
+	public Workflow<X> getWorkflow() {
 		return workflow;
 	}
 
-	public void setWorkflow(Workflow workflow) {
+	public void setWorkflow(Workflow<X> workflow) {
 		this.workflow = workflow;
 	}
 
-	public Status(Workflow workflow, String name) {
+	public Status(Workflow<X> workflow, String name) {
 		this();
 		this.workflow = workflow;
 		this.name = name;
@@ -64,11 +64,11 @@ public class Status extends TradistaFlowObject {
 		return name;
 	}
 
-	public boolean isInitialStatus(Workflow workflow) {
+	public boolean isInitialStatus(Workflow<X> workflow) {
 		return workflow.isInitialStatus(this);
 	}
 
-	public boolean isFinalStatus(Workflow workflow) {
+	public boolean isFinalStatus(Workflow<X> workflow) {
 		return workflow.isFinalStatus(this);
 	}
 
@@ -81,6 +81,7 @@ public class Status extends TradistaFlowObject {
 		return Objects.hash(name, workflow);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -89,7 +90,7 @@ public class Status extends TradistaFlowObject {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Status other = (Status) obj;
+		Status<X> other = (Status<X>) obj;
 		return Objects.equals(name, other.name) && Objects.equals(workflow, other.workflow);
 	}
 

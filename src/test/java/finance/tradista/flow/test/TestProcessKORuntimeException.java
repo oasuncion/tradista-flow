@@ -2,7 +2,6 @@ package finance.tradista.flow.test;
 
 import finance.tradista.flow.model.Status;
 import finance.tradista.flow.model.Workflow;
-import finance.tradista.flow.model.WorkflowObject;
 import jakarta.persistence.Entity;
 
 /*
@@ -32,14 +31,14 @@ under the License.    */
  *
  */
 @Entity
-public class TestProcessKORuntimeException extends finance.tradista.flow.model.Process<WorkflowObject> {
+public class TestProcessKORuntimeException extends finance.tradista.flow.model.Process<WorkflowTestObject> {
 
 	private static final long serialVersionUID = -7542450271283408548L;
 
 	public TestProcessKORuntimeException() {
 		setTask(obj -> {
 			// The change below is expected to be ignored as an exception is thrown.
-			obj.setStatus(new Status(new Workflow("dummyWorkkflow"), "dummyStatus"));
+			obj.setStatus(new Status<>(new Workflow<WorkflowTestObject>("dummyWorkkflow"), "dummyStatus"));
 			throw new RuntimeException("Process KO");
 		});
 	}

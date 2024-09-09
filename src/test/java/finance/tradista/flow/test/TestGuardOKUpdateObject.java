@@ -1,10 +1,10 @@
 package finance.tradista.flow.test;
 
-import finance.tradista.flow.model.Status;
-import finance.tradista.flow.model.WorkflowObject;
+import finance.tradista.flow.model.Guard;
+import jakarta.persistence.Entity;
 
 /*
- * Copyright 2023 Olivier Asuncion
+ * Copyright 2024 Olivier Asuncion
  * 
  * Licensed to the Apache Software Foundation (ASF) under one
 or more contributor license agreements.  See the NOTICE file
@@ -24,40 +24,22 @@ specific language governing permissions and limitations
 under the License.    */
 
 /**
- * Test Class only.
+ * Guard Test Class. This test guard modifies the passed object and returns
+ * true, so never blocks.
  * 
  * @author OA
  *
  */
-public class WorkflowTestObject implements WorkflowObject {
+@Entity
+public class TestGuardOKUpdateObject extends Guard<WorkflowTestObject> {
 
-	private Status<? extends WorkflowObject> status;
+	private static final long serialVersionUID = -8674965679988629087L;
 
-	private String workflow;
-
-	@Override
-	public void setStatus(Status<? extends WorkflowObject> status) {
-		this.status = status;
-	}
-
-	@Override
-	public String getWorkflow() {
-		return workflow;
-	}
-
-	public void setWorkflow(String name) {
-		this.workflow = name;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public Status<? extends WorkflowObject> getStatus() {
-		return status;
-	}
-
-	@Override
-	public WorkflowTestObject clone() throws CloneNotSupportedException {
-		return (WorkflowTestObject) super.clone();
+	public TestGuardOKUpdateObject() {
+		setPredicate(obj -> {
+			obj.setWorkflow("AAA");
+			return true;
+		});
 	}
 
 }

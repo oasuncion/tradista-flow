@@ -36,7 +36,7 @@ under the License.    */
  *
  */
 @Entity
-public class SimpleAction extends Action {
+public class SimpleAction<X extends WorkflowObject> extends Action<X> {
 
 	private static final long serialVersionUID = 4747165809942693001L;
 
@@ -45,9 +45,9 @@ public class SimpleAction extends Action {
 	private Status arrivalStatus;
 
 	@OneToOne(cascade = CascadeType.ALL)
-	private Process<WorkflowObject> process;
+	private Process process;
 
-	private void init(Workflow workflow, Status arrivalStatus) {
+	private void init(Workflow<X> workflow, Status<X> arrivalStatus) {
 		StringBuilder errMsg = new StringBuilder();
 		if (arrivalStatus != null) {
 			if (arrivalStatus.getWorkflow() == null || !arrivalStatus.getWorkflow().equals(workflow)) {
@@ -64,70 +64,70 @@ public class SimpleAction extends Action {
 		}
 	}
 
-	public SimpleAction(Workflow workflow, String name, Status departureStatus, Status arrivalStatus,
-			Guard<WorkflowObject> guard) {
-		super(workflow, name, departureStatus, guard);
+	public SimpleAction(Workflow<X> workflow, String name, Status<X> departureStatus, Status<X> arrivalStatus,
+			Guard<X>... guards) {
+		super(workflow, name, departureStatus, guards);
 		init(workflow, arrivalStatus);
 	}
 
-	public SimpleAction(Workflow workflow, String name, Status departureStatus, Status arrivalStatus) {
-		super(workflow, name, departureStatus, null);
+	public SimpleAction(Workflow<X> workflow, String name, Status<X> departureStatus, Status<X> arrivalStatus) {
+		super(workflow, name, departureStatus, (Guard<X>[]) null);
 		init(workflow, arrivalStatus);
 	}
 
-	public SimpleAction(Workflow workflow, String name, Status departureStatus, Status arrivalStatus,
-			Guard<WorkflowObject> guard, Process<WorkflowObject> process) {
-		super(workflow, name, departureStatus, guard);
-		init(workflow, arrivalStatus);
-		this.process = process;
-	}
-
-	public SimpleAction(Workflow workflow, String name, Status departureStatus, Status arrivalStatus,
-			Process<WorkflowObject> process) {
-		super(workflow, name, departureStatus, null);
+	public SimpleAction(Workflow<X> workflow, String name, Status<X> departureStatus, Status<X> arrivalStatus,
+			Guard<X>[] guards, Process<X> process) {
+		super(workflow, name, departureStatus, guards);
 		init(workflow, arrivalStatus);
 		this.process = process;
 	}
 
-	public SimpleAction(Workflow workflow, String name, Status departureStatus, Process<WorkflowObject> process) {
-		this(workflow, name, departureStatus, (Status) null, process);
+	public SimpleAction(Workflow<X> workflow, String name, Status<X> departureStatus, Status<X> arrivalStatus,
+			Process<X> process) {
+		super(workflow, name, departureStatus, (Guard<X>[]) null);
+		init(workflow, arrivalStatus);
+		this.process = process;
 	}
 
-	public SimpleAction(Workflow workflow, String name, Status departureStatus, Guard<WorkflowObject> guard) {
-		this(workflow, name, departureStatus, null, guard);
+	public SimpleAction(Workflow<X> workflow, String name, Status<X> departureStatus, Process<X> process) {
+		this(workflow, name, departureStatus, (Status<X>) null, process);
 	}
 
-	public SimpleAction(Workflow workflow, String name, Status departureStatus) {
-		this(workflow, name, departureStatus, (Status) null);
+	public SimpleAction(Workflow<X> workflow, String name, Status<X> departureStatus, Guard<X>... guards) {
+		this(workflow, name, departureStatus, null, guards);
 	}
 
-	public SimpleAction(Workflow workflow, String name, Status departureStatus, Guard<WorkflowObject> guard,
-			Process<WorkflowObject> process) {
-		this(workflow, name, departureStatus, (Status) null, guard, process);
+	public SimpleAction(Workflow<X> workflow, String name, Status<X> departureStatus) {
+		this(workflow, name, departureStatus, (Status<X>) null);
+	}
+
+	public SimpleAction(Workflow<X> workflow, String name, Status<X> departureStatus, Guard<X>[] guards,
+			Process<X> process) {
+		this(workflow, name, departureStatus, (Status<X>) null, guards, process);
 	}
 
 	public SimpleAction() {
 	}
 
-	public Status getArrivalStatus() {
+	public Status<X> getArrivalStatus() {
 		return TradistaFlowUtil.clone(arrivalStatus);
 	}
 
-	public void setArrivalStatus(Status arrivalStatus) {
+	public void setArrivalStatus(Status<X> arrivalStatus) {
 		this.arrivalStatus = arrivalStatus;
 	}
 
-	public Process<WorkflowObject> getProcess() {
+	public Process<X> getProcess() {
 		return process;
 	}
 
-	public void setProcess(Process<WorkflowObject> process) {
+	public void setProcess(Process<X> process) {
 		this.process = process;
 	}
 
 	@Override
-	public SimpleAction clone() {
-		SimpleAction action = (SimpleAction) super.clone();
+	public SimpleAction<X> clone() {
+		SimpleAction<X> action = (SimpleAction<X>) super.clone();
 		action.arrivalStatus = TradistaFlowUtil.clone(arrivalStatus);
 		return action;
 	}
@@ -137,6 +137,7 @@ public class SimpleAction extends Action {
 		return Objects.hash(arrivalStatus, getDepartureStatus(), getName(), getWorkflow());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -145,7 +146,7 @@ public class SimpleAction extends Action {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		SimpleAction other = (SimpleAction) obj;
+		SimpleAction<X> other = (SimpleAction<X>) obj;
 		return Objects.equals(arrivalStatus, other.arrivalStatus)
 				&& Objects.equals(getDepartureStatus(), other.getDepartureStatus())
 				&& Objects.equals(getName(), other.getName()) && Objects.equals(getWorkflow(), other.getWorkflow());
@@ -157,7 +158,7 @@ public class SimpleAction extends Action {
 	}
 
 	@Override
-	public boolean isDepartureStatus(Status status) {
+	public boolean isDepartureStatus(Status<X> status) {
 		return getDepartureStatus().equals(status);
 	}
 

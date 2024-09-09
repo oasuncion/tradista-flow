@@ -1,6 +1,9 @@
 package finance.tradista.flow.model;
 
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import finance.tradista.flow.util.TradistaFlowUtil;
 import jakarta.persistence.CascadeType;
@@ -10,7 +13,7 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
 
 /*
  * Copyright 2023 Olivier Asuncion
@@ -40,14 +43,14 @@ under the License.    */
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class Action extends TradistaFlowObject {
+public abstract class Action<X extends WorkflowObject> extends TradistaFlowObject {
 
 	private static final long serialVersionUID = 6966194265379717568L;
 
 	private String name;
 
-	@OneToOne(cascade = CascadeType.ALL)
-	private Guard<WorkflowObject> guard;
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private Set<Guard> guards;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "workflow_id")
@@ -57,7 +60,7 @@ public abstract class Action extends TradistaFlowObject {
 	@JoinColumn(name = "departure_status_id")
 	private Status departureStatus;
 
-	protected Action(Workflow workflow, String name, Status departureStatus, Guard<WorkflowObject> guard) {
+	protected Action(Workflow<X> workflow, String name, Status<X> departureStatus, Guard<X>... guards) {
 		this();
 		StringBuilder errMsg = new StringBuilder();
 		if (departureStatus != null) {
@@ -70,27 +73,30 @@ public abstract class Action extends TradistaFlowObject {
 		}
 		this.name = name;
 		this.departureStatus = departureStatus;
-		this.guard = guard;
+		this.guards = new LinkedHashSet<>();
+		if (guards != null) {
+			Arrays.stream(guards).forEach(g -> this.guards.add(g));
+		}
 	}
 
 	protected Action() {
 	}
-	
+
 	public abstract boolean isConnectedToPseudoStatus();
 
 	public String getName() {
 		return name;
 	}
 
-	public Status getDepartureStatus() {
+	public Status<X> getDepartureStatus() {
 		return TradistaFlowUtil.clone(departureStatus);
 	}
 
-	public Workflow getWorkflow() {
+	public Workflow<X> getWorkflow() {
 		return workflow;
 	}
 
-	public void setWorkflow(Workflow workflow) {
+	public void setWorkflow(Workflow<X> workflow) {
 		this.workflow = workflow;
 	}
 
@@ -98,23 +104,24 @@ public abstract class Action extends TradistaFlowObject {
 		this.name = name;
 	}
 
-	public void setDepartureStatus(Status departureStatus) {
+	public void setDepartureStatus(Status<X> departureStatus) {
 		this.departureStatus = departureStatus;
 	}
 
-	public Guard<WorkflowObject> getGuard() {
-		return guard;
+	public Set<Guard> getGuards() {
+		return guards;
 	}
 
-	public void setGuard(Guard<WorkflowObject> guard) {
-		this.guard = guard;
+	public void setGuards(Set<Guard> guards) {
+		this.guards = guards;
 	}
-	
-	public abstract boolean isDepartureStatus(Status status);
 
+	public abstract boolean isDepartureStatus(Status<X> status);
+
+	@SuppressWarnings("unchecked")
 	@Override
-	public Action clone() {
-		Action action = (Action) super.clone();
+	public Action<X> clone() {
+		Action<X> action = (Action<X>) super.clone();
 		action.departureStatus = TradistaFlowUtil.clone(departureStatus);
 		return action;
 	}
@@ -124,6 +131,7 @@ public abstract class Action extends TradistaFlowObject {
 		return Objects.hash(departureStatus, name, workflow);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -132,7 +140,7 @@ public abstract class Action extends TradistaFlowObject {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Action other = (Action) obj;
+		Action<X> other = (Action<X>) obj;
 		return Objects.equals(departureStatus, other.departureStatus) && Objects.equals(name, other.name)
 				&& Objects.equals(workflow, other.workflow);
 	}

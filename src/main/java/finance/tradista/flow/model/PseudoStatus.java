@@ -25,14 +25,14 @@ specific language governing permissions and limitations
 under the License.    */
 
 @Entity
-public class PseudoStatus extends Status {
+public class PseudoStatus<X extends WorkflowObject> extends Status<X> {
 
 	private static final long serialVersionUID = -8956303865604695993L;
 
 	public PseudoStatus() {
 	}
 
-	public PseudoStatus(Workflow workflow) {
+	public PseudoStatus(Workflow<X> workflow) {
 		super(workflow, UUID.randomUUID().toString());
 	}
 
