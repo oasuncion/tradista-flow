@@ -79,6 +79,7 @@ public class WorkflowManagerTest {
 		saveWorkflow(wkf);
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
 	@DisplayName("Save valid workflow with a conditional action")
 	void testSaveValidWorkflowConditional() {
@@ -135,6 +136,7 @@ public class WorkflowManagerTest {
 		}
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
 	@DisplayName("Check valid workflow with a conditional action")
 	void testIsValidConditional() {
@@ -169,6 +171,7 @@ public class WorkflowManagerTest {
 		}
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
 	@DisplayName("Check invalid workflow with a condition action")
 	void testIsNotValidConditional() {
@@ -208,6 +211,7 @@ public class WorkflowManagerTest {
 		}
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
 	@DisplayName("Cycle detection with a conditional action")
 	void testCycleCondition() {
@@ -308,6 +312,7 @@ public class WorkflowManagerTest {
 		Assertions.assertEquals(resActionName, wkf.getAvailableActionsFromStatus(s1));
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test
 	@DisplayName("Get a conditional available action")
 	void testGetConditionalAvailableActionNames() {
@@ -322,6 +327,7 @@ public class WorkflowManagerTest {
 		Assertions.assertEquals(resActionName, wkf.getAvailableActionsFromStatus(s1));
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test
 	@DisplayName("Get several available actions")
 	void testGetSeveralAvailableActionNames() {
@@ -344,6 +350,7 @@ public class WorkflowManagerTest {
 		Assertions.assertEquals(resActionNames, wkf.getAvailableActionsFromStatus(s1));
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
 	@DisplayName("Get several available actions from Conditional")
 	void testGetSeveralAvailableActionNamesFromConditional() {
@@ -541,6 +548,7 @@ public class WorkflowManagerTest {
 		}
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
 	@DisplayName("Apply valid conditional action")
 	void testApplyValidConditionalAction() {
@@ -564,6 +572,7 @@ public class WorkflowManagerTest {
 		Assertions.assertEquals(s2, res.getStatus());
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
 	@DisplayName("Apply valid junction action")
 	void testApplyValidJunctionAction() {
@@ -598,6 +607,7 @@ public class WorkflowManagerTest {
 		Assertions.assertEquals(s4, res.getStatus());
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
 	@DisplayName("Apply valid junction action with a guard OK")
 	void testApplyValidJunctionActionWithGuardOK() {
@@ -633,6 +643,7 @@ public class WorkflowManagerTest {
 		Assertions.assertEquals(s4, res.getStatus());
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
 	@DisplayName("Apply valid junction action with a guard KO")
 	void testApplyValidJunctionActionWithGuardKO() {
@@ -668,6 +679,7 @@ public class WorkflowManagerTest {
 		Assertions.assertEquals(s4, res.getStatus());
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
 	@DisplayName("Apply conditional action with checked exception")
 	void testApplyConditionalActionWithCheckedException() {
@@ -690,6 +702,7 @@ public class WorkflowManagerTest {
 		assertEquals(s1, obj.getStatus());
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
 	@DisplayName("Apply conditional action with runtime exception")
 	void testApplyConditionalActionWithRuntimeException() {
@@ -712,6 +725,7 @@ public class WorkflowManagerTest {
 		assertEquals(s1, obj.getStatus());
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
 	@DisplayName("Apply valid conditional action with process OK")
 	void testApplyValidConditionalActionWithProcessOK() {
@@ -739,6 +753,7 @@ public class WorkflowManagerTest {
 		Assertions.assertEquals(s2, res.getStatus());
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
 	@DisplayName("Apply valid conditional action with process KO")
 	void testApplyValidConditionalActionWithProcessKO() {

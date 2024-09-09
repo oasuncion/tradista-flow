@@ -49,13 +49,16 @@ public abstract class Action<X extends WorkflowObject> extends TradistaFlowObjec
 
 	private String name;
 
+	@SuppressWarnings("rawtypes")
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<Guard> guards;
 
+	@SuppressWarnings("rawtypes")
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "workflow_id")
 	private Workflow workflow;
 
+	@SuppressWarnings("rawtypes")
 	@ManyToOne(cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "departure_status_id")
 	private Status departureStatus;
@@ -88,10 +91,12 @@ public abstract class Action<X extends WorkflowObject> extends TradistaFlowObjec
 		return name;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Status<X> getDepartureStatus() {
 		return TradistaFlowUtil.clone(departureStatus);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Workflow<X> getWorkflow() {
 		return workflow;
 	}
@@ -108,10 +113,12 @@ public abstract class Action<X extends WorkflowObject> extends TradistaFlowObjec
 		this.departureStatus = departureStatus;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public Set<Guard> getGuards() {
 		return guards;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void setGuards(Set<Guard> guards) {
 		this.guards = guards;
 	}

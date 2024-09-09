@@ -39,9 +39,11 @@ public class Status<X extends WorkflowObject> extends TradistaFlowObject {
 
 	private String name;
 
+	@SuppressWarnings("rawtypes")
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Workflow workflow;
 
+	@SuppressWarnings("unchecked")
 	public Workflow<X> getWorkflow() {
 		return workflow;
 	}

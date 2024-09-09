@@ -56,9 +56,11 @@ public class Workflow<X extends WorkflowObject> extends TradistaFlowObject {
 	@Transient
 	private Graph<Status<X>, Action<X>> graph;
 
+	@SuppressWarnings("rawtypes")
 	@OneToMany(mappedBy = "workflow", cascade = CascadeType.ALL)
 	private Set<Action> actions;
 
+	@SuppressWarnings("rawtypes")
 	@OneToMany(mappedBy = "workflow", cascade = CascadeType.ALL)
 	private Set<Status> status;
 
@@ -90,7 +92,8 @@ public class Workflow<X extends WorkflowObject> extends TradistaFlowObject {
 		return (Set<Action<X>>) TradistaFlowUtil.deepCopy(actions);
 	}
 
-	public void setActions(Set<Action> actions) {
+	@SuppressWarnings({ "unchecked"})
+	public void setActions(@SuppressWarnings("rawtypes") Set<Action> actions) {
 		graph.removeAllEdges((Collection<? extends Action<X>>) this.actions);
 		this.actions = actions;
 		if (actions != null) {
@@ -116,6 +119,7 @@ public class Workflow<X extends WorkflowObject> extends TradistaFlowObject {
 		return (Set<Status<X>>) TradistaFlowUtil.deepCopy(status);
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void setStatus(Set<Status> status) {
 		graph.removeAllVertices((Collection<? extends Status<X>>) this.status);
 		this.status = status;
@@ -130,6 +134,7 @@ public class Workflow<X extends WorkflowObject> extends TradistaFlowObject {
 		this.name = name;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void addAction(Action<X> action) {
 		if (action instanceof ConditionalAction<X>
 				|| ((SimpleAction<X>) action).getArrivalStatus() != null && !action.isConnectedToPseudoStatus()) {
@@ -150,7 +155,7 @@ public class Workflow<X extends WorkflowObject> extends TradistaFlowObject {
 		graph.addVertex(status);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public Workflow<X> clone() {
 		Workflow<X> workflow = (Workflow<X>) super.clone();
@@ -173,6 +178,7 @@ public class Workflow<X extends WorkflowObject> extends TradistaFlowObject {
 		return graph.outDegreeOf(status) == 0;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Set<String> getAvailableActionsFromStatus(Status<X> status) {
 		Set<Action<X>> actions = null;
 		Set<String> actionNames = null;
@@ -219,6 +225,7 @@ public class Workflow<X extends WorkflowObject> extends TradistaFlowObject {
 		return Objects.equals(name, other.name);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Status<X> getInitialStatus() {
 		Status<X> status = null;
 		if (this.status != null) {
@@ -244,6 +251,7 @@ public class Workflow<X extends WorkflowObject> extends TradistaFlowObject {
 	 * @param actionName the name of the action to be searched
 	 * @return an Action object.
 	 */
+	@SuppressWarnings("unchecked")
 	public Action<X> getActionByDepartureStatusAndName(Status<X> status, String actionName) {
 		Set<Action<X>> actions = null;
 		if (this.actions != null) {

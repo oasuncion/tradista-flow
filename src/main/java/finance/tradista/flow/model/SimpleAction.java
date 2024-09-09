@@ -40,10 +40,12 @@ public class SimpleAction<X extends WorkflowObject> extends Action<X> {
 
 	private static final long serialVersionUID = 4747165809942693001L;
 
+	@SuppressWarnings("rawtypes")
 	@ManyToOne(cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "arrival_status_id")
 	private Status arrivalStatus;
 
+	@SuppressWarnings("rawtypes")
 	@OneToOne(cascade = CascadeType.ALL)
 	private Process process;
 
@@ -109,6 +111,7 @@ public class SimpleAction<X extends WorkflowObject> extends Action<X> {
 	public SimpleAction() {
 	}
 
+	@SuppressWarnings("unchecked")
 	public Status<X> getArrivalStatus() {
 		return TradistaFlowUtil.clone(arrivalStatus);
 	}
@@ -117,6 +120,7 @@ public class SimpleAction<X extends WorkflowObject> extends Action<X> {
 		this.arrivalStatus = arrivalStatus;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Process<X> getProcess() {
 		return process;
 	}

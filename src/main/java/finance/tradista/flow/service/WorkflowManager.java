@@ -170,7 +170,7 @@ public final class WorkflowManager {
 	 * @throws TradistaFlowTechnicalException if a condition/guard/process raised a
 	 *                                        runtime exception.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static <X extends WorkflowObject> X applyAction(X object, String action)
 			throws TradistaFlowBusinessException {
 		if (object == null) {

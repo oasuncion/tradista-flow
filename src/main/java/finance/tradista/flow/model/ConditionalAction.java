@@ -47,23 +47,28 @@ public class ConditionalAction<X extends WorkflowObject> extends Action<X> {
 
 	private static final long serialVersionUID = -4235540145388029599L;
 
+	@SuppressWarnings("rawtypes")
 	@OneToOne(cascade = CascadeType.ALL)
 	private Condition condition;
 
+	@SuppressWarnings("rawtypes")
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Map<Integer, Status> conditionalRouting;
 
+	@SuppressWarnings("rawtypes")
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Map<Status, Process> conditionalProcesses;
 
+	@SuppressWarnings("rawtypes")
 	@OneToOne(cascade = CascadeType.ALL)
 	private Status choicePseudoStatus;
 
+	@SuppressWarnings("rawtypes")
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<SimpleAction> conditionalActions;
 
-	private void init(Workflow<X> workflow, Condition<X> condition, Map<Integer, Status> conditionalRouting,
-			Status<X>... arrivalStatus) {
+	private void init(Workflow<X> workflow, Condition<X> condition,
+			@SuppressWarnings("rawtypes") Map<Integer, Status> conditionalRouting, Status<X>... arrivalStatus) {
 		StringBuilder errMsg = new StringBuilder();
 		for (Status<X> status : arrivalStatus) {
 			if (status.getWorkflow() == null || !status.getWorkflow().equals(workflow)) {
@@ -81,6 +86,7 @@ public class ConditionalAction<X extends WorkflowObject> extends Action<X> {
 		this.conditionalActions = new HashSet<>(arrivalStatus.length);
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public ConditionalAction(Workflow<X> workflow, Status<X> departureStatus, String name, Condition<X> condition,
 			Map<Integer, Status> conditionalRouting, Guard<X>[] guards, Status<X>... arrivalStatus) {
 		super(workflow, name, departureStatus, guards);
@@ -93,6 +99,7 @@ public class ConditionalAction<X extends WorkflowObject> extends Action<X> {
 		workflow.addAction(this);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public ConditionalAction(Workflow<X> workflow, Status<X> departureStatus, String name, Condition<X> condition,
 			Map<Integer, Status> conditionalRouting, Status<X>... arrivalStatus) {
 		super(workflow, name, departureStatus, (Guard<X>[]) null);
@@ -105,6 +112,7 @@ public class ConditionalAction<X extends WorkflowObject> extends Action<X> {
 		workflow.addAction(this);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public ConditionalAction(Workflow<X> workflow, Set<SimpleAction<X>> departureActions, Condition<X> condition,
 			Map<Integer, Status> conditionalRouting, Status<X>... arrivalStatus) {
 		super(workflow, null, null, (Guard<X>[]) null);
@@ -120,6 +128,7 @@ public class ConditionalAction<X extends WorkflowObject> extends Action<X> {
 		workflow.addAction(this);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public ConditionalAction(Workflow<X> workflow, Status<X> departureStatus, String name, Condition<X> condition,
 			Map<Integer, Status> conditionalRouting, Map<Status, Process> conditionalProcesses,
 			Status<X>... arrivalStatus) {
@@ -134,6 +143,7 @@ public class ConditionalAction<X extends WorkflowObject> extends Action<X> {
 		workflow.addAction(this);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public ConditionalAction(Workflow<X> workflow, Set<SimpleAction<X>> departureActions, Condition<X> condition,
 			Map<Integer, Status> conditionalRouting, Map<Status, Process> conditionalProcesses,
 			Status<X>... arrivalStatus) {
@@ -151,6 +161,7 @@ public class ConditionalAction<X extends WorkflowObject> extends Action<X> {
 		workflow.addAction(this);
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public ConditionalAction(Workflow<X> workflow, Status<X> departureStatus, String name, Condition<X> condition,
 			Map<Integer, Status> conditionalRouting, Guard<X>[] guards, Map<Status, Process> conditionalProcesses,
 			Status<X>... arrivalStatus) {
@@ -168,6 +179,7 @@ public class ConditionalAction<X extends WorkflowObject> extends Action<X> {
 	public ConditionalAction() {
 	}
 
+	@SuppressWarnings("unchecked")
 	public Condition<X> getCondition() {
 		return condition;
 	}
@@ -176,18 +188,22 @@ public class ConditionalAction<X extends WorkflowObject> extends Action<X> {
 		this.condition = condition;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public Map<Integer, Status> getConditionalRouting() {
 		return conditionalRouting;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void setConditionalRouting(Map<Integer, Status> conditionalRouting) {
 		this.conditionalRouting = conditionalRouting;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Status<X> getArrivalStatusByResult(int res) {
 		return conditionalRouting.get(res);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Status<X> getChoicePseudoStatus() {
 		return choicePseudoStatus;
 	}
@@ -196,18 +212,22 @@ public class ConditionalAction<X extends WorkflowObject> extends Action<X> {
 		this.choicePseudoStatus = choicePseudoStatus;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public Set<SimpleAction> getConditionalActions() {
 		return conditionalActions;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void setConditionalActions(Set<SimpleAction> conditionalActions) {
 		this.conditionalActions = conditionalActions;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public Map<Status, Process> getConditionalProcesses() {
 		return conditionalProcesses;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void setConditionalProcesses(Map<Status, Process> conditionalProcesses) {
 		this.conditionalProcesses = conditionalProcesses;
 	}
@@ -220,6 +240,7 @@ public class ConditionalAction<X extends WorkflowObject> extends Action<X> {
 				.collect(Collectors.toSet());
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Set<Guard> getGuardsByActionName(String name) {
 		if (conditionalActions == null || conditionalActions.isEmpty()) {
 			return null;
@@ -236,6 +257,7 @@ public class ConditionalAction<X extends WorkflowObject> extends Action<X> {
 		return false;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean isDepartureStatus(Status<X> status) {
 		return this.conditionalActions.stream().filter(a -> a.isDepartureStatus(status)).count() > 0;
