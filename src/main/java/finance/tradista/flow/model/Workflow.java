@@ -1,5 +1,6 @@
 package finance.tradista.flow.model;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -43,7 +44,7 @@ under the License.    */
  *
  */
 @Entity
-public class Workflow extends TradistaFlowObject {
+public class Workflow<X extends WorkflowObject> extends TradistaFlowObject {
 
 	private static final long serialVersionUID = 3469347171038496805L;
 
@@ -53,11 +54,13 @@ public class Workflow extends TradistaFlowObject {
 	private String description;
 
 	@Transient
-	private Graph<Status, Action> graph;
+	private Graph<Status<X>, Action<X>> graph;
 
+	@SuppressWarnings("rawtypes")
 	@OneToMany(mappedBy = "workflow", cascade = CascadeType.ALL)
 	private Set<Action> actions;
 
+	@SuppressWarnings("rawtypes")
 	@OneToMany(mappedBy = "workflow", cascade = CascadeType.ALL)
 	private Set<Status> status;
 
@@ -85,19 +88,20 @@ public class Workflow extends TradistaFlowObject {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Set<Action> getActions() {
-		return (Set<Action>) TradistaFlowUtil.deepCopy(actions);
+	public Set<Action<X>> getActions() {
+		return (Set<Action<X>>) TradistaFlowUtil.deepCopy(actions);
 	}
 
-	public void setActions(Set<Action> actions) {
-		graph.removeAllEdges(this.actions);
+	@SuppressWarnings({ "unchecked"})
+	public void setActions(@SuppressWarnings("rawtypes") Set<Action> actions) {
+		graph.removeAllEdges((Collection<? extends Action<X>>) this.actions);
 		this.actions = actions;
 		if (actions != null) {
-			for (Action action : actions) {
-				if (action instanceof SimpleAction simpleAction) {
+			for (Action<X> action : actions) {
+				if (action instanceof SimpleAction<X> simpleAction) {
 					graph.addEdge(simpleAction.getDepartureStatus(), simpleAction.getArrivalStatus(), simpleAction);
 				} else {
-					for (SimpleAction condAction : ((ConditionalAction) action).getConditionalActions()) {
+					for (SimpleAction<X> condAction : ((ConditionalAction<X>) action).getConditionalActions()) {
 						graph.addEdge(condAction.getDepartureStatus(), condAction.getArrivalStatus(), condAction);
 					}
 				}
@@ -111,15 +115,16 @@ public class Workflow extends TradistaFlowObject {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Set<Status> getStatus() {
-		return (Set<Status>) TradistaFlowUtil.deepCopy(status);
+	public Set<Status<X>> getStatus() {
+		return (Set<Status<X>>) TradistaFlowUtil.deepCopy(status);
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void setStatus(Set<Status> status) {
-		graph.removeAllVertices(this.status);
+		graph.removeAllVertices((Collection<? extends Status<X>>) this.status);
 		this.status = status;
 		if (status != null) {
-			for (Status s : status) {
+			for (Status<X> s : status) {
 				graph.addVertex(s);
 			}
 		}
@@ -129,30 +134,31 @@ public class Workflow extends TradistaFlowObject {
 		this.name = name;
 	}
 
-	public void addAction(Action action) {
-		if (action instanceof ConditionalAction
-				|| ((SimpleAction) action).getArrivalStatus() != null && !action.isConnectedToPseudoStatus()) {
+	@SuppressWarnings("unchecked")
+	public void addAction(Action<X> action) {
+		if (action instanceof ConditionalAction<X>
+				|| ((SimpleAction<X>) action).getArrivalStatus() != null && !action.isConnectedToPseudoStatus()) {
 			actions.add(action);
 			action.setWorkflow(this);
 		}
-		if (action instanceof SimpleAction simpleAction) {
+		if (action instanceof SimpleAction<X> simpleAction) {
 			graph.addEdge(simpleAction.getDepartureStatus(), simpleAction.getArrivalStatus(), simpleAction);
 		} else {
-			for (SimpleAction condAction : ((ConditionalAction) action).getConditionalActions()) {
+			for (SimpleAction<X> condAction : ((ConditionalAction<X>) action).getConditionalActions()) {
 				graph.addEdge(condAction.getDepartureStatus(), condAction.getArrivalStatus(), condAction);
 			}
 		}
 	}
 
-	public void addStatus(Status status) {
+	public void addStatus(Status<X> status) {
 		this.status.add(status);
 		graph.addVertex(status);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public Workflow clone() {
-		Workflow workflow = (Workflow) super.clone();
+	public Workflow<X> clone() {
+		Workflow<X> workflow = (Workflow<X>) super.clone();
 		workflow.status = (Set<Status>) TradistaFlowUtil.deepCopy(status);
 		workflow.actions = (Set<Action>) TradistaFlowUtil.deepCopy(actions);
 		return workflow;
@@ -164,26 +170,27 @@ public class Workflow extends TradistaFlowObject {
 				&& graph.vertexSet().stream().filter(key -> graph.incomingEdgesOf(key).isEmpty()).count() == 1;
 	}
 
-	public boolean isInitialStatus(Status status) {
+	public boolean isInitialStatus(Status<X> status) {
 		return graph.inDegreeOf(status) == 0;
 	}
 
-	public boolean isFinalStatus(Status status) {
+	public boolean isFinalStatus(Status<X> status) {
 		return graph.outDegreeOf(status) == 0;
 	}
 
-	public Set<String> getAvailableActionsFromStatus(Status status) {
-		Set<Action> actions = null;
+	@SuppressWarnings("unchecked")
+	public Set<String> getAvailableActionsFromStatus(Status<X> status) {
+		Set<Action<X>> actions = null;
 		Set<String> actionNames = null;
 		if (this.actions != null) {
 			actions = this.actions.stream().filter(a -> a.isDepartureStatus(status)).collect(Collectors.toSet());
 		}
 		if (actions != null) {
-			for (Action a : actions) {
+			for (Action<X> a : actions) {
 				if (actionNames == null) {
 					actionNames = new HashSet<>();
 				}
-				if (a instanceof ConditionalAction condAction) {
+				if (a instanceof ConditionalAction<X> condAction) {
 					Set<String> aNames = condAction.getConditionalActions().stream()
 							.filter(action -> action.isDepartureStatus(status)).map(Action::getName)
 							.collect(Collectors.toSet());
@@ -196,7 +203,7 @@ public class Workflow extends TradistaFlowObject {
 		return actionNames;
 	}
 
-	public Status getTargetStatus(SimpleAction action) {
+	public Status<X> getTargetStatus(SimpleAction<X> action) {
 		return TradistaFlowUtil.clone(graph.getEdgeTarget(action));
 	}
 
@@ -205,6 +212,7 @@ public class Workflow extends TradistaFlowObject {
 		return Objects.hash(name);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -213,12 +221,13 @@ public class Workflow extends TradistaFlowObject {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Workflow other = (Workflow) obj;
+		Workflow<X> other = (Workflow<X>) obj;
 		return Objects.equals(name, other.name);
 	}
 
-	public Status getInitialStatus() {
-		Status status = null;
+	@SuppressWarnings("unchecked")
+	public Status<X> getInitialStatus() {
+		Status<X> status = null;
 		if (this.status != null) {
 			status = TradistaFlowUtil.clone(this.status.stream().filter(this::isInitialStatus).findFirst().get());
 		}
@@ -226,10 +235,10 @@ public class Workflow extends TradistaFlowObject {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Set<Status> getFinalStatus() {
-		Set<Status> status = null;
+	public Set<Status<X>> getFinalStatus() {
+		Set<Status<X>> status = null;
 		if (this.status != null) {
-			status = (Set<Status>) TradistaFlowUtil
+			status = (Set<Status<X>>) TradistaFlowUtil
 					.deepCopy(this.status.stream().filter(this::isFinalStatus).collect(Collectors.toSet()));
 		}
 		return status;
@@ -242,14 +251,15 @@ public class Workflow extends TradistaFlowObject {
 	 * @param actionName the name of the action to be searched
 	 * @return an Action object.
 	 */
-	public Action getActionByDepartureStatusAndName(Status status, String actionName) {
-		Set<Action> actions = null;
+	@SuppressWarnings("unchecked")
+	public Action<X> getActionByDepartureStatusAndName(Status<X> status, String actionName) {
+		Set<Action<X>> actions = null;
 		if (this.actions != null) {
 			actions = this.actions.stream().filter(a -> a.isDepartureStatus(status)).collect(Collectors.toSet());
 		}
 		if (actions != null) {
-			for (Action a : actions) {
-				if (a instanceof ConditionalAction condAction) {
+			for (Action<X> a : actions) {
+				if (a instanceof ConditionalAction<X> condAction) {
 					boolean exists = condAction.getConditionalActions().stream()
 							.filter(act -> act.isDepartureStatus(status) && act.getName().equals(actionName))
 							.count() > 0;

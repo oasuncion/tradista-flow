@@ -1,7 +1,6 @@
 package finance.tradista.flow.test;
 
 import finance.tradista.flow.model.Guard;
-import finance.tradista.flow.model.WorkflowObject;
 import jakarta.persistence.Entity;
 
 /*
@@ -31,7 +30,7 @@ under the License.    */
  *
  */
 @Entity
-public class TestGuardOK extends Guard<WorkflowObject> {
+public class TestGuardOK extends Guard<WorkflowTestObject> {
 
 	private static final long serialVersionUID = -4945718662266443702L;
 

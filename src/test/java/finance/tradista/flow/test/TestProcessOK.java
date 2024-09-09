@@ -1,6 +1,5 @@
 package finance.tradista.flow.test;
 
-import finance.tradista.flow.model.WorkflowObject;
 import jakarta.persistence.Entity;
 
 /*
@@ -31,7 +30,7 @@ under the License.    */
  *
  */
 @Entity
-public class TestProcessOK extends finance.tradista.flow.model.Process<WorkflowObject> {
+public class TestProcessOK extends finance.tradista.flow.model.Process<WorkflowTestObject> {
 
 	private static final long serialVersionUID = -5097243928471620584L;
 

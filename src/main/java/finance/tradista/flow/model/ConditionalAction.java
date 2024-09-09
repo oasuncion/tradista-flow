@@ -38,33 +38,39 @@ under the License.    */
  * Class representing a conditional workflow action.
  * 
  * @author Olivier Asuncion
+ * @param <X>
  *
  */
 
 @Entity
-public class ConditionalAction extends Action {
+public class ConditionalAction<X extends WorkflowObject> extends Action<X> {
 
 	private static final long serialVersionUID = -4235540145388029599L;
 
+	@SuppressWarnings("rawtypes")
 	@OneToOne(cascade = CascadeType.ALL)
-	private Condition<WorkflowObject> condition;
+	private Condition condition;
 
+	@SuppressWarnings("rawtypes")
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Map<Integer, Status> conditionalRouting;
 
+	@SuppressWarnings("rawtypes")
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	private Map<Status, Process<WorkflowObject>> conditionalProcesses;
+	private Map<Status, Process> conditionalProcesses;
 
+	@SuppressWarnings("rawtypes")
 	@OneToOne(cascade = CascadeType.ALL)
 	private Status choicePseudoStatus;
 
+	@SuppressWarnings("rawtypes")
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<SimpleAction> conditionalActions;
 
-	private void init(Workflow workflow, Condition<WorkflowObject> condition, Map<Integer, Status> conditionalRouting,
-			Status... arrivalStatus) {
+	private void init(Workflow<X> workflow, Condition<X> condition,
+			@SuppressWarnings("rawtypes") Map<Integer, Status> conditionalRouting, Status<X>... arrivalStatus) {
 		StringBuilder errMsg = new StringBuilder();
-		for (Status status : arrivalStatus) {
+		for (Status<X> status : arrivalStatus) {
 			if (status.getWorkflow() == null || !status.getWorkflow().equals(workflow)) {
 				errMsg.append(
 						String.format("The arrival status %s should have the same workflow %s", status, workflow));
@@ -76,90 +82,95 @@ public class ConditionalAction extends Action {
 		setWorkflow(workflow);
 		this.condition = condition;
 		this.conditionalRouting = conditionalRouting;
-		choicePseudoStatus = new PseudoStatus(workflow);
+		choicePseudoStatus = new PseudoStatus<X>(workflow);
 		this.conditionalActions = new HashSet<>(arrivalStatus.length);
 	}
 
-	public ConditionalAction(Workflow workflow, Status departureStatus, String name,
-			Condition<WorkflowObject> condition, Map<Integer, Status> conditionalRouting, Guard<WorkflowObject> guard,
-			Status... arrivalStatus) {
-		super(workflow, name, departureStatus, guard);
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public ConditionalAction(Workflow<X> workflow, Status<X> departureStatus, String name, Condition<X> condition,
+			Map<Integer, Status> conditionalRouting, Guard<X>[] guards, Status<X>... arrivalStatus) {
+		super(workflow, name, departureStatus, guards);
 		init(workflow, condition, conditionalRouting, arrivalStatus);
-		conditionalActions.add(new SimpleAction(workflow, name, departureStatus, choicePseudoStatus));
+		conditionalActions.add(new SimpleAction<>(workflow, name, departureStatus, choicePseudoStatus));
 		for (int num = 0; num < arrivalStatus.length; num++) {
 			conditionalActions.add(
-					new SimpleAction(workflow, UUID.randomUUID().toString(), choicePseudoStatus, arrivalStatus[num]));
+					new SimpleAction<>(workflow, UUID.randomUUID().toString(), choicePseudoStatus, arrivalStatus[num]));
 		}
 		workflow.addAction(this);
 	}
 
-	public ConditionalAction(Workflow workflow, Status departureStatus, String name,
-			Condition<WorkflowObject> condition, Map<Integer, Status> conditionalRouting, Status... arrivalStatus) {
-		super(workflow, name, departureStatus, null);
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public ConditionalAction(Workflow<X> workflow, Status<X> departureStatus, String name, Condition<X> condition,
+			Map<Integer, Status> conditionalRouting, Status<X>... arrivalStatus) {
+		super(workflow, name, departureStatus, (Guard<X>[]) null);
 		init(workflow, condition, conditionalRouting, arrivalStatus);
-		conditionalActions.add(new SimpleAction(workflow, name, departureStatus, choicePseudoStatus));
+		conditionalActions.add(new SimpleAction<>(workflow, name, departureStatus, choicePseudoStatus));
 		for (int num = 0; num < arrivalStatus.length; num++) {
 			conditionalActions.add(
-					new SimpleAction(workflow, UUID.randomUUID().toString(), choicePseudoStatus, arrivalStatus[num]));
+					new SimpleAction<>(workflow, UUID.randomUUID().toString(), choicePseudoStatus, arrivalStatus[num]));
 		}
 		workflow.addAction(this);
 	}
 
-	public ConditionalAction(Workflow workflow, Set<SimpleAction> departureActions, Condition<WorkflowObject> condition,
-			Map<Integer, Status> conditionalRouting, Status... arrivalStatus) {
-		super(workflow, null, null, null);
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public ConditionalAction(Workflow<X> workflow, Set<SimpleAction<X>> departureActions, Condition<X> condition,
+			Map<Integer, Status> conditionalRouting, Status<X>... arrivalStatus) {
+		super(workflow, null, null, (Guard<X>[]) null);
 		init(workflow, condition, conditionalRouting, arrivalStatus);
-		for (SimpleAction sa : departureActions) {
+		for (SimpleAction<X> sa : departureActions) {
 			sa.setArrivalStatus(choicePseudoStatus);
 			conditionalActions.add(sa);
 		}
 		for (int num = 0; num < arrivalStatus.length; num++) {
 			conditionalActions.add(
-					new SimpleAction(workflow, UUID.randomUUID().toString(), choicePseudoStatus, arrivalStatus[num]));
+					new SimpleAction<>(workflow, UUID.randomUUID().toString(), choicePseudoStatus, arrivalStatus[num]));
 		}
 		workflow.addAction(this);
 	}
 
-	public ConditionalAction(Workflow workflow, Status departureStatus, String name,
-			Condition<WorkflowObject> condition, Map<Integer, Status> conditionalRouting,
-			Map<Status, Process<WorkflowObject>> conditionalProcesses, Status... arrivalStatus) {
-		super(workflow, name, departureStatus, null);
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public ConditionalAction(Workflow<X> workflow, Status<X> departureStatus, String name, Condition<X> condition,
+			Map<Integer, Status> conditionalRouting, Map<Status, Process> conditionalProcesses,
+			Status<X>... arrivalStatus) {
+		super(workflow, name, departureStatus, (Guard<X>[]) null);
 		init(workflow, condition, conditionalRouting, arrivalStatus);
 		this.conditionalProcesses = conditionalProcesses;
-		conditionalActions.add(new SimpleAction(workflow, name, departureStatus, choicePseudoStatus));
+		conditionalActions.add(new SimpleAction<>(workflow, name, departureStatus, choicePseudoStatus));
 		for (int num = 0; num < arrivalStatus.length; num++) {
-			conditionalActions.add(new SimpleAction(workflow, UUID.randomUUID().toString(), choicePseudoStatus,
+			conditionalActions.add(new SimpleAction<>(workflow, UUID.randomUUID().toString(), choicePseudoStatus,
 					arrivalStatus[num], conditionalProcesses.get(arrivalStatus[num])));
 		}
 		workflow.addAction(this);
 	}
 
-	public ConditionalAction(Workflow workflow, Set<SimpleAction> departureActions, Condition<WorkflowObject> condition,
-			Map<Integer, Status> conditionalRouting, Map<Status, Process<WorkflowObject>> conditionalProcesses,
-			Status... arrivalStatus) {
-		super(workflow, null, null, null);
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public ConditionalAction(Workflow<X> workflow, Set<SimpleAction<X>> departureActions, Condition<X> condition,
+			Map<Integer, Status> conditionalRouting, Map<Status, Process> conditionalProcesses,
+			Status<X>... arrivalStatus) {
+		super(workflow, null, null, (Guard<X>[]) null);
 		init(workflow, condition, conditionalRouting, arrivalStatus);
 		this.conditionalProcesses = conditionalProcesses;
-		for (SimpleAction sa : departureActions) {
+		for (SimpleAction<X> sa : departureActions) {
 			sa.setArrivalStatus(choicePseudoStatus);
 			conditionalActions.add(sa);
 		}
 		for (int num = 0; num < arrivalStatus.length; num++) {
-			conditionalActions.add(new SimpleAction(workflow, UUID.randomUUID().toString(), choicePseudoStatus,
+			conditionalActions.add(new SimpleAction<>(workflow, UUID.randomUUID().toString(), choicePseudoStatus,
 					arrivalStatus[num], conditionalProcesses.get(arrivalStatus[num])));
 		}
 		workflow.addAction(this);
 	}
 
-	public ConditionalAction(Workflow workflow, Status departureStatus, String name,
-			Condition<WorkflowObject> condition, Map<Integer, Status> conditionalRouting, Guard<WorkflowObject> guard,
-			Map<Status, Process<WorkflowObject>> conditionalProcesses, Status... arrivalStatus) {
-		super(workflow, name, departureStatus, guard);
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public ConditionalAction(Workflow<X> workflow, Status<X> departureStatus, String name, Condition<X> condition,
+			Map<Integer, Status> conditionalRouting, Guard<X>[] guards, Map<Status, Process> conditionalProcesses,
+			Status<X>... arrivalStatus) {
+		super(workflow, name, departureStatus, guards);
 		init(workflow, condition, conditionalRouting, arrivalStatus);
 		this.conditionalProcesses = conditionalProcesses;
-		conditionalActions.add(new SimpleAction(workflow, name, departureStatus, choicePseudoStatus));
+		conditionalActions.add(new SimpleAction<>(workflow, name, departureStatus, choicePseudoStatus));
 		for (int num = 0; num < arrivalStatus.length; num++) {
-			conditionalActions.add(new SimpleAction(workflow, UUID.randomUUID().toString(), choicePseudoStatus,
+			conditionalActions.add(new SimpleAction<>(workflow, UUID.randomUUID().toString(), choicePseudoStatus,
 					arrivalStatus[num], conditionalProcesses.get(arrivalStatus[num])));
 		}
 		workflow.addAction(this);
@@ -168,51 +179,60 @@ public class ConditionalAction extends Action {
 	public ConditionalAction() {
 	}
 
-	public Condition<WorkflowObject> getCondition() {
+	@SuppressWarnings("unchecked")
+	public Condition<X> getCondition() {
 		return condition;
 	}
 
-	public void setCondition(Condition<WorkflowObject> condition) {
+	public void setCondition(Condition<X> condition) {
 		this.condition = condition;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public Map<Integer, Status> getConditionalRouting() {
 		return conditionalRouting;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void setConditionalRouting(Map<Integer, Status> conditionalRouting) {
 		this.conditionalRouting = conditionalRouting;
 	}
 
-	public Status getArrivalStatusByResult(int res) {
+	@SuppressWarnings("unchecked")
+	public Status<X> getArrivalStatusByResult(int res) {
 		return conditionalRouting.get(res);
 	}
 
-	public Status getChoicePseudoStatus() {
+	@SuppressWarnings("unchecked")
+	public Status<X> getChoicePseudoStatus() {
 		return choicePseudoStatus;
 	}
 
-	public void setChoicePseudoStatus(Status choicePseudoStatus) {
+	public void setChoicePseudoStatus(Status<X> choicePseudoStatus) {
 		this.choicePseudoStatus = choicePseudoStatus;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public Set<SimpleAction> getConditionalActions() {
 		return conditionalActions;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void setConditionalActions(Set<SimpleAction> conditionalActions) {
 		this.conditionalActions = conditionalActions;
 	}
 
-	public Map<Status, Process<WorkflowObject>> getConditionalProcesses() {
+	@SuppressWarnings("rawtypes")
+	public Map<Status, Process> getConditionalProcesses() {
 		return conditionalProcesses;
 	}
 
-	public void setConditionalProcesses(Map<Status, Process<WorkflowObject>> conditionalProcesses) {
+	@SuppressWarnings("rawtypes")
+	public void setConditionalProcesses(Map<Status, Process> conditionalProcesses) {
 		this.conditionalProcesses = conditionalProcesses;
 	}
 
-	public Set<Action> getDepartureActions() {
+	public Set<Action<X>> getDepartureActions() {
 		if (conditionalActions == null || conditionalActions.isEmpty()) {
 			return null;
 		}
@@ -220,13 +240,14 @@ public class ConditionalAction extends Action {
 				.collect(Collectors.toSet());
 	}
 
-	public Guard<WorkflowObject> getGuardByActionName(String name) {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public Set<Guard> getGuardsByActionName(String name) {
 		if (conditionalActions == null || conditionalActions.isEmpty()) {
 			return null;
 		}
 		Optional<SimpleAction> sa = conditionalActions.stream().filter(a -> a.getName().equals(name)).findAny();
 		if (sa.isPresent()) {
-			return sa.get().getGuard();
+			return sa.get().getGuards();
 		}
 		return null;
 	}
@@ -236,8 +257,9 @@ public class ConditionalAction extends Action {
 		return false;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public boolean isDepartureStatus(Status status) {
+	public boolean isDepartureStatus(Status<X> status) {
 		return this.conditionalActions.stream().filter(a -> a.isDepartureStatus(status)).count() > 0;
 	}
 
@@ -246,6 +268,7 @@ public class ConditionalAction extends Action {
 		return Objects.hash(choicePseudoStatus, getWorkflow());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -254,7 +277,7 @@ public class ConditionalAction extends Action {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		ConditionalAction other = (ConditionalAction) obj;
+		ConditionalAction<X> other = (ConditionalAction<X>) obj;
 		return Objects.equals(choicePseudoStatus, other.choicePseudoStatus)
 				&& Objects.equals(getWorkflow(), other.getWorkflow());
 	}
