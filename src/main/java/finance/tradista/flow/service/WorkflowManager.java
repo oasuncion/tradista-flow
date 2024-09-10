@@ -2,7 +2,6 @@ package finance.tradista.flow.service;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -208,10 +207,14 @@ public final class WorkflowManager {
 			}
 
 			if (actionObject instanceof SimpleAction simpleAction) {
-				// Perform process
-				finance.tradista.flow.model.Process<WorkflowObject> process = simpleAction.getProcess();
-				if (process != null) {
-					process.apply(objectDeepCopy);
+				// Perform processes
+				Set<finance.tradista.flow.model.Process> processes = simpleAction.getProcesses();
+				if (!ObjectUtils.isEmpty(processes)) {
+					for (finance.tradista.flow.model.Process<X> process : processes) {
+						if (process != null) {
+							process.apply(objectDeepCopy);
+						}
+					}
 				}
 				objectDeepCopy.setStatus(wkf.getTargetStatus(simpleAction));
 			} else {
@@ -228,12 +231,14 @@ public final class WorkflowManager {
 				}
 				int res = condAction.getCondition().apply(objectDeepCopy);
 				Status<X> arrivalStatus = condAction.getArrivalStatusByResult(res);
-				// Perform process
-				Map<Status, finance.tradista.flow.model.Process> condProcesses = condAction.getConditionalProcesses();
-				if (condProcesses != null) {
-					finance.tradista.flow.model.Process<X> process = condProcesses.get(arrivalStatus);
-					if (process != null) {
-						process.apply(objectDeepCopy);
+				// Perform processes
+				Set<finance.tradista.flow.model.Process> processes = condAction
+						.getProcessesByStatusName(arrivalStatus.getName());
+				if (!ObjectUtils.isEmpty(processes)) {
+					for (finance.tradista.flow.model.Process<X> process : processes) {
+						if (process != null) {
+							process.apply(objectDeepCopy);
+						}
 					}
 				}
 				objectDeepCopy.setStatus(arrivalStatus);

@@ -24,19 +24,25 @@ under the License.    */
 
 /**
  * Process Test Class. This test process sets the WorkflowObject's workflow to
- * "Wkf".
+ * "Wkf". If the WorkflowObject's workflow was already set to "Wkf", it sets it
+ * to ""AnotherWkf".
  * 
  * @author OA
  *
  */
 @Entity
-public class TestProcessOK extends finance.tradista.flow.model.Process<WorkflowTestObject> {
+public class TestProcessOKOne extends finance.tradista.flow.model.Process<WorkflowTestObject> {
 
 	private static final long serialVersionUID = -5097243928471620584L;
 
-	public TestProcessOK() {
+	public TestProcessOKOne() {
 		setTask(obj -> {
-			((WorkflowTestObject) obj).setWorkflow("Wkf");
+			final String WKF = "Wkf";
+			if (!obj.getWorkflow().equals(WKF)) {
+				obj.setWorkflow(WKF);
+			} else {
+				obj.setWorkflow("AnotherWkf");
+			}
 		});
 	}
 

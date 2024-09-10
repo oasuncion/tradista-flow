@@ -1,12 +1,9 @@
 package finance.tradista.flow.test;
 
-import finance.tradista.flow.exception.TradistaFlowBusinessException;
-import finance.tradista.flow.model.Status;
-import finance.tradista.flow.model.Workflow;
 import jakarta.persistence.Entity;
 
 /*
- * Copyright 2023 Olivier Asuncion
+ * Copyright 2024 Olivier Asuncion
  * 
  * Licensed to the Apache Software Foundation (ASF) under one
 or more contributor license agreements.  See the NOTICE file
@@ -26,28 +23,26 @@ specific language governing permissions and limitations
 under the License.    */
 
 /**
- * Process Test Class. This test process performs some updates on the object and
- * then throws a TradistaFlowBusinessException.
+ * Process Test Class. This test process sets the WorkflowObject's workflow to
+ * "Wkf". If the WorkflowObject's workflow was already set to "Wkf", it sets it
+ * to ""AnotherWkf".
  * 
  * @author OA
  *
  */
 @Entity
-public class TestProcessKOCheckedException extends finance.tradista.flow.model.Process<WorkflowTestObject> {
+public class TestProcessOKTwo extends finance.tradista.flow.model.Process<WorkflowTestObject> {
 
 	private static final long serialVersionUID = -5097243928471620584L;
 
-	public TestProcessKOCheckedException() {
+	public TestProcessOKTwo() {
 		setTask(obj -> {
-			// The changes below are expected to be ignored as an exception is thrown.
 			final String WKF = "Wkf";
 			if (!obj.getWorkflow().equals(WKF)) {
 				obj.setWorkflow(WKF);
 			} else {
 				obj.setWorkflow("AnotherWkf");
 			}
-			obj.setStatus(new Status<>(new Workflow<WorkflowTestObject>("dummyWorkkflow"), "dummyStatus"));
-			throw new TradistaFlowBusinessException("Process KO");
 		});
 	}
 
