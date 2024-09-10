@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,7 +31,8 @@ import finance.tradista.flow.test.TestGuardOK;
 import finance.tradista.flow.test.TestGuardOKUpdateObject;
 import finance.tradista.flow.test.TestProcessKOCheckedException;
 import finance.tradista.flow.test.TestProcessKORuntimeException;
-import finance.tradista.flow.test.TestProcessOK;
+import finance.tradista.flow.test.TestProcessOKOne;
+import finance.tradista.flow.test.TestProcessOKTwo;
 import finance.tradista.flow.test.WorkflowTestObject;
 
 /*
@@ -68,13 +70,14 @@ public class WorkflowManagerTest {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	@DisplayName("Save valid workflow")
 	void testSaveValidWorkflow() {
 		Workflow<WorkflowTestObject> wkf = new Workflow<>("TestSaveValidWorkflow");
 		Status<WorkflowTestObject> s1 = new Status<>(wkf, "s1");
 		Status<WorkflowTestObject> s2 = new Status<>(wkf, "s2");
-		Process<WorkflowTestObject> process = new TestProcessOK();
+		Process<WorkflowTestObject> process = new TestProcessOKOne();
 		new SimpleAction<>(wkf, "a1", s1, s2, process);
 		saveWorkflow(wkf);
 	}
@@ -95,6 +98,7 @@ public class WorkflowManagerTest {
 		saveWorkflow(wkf);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	@DisplayName("Get valid workflow")
 	void testGetValidWorkflow() {
@@ -102,7 +106,7 @@ public class WorkflowManagerTest {
 		Workflow<WorkflowTestObject> wkf = new Workflow<>(workflowName);
 		Status<WorkflowTestObject> s1 = new Status<>(wkf, "s1");
 		Status<WorkflowTestObject> s2 = new Status<>(wkf, "s2");
-		Process<WorkflowTestObject> process = new TestProcessOK();
+		Process<WorkflowTestObject> process = new TestProcessOKOne();
 		Workflow<WorkflowTestObject> loadedWorklow;
 		new SimpleAction<WorkflowTestObject>(wkf, "a1", s1, s2, process);
 		saveWorkflow(wkf);
@@ -389,6 +393,7 @@ public class WorkflowManagerTest {
 		applyAction(obj, actionName);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	@DisplayName("Apply valid action with process OK")
 	void testApplyValidActionWithProcessOK() {
@@ -396,7 +401,7 @@ public class WorkflowManagerTest {
 		Workflow<WorkflowTestObject> wkf = new Workflow<>(workflowName);
 		Status<WorkflowTestObject> s1 = new Status<>(wkf, "s1");
 		Status<WorkflowTestObject> s2 = new Status<>(wkf, "s2");
-		TestProcessOK process = new TestProcessOK();
+		TestProcessOKOne process = new TestProcessOKOne();
 		final String actionName = "a1";
 		new SimpleAction<WorkflowTestObject>(wkf, actionName, s1, s2, process);
 		WorkflowTestObject obj = new WorkflowTestObject();
@@ -410,6 +415,30 @@ public class WorkflowManagerTest {
 		Assertions.assertEquals(s2, res.getStatus());
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	@DisplayName("Apply valid action with two processes OK with updates")
+	void testApplyValidActionWithProcessesOKUpdates() {
+		String workflowName = "testApplyValidActionWithProcessesOKUpdates";
+		Workflow<WorkflowTestObject> wkf = new Workflow<>(workflowName);
+		Status<WorkflowTestObject> s1 = new Status<>(wkf, "s1");
+		Status<WorkflowTestObject> s2 = new Status<>(wkf, "s2");
+		TestProcessOKOne processOne = new TestProcessOKOne();
+		TestProcessOKTwo processTwo = new TestProcessOKTwo();
+		final String actionName = "a1";
+		new SimpleAction<WorkflowTestObject>(wkf, actionName, s1, s2, processOne, processTwo);
+		WorkflowTestObject obj = new WorkflowTestObject();
+		WorkflowObject res = null;
+		saveWorkflow(wkf);
+		obj.setStatus(s1);
+		obj.setWorkflow(workflowName);
+		res = applyAction(obj, actionName);
+		Assertions.assertEquals("AnotherWkf", res.getWorkflow());
+		Assertions.assertNotEquals(s2, obj.getStatus());
+		Assertions.assertEquals(s2, res.getStatus());
+	}
+
+	@SuppressWarnings("unchecked")
 	@Test
 	@DisplayName("Apply valid action with process KO")
 	void testApplyValidActionWithProcessKO() {
@@ -431,6 +460,7 @@ public class WorkflowManagerTest {
 		assertEquals(s1, obj.getStatus());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	@DisplayName("Apply valid action with process KO Runtime Exception")
 	void testApplyValidActionWithProcessKORuntimeException() {
@@ -452,6 +482,55 @@ public class WorkflowManagerTest {
 		assertEquals(s1, obj.getStatus());
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	@DisplayName("Apply valid action with two processes OK and KO Runtime Exception")
+	void testApplyValidActionWithProcessesOKAndKORuntimeException() {
+		String workflowName = "testApplyValidActionWithProcessOKAndKORuntimeException";
+		Workflow<WorkflowTestObject> wkf = new Workflow<>(workflowName);
+		Status<WorkflowTestObject> s1 = new Status<>(wkf, "s1");
+		Status<WorkflowTestObject> s2 = new Status<>(wkf, "s2");
+		TestProcessOKOne processOne = new TestProcessOKOne();
+		TestProcessKORuntimeException processTwo = new TestProcessKORuntimeException();
+		final String actionName = "a1";
+		new SimpleAction<WorkflowTestObject>(wkf, actionName, s1, s2, processOne, processTwo);
+		WorkflowTestObject obj = new WorkflowTestObject();
+		saveWorkflow(wkf);
+		obj.setStatus(s1);
+		obj.setWorkflow(workflowName);
+		assertThrows(TradistaFlowTechnicalException.class, () -> WorkflowManager.applyAction(obj, actionName));
+		Assertions.assertNotEquals(s2, obj.getStatus());
+		Assertions.assertNotEquals("Wkf", obj.getWorkflow());
+		Assertions.assertNotEquals("AnotherWkf", obj.getWorkflow());
+
+		assertEquals(s1, obj.getStatus());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	@DisplayName("Apply valid action with two processes OK and KO Checked Exception")
+	void testApplyValidActionWithProcessesOKAndKOCheckedException() {
+		String workflowName = "testApplyValidActionWithProcessOKAndKOCheckedException";
+		Workflow<WorkflowTestObject> wkf = new Workflow<>(workflowName);
+		Status<WorkflowTestObject> s1 = new Status<>(wkf, "s1");
+		Status<WorkflowTestObject> s2 = new Status<>(wkf, "s2");
+		TestProcessOKOne processOne = new TestProcessOKOne();
+		TestProcessKOCheckedException processTwo = new TestProcessKOCheckedException();
+		final String actionName = "a1";
+		new SimpleAction<WorkflowTestObject>(wkf, actionName, s1, s2, processOne, processTwo);
+		WorkflowTestObject obj = new WorkflowTestObject();
+		saveWorkflow(wkf);
+		obj.setStatus(s1);
+		obj.setWorkflow(workflowName);
+		assertThrows(TradistaFlowBusinessException.class, () -> WorkflowManager.applyAction(obj, actionName));
+		Assertions.assertNotEquals(s2, obj.getStatus());
+		Assertions.assertNotEquals("Wkf", obj.getWorkflow());
+		Assertions.assertNotEquals("AnotherWkf", obj.getWorkflow());
+
+		assertEquals(s1, obj.getStatus());
+	}
+
+	@SuppressWarnings("unchecked")
 	@Test
 	@DisplayName("Apply action with guard OK")
 	void testApplyActionGuardOK() {
@@ -472,6 +551,7 @@ public class WorkflowManagerTest {
 		Assertions.assertEquals(s2, res.getStatus());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	@DisplayName("Apply action with guard KO")
 	void testApplyActionGuardKO() {
@@ -490,6 +570,7 @@ public class WorkflowManagerTest {
 		Assertions.assertEquals(s1, obj.getStatus());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	@DisplayName("Apply action with 2nd guard KO")
 	void testApplyActionSecondGuardKO() {
@@ -509,6 +590,7 @@ public class WorkflowManagerTest {
 		Assertions.assertEquals(s1, obj.getStatus());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	@DisplayName("Apply action with guard OK and object modified")
 	void testApplyActiondGuardOKObjectModified() {
@@ -735,12 +817,14 @@ public class WorkflowManagerTest {
 		Status<WorkflowTestObject> s2 = new Status<>(wkf, "s2");
 		Status<WorkflowTestObject> s3 = new Status<>(wkf, "s3");
 		Condition<WorkflowTestObject> c1 = new TestCondition();
-		Process<WorkflowTestObject> process = new TestProcessOK();
+		Process<WorkflowTestObject> process = new TestProcessOKOne();
 		Map<Integer, Status> conditionalRouting = new HashMap<Integer, Status>();
 		conditionalRouting.put(1, s2);
 		conditionalRouting.put(2, s3);
-		Map<Status, Process> conditionalProcesses = new HashMap<Status, Process>();
-		conditionalProcesses.put(s2, process);
+		Map<Status, Set<Process>> conditionalProcesses = new HashMap<Status, Set<Process>>();
+		Set<Process> processes = new LinkedHashSet<Process>();
+		processes.add(process);
+		conditionalProcesses.put(s2, processes);
 		final String actionName = "a1";
 		new ConditionalAction<WorkflowTestObject>(wkf, s1, actionName, c1, conditionalRouting, conditionalProcesses, s2,
 				s3);
@@ -767,8 +851,10 @@ public class WorkflowManagerTest {
 		Map<Integer, Status> conditionalRouting = new HashMap<Integer, Status>();
 		conditionalRouting.put(1, s2);
 		conditionalRouting.put(2, s3);
-		Map<Status, Process> conditionalProcesses = new HashMap<Status, Process>();
-		conditionalProcesses.put(s2, process);
+		Map<Status, Set<Process>> conditionalProcesses = new HashMap<Status, Set<Process>>();
+		Set<Process> processes = new LinkedHashSet<Process>();
+		processes.add(process);
+		conditionalProcesses.put(s2, processes);
 		final String actionName = "a1";
 		new ConditionalAction<WorkflowTestObject>(wkf, s1, actionName, c1, conditionalRouting, conditionalProcesses, s2,
 				s3);

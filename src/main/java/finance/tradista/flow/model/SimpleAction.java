@@ -1,13 +1,17 @@
 package finance.tradista.flow.model;
 
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import finance.tradista.flow.util.TradistaFlowUtil;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
 
 /*
  * Copyright 2023 Olivier Asuncion
@@ -46,8 +50,8 @@ public class SimpleAction<X extends WorkflowObject> extends Action<X> {
 	private Status arrivalStatus;
 
 	@SuppressWarnings("rawtypes")
-	@OneToOne(cascade = CascadeType.ALL)
-	private Process process;
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private Set<Process> processes;
 
 	private void init(Workflow<X> workflow, Status<X> arrivalStatus) {
 		StringBuilder errMsg = new StringBuilder();
@@ -78,21 +82,27 @@ public class SimpleAction<X extends WorkflowObject> extends Action<X> {
 	}
 
 	public SimpleAction(Workflow<X> workflow, String name, Status<X> departureStatus, Status<X> arrivalStatus,
-			Guard<X>[] guards, Process<X> process) {
+			Guard<X>[] guards, Process<X>... processes) {
 		super(workflow, name, departureStatus, guards);
 		init(workflow, arrivalStatus);
-		this.process = process;
+		this.processes = new LinkedHashSet<>();
+		if (processes != null) {
+			Arrays.stream(processes).forEach(p -> this.processes.add(p));
+		}
 	}
 
 	public SimpleAction(Workflow<X> workflow, String name, Status<X> departureStatus, Status<X> arrivalStatus,
-			Process<X> process) {
+			Process<X>... processes) {
 		super(workflow, name, departureStatus, (Guard<X>[]) null);
 		init(workflow, arrivalStatus);
-		this.process = process;
+		this.processes = new LinkedHashSet<>();
+		if (processes != null) {
+			Arrays.stream(processes).forEach(p -> this.processes.add(p));
+		}
 	}
 
-	public SimpleAction(Workflow<X> workflow, String name, Status<X> departureStatus, Process<X> process) {
-		this(workflow, name, departureStatus, (Status<X>) null, process);
+	public SimpleAction(Workflow<X> workflow, String name, Status<X> departureStatus, Process<X>... processes) {
+		this(workflow, name, departureStatus, (Status<X>) null, processes);
 	}
 
 	public SimpleAction(Workflow<X> workflow, String name, Status<X> departureStatus, Guard<X>... guards) {
@@ -104,8 +114,8 @@ public class SimpleAction<X extends WorkflowObject> extends Action<X> {
 	}
 
 	public SimpleAction(Workflow<X> workflow, String name, Status<X> departureStatus, Guard<X>[] guards,
-			Process<X> process) {
-		this(workflow, name, departureStatus, (Status<X>) null, guards, process);
+			Process<X>... processes) {
+		this(workflow, name, departureStatus, (Status<X>) null, guards, processes);
 	}
 
 	public SimpleAction() {
@@ -120,13 +130,14 @@ public class SimpleAction<X extends WorkflowObject> extends Action<X> {
 		this.arrivalStatus = arrivalStatus;
 	}
 
-	@SuppressWarnings("unchecked")
-	public Process<X> getProcess() {
-		return process;
+	@SuppressWarnings("rawtypes")
+	public Set<Process> getProcesses() {
+		return processes;
 	}
 
-	public void setProcess(Process<X> process) {
-		this.process = process;
+	@SuppressWarnings("rawtypes")
+	public void setProcesses(Set<Process> processes) {
+		this.processes = processes;
 	}
 
 	@Override

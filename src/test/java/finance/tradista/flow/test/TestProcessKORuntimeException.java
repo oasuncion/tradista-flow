@@ -25,7 +25,8 @@ specific language governing permissions and limitations
 under the License.    */
 
 /**
- * Process Test Class. This test process throws a RuntimeException.
+ * Process Test Class. This test process performs some updates on the object and
+ * then throws a RuntimeException.
  * 
  * @author OA
  *
@@ -37,7 +38,13 @@ public class TestProcessKORuntimeException extends finance.tradista.flow.model.P
 
 	public TestProcessKORuntimeException() {
 		setTask(obj -> {
-			// The change below is expected to be ignored as an exception is thrown.
+			// The changes below are expected to be ignored as an exception is thrown.
+			final String WKF = "Wkf";
+			if (!obj.getWorkflow().equals(WKF)) {
+				obj.setWorkflow(WKF);
+			} else {
+				obj.setWorkflow("AnotherWkf");
+			}
 			obj.setStatus(new Status<>(new Workflow<WorkflowTestObject>("dummyWorkkflow"), "dummyStatus"));
 			throw new RuntimeException("Process KO");
 		});
