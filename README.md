@@ -1,7 +1,7 @@
 # Tradista Flow
 
 ![License](https://img.shields.io/badge/License-Apache_2.0-33ff99.svg?link=https://www.apache.org/licenses/LICENSE-2.0)&emsp;
-![Version](https://img.shields.io/badge/Version%20-%204.0.0%20-%2033ff99?color=33ff99)
+![Version](https://img.shields.io/badge/Version%20-%205.0.0%20-%2033ff99?color=33ff99)
 
 Tradista Flow is a simple Java Workflow engine that can be included in any Java application.
 Tradista Flow allows to create/update/delete workflows and execute them.
@@ -12,7 +12,7 @@ Tradista Flow is available in Maven Central, it can be added to your project by 
 <dependency>
   <groupId>finance.tradista.flow</groupId>
   <artifactId>tradista-flow</artifactId>
-  <version>4.0.0</version>
+  <version>5.0.0</version>
 </dependency>
 ```
 
@@ -25,10 +25,10 @@ Tradista Flow is available in Maven Central, it can be added to your project by 
 ![Simple Workflow](./img/simpleWkf.png)
 
 ```java
-Workflow wkf = new Workflow("SampleWorkflow");
-Status statusOne = new Status(wkf, "s1");
-Status statusTwo = new Status(wkf, "s2");
-Action actionOne = new Action(wkf, "a1", statusOne, statusTwo);
+Workflow<Order> wkf = new Workflow<>("SampleWorkflow");
+Status<Order> statusOne = new Status<>(wkf, "s1");
+Status<Order> statusTwo = new Status<>(wkf, "s2");
+Action<Order> actionOne = new SimpleAction<>(wkf, "a1", statusOne, statusTwo);
 WorkflowManager.saveWorkflow(wkf);
 ```
 
@@ -36,6 +36,7 @@ WorkflowManager.saveWorkflow(wkf);
 <br/>
 It is possible with Tradista Flow to define conditions linked to actions, it is the concept of "guard".
 The objects go to the target status only if the condition defined in the guard is OK.
+It is possible to set several guards to a given action, in this case they will be executed sequentially.
 <br/>
 <br/>
 
@@ -59,11 +60,11 @@ public class OrderValidated extends Guard<Order> {
 Define the workflow:
 
 ```java
-Workflow wkf = new Workflow("SampleWorkflow");
-Status initiated = new Status(wkf, "Initiated");
-Status confirmed = new Status(wkf, "Confirmed");
+Workflow<Order> wkf = new Workflow<>("SampleWorkflow");
+Status<Order> initiated = new Status<>(wkf, "Initiated");
+Status<Order> confirmed = new Status<>(wkf, "Confirmed");
 OrderValidated orderValidated = new OrderValidated();
-Action actionOne = new Action(wkf, "Confirm", initiated, confirmed, orderValidated);
+Action<Order> actionOne = new SimpleAction<>(wkf, "Confirm", initiated, confirmed, orderValidated);
 WorkflowManager.saveWorkflow(wkf);
 ```
 
@@ -99,15 +100,15 @@ public class OrderCondition extends Condition<Order> {
 Define the workflow:
 
 ```java
-Workflow wkf = new Workflow("SampleWorkflow");
-Status initiated = new Status(wkf, "Initiated");
-Status confirmed = new Status(wkf, "Confirmed");
-Status incorrect = new Status(wkf, "Incorrect");
+Workflow<Order> wkf = new Workflow<>("SampleWorkflow");
+Status<Order> initiated = new Status<>(wkf, "Initiated");
+Status<Order> confirmed = new Status<>(wkf, "Confirmed");
+Status<Order> incorrect = new Status<>(wkf, "Incorrect");
 OrderCondition orderCondition = new OrderCondition();
 Map<Integer, Status> conditionalRouting = new HashMap<Integer, Status>();
 conditionalRouting.put(1, confirmed);
 conditionalRouting.put(2, incorrect);
-Action action = new ConditionalAction(wkf, initiated, "Confirm", orderCondition, conditionalRouting, confirmed, incorrect);
+Action<Order> action = new ConditionalAction<>(wkf, initiated, "Confirm", orderCondition, conditionalRouting, confirmed, incorrect);
 WorkflowManager.saveWorkflow(wkf);
 ```
 
@@ -144,25 +145,26 @@ public class CancellationCondition extends Condition<Order> {
 Define the workflow:
 
 ```java
-Workflow wkf = new Workflow("SampleWorkflow");
+Workflow<Order> wkf = new Workflow<>("SampleWorkflow");
 ...
-Status confirmed = new Status(wkf, "Confirmed");
-Status incorrect = new Status(wkf, "Incorrect");
-Status cancelled = new Status(wkf, "Cancelled");
-Status underInvestigation = new Status(wkf, "Under Investigation");
+Status<Order> confirmed = new Status<>(wkf, "Confirmed");
+Status<Order> incorrect = new Status<>(wkf, "Incorrect");
+Status<Order> cancelled = new Status<>(wkf, "Cancelled");
+Status<Order> underInvestigation = new Status<>(wkf, "Under Investigation");
 CancellationCondition cancellationCondition = new CancellationCondition();
 Map<Integer, Status> conditionalRouting = new HashMap<Integer, Status>();
 conditionalRouting.put(1, cancelled);
 conditionalRouting.put(2, underInvestigation);
-Set<SimpleAction> departureActions = new HashSet<>();
-departureActions.add(new SimpleAction(wkf, "Cancel", confirmed));
-departureActions.add(new SimpleAction(wkf, "Cancel", incorrect));
-Action action = new ConditionalAction(wkf, departureActions, cancellationCondition, conditionalRouting, cancelled, underInvestigation);
+Set<SimpleAction<Order>> departureActions = new HashSet<>();
+departureActions.add(new SimpleAction<>(wkf, "Cancel", confirmed));
+departureActions.add(new SimpleAction<>(wkf, "Cancel", incorrect));
+Action<Order> action = new ConditionalAction<>(wkf, departureActions, cancellationCondition, conditionalRouting, cancelled, underInvestigation);
 WorkflowManager.saveWorkflow(wkf);
 ```
 ### A workflow with a process:
 <br/>
 You can also add process to an action. Processes are executed when an action is applied (if the action has a guard, the process is executed after the guard condition execution, and only if the condition is Ok).
+It is possible to set several processes to a given action, in this case they will be executed sequentially.
 <br/>
 <br/>
 
@@ -186,11 +188,11 @@ public class OrderConfirmation extends Process<Order> {
 Define the workflow:
 
 ```java
-Workflow wkf = new Workflow("SampleWorkflow");
-Status initiated = new Status(wkf, "Initiated");
-Status confirmed = new Status(wkf, "Confirmed");
+Workflow<Order> wkf = new Workflow<>("SampleWorkflow");
+Status<Order> initiated = new Status<>(wkf, "Initiated");
+Status<Order> confirmed = new Status<>(wkf, "Confirmed");
 OrderConfirmation orderConfirmation = new OrderConfirmation();
-Action action = new ConditionalAction(wkf, "Confirm", initiated, confirmed, orderConfirmation);
+Action<Order> action = new ConditionalAction<>(wkf, "Confirm", initiated, confirmed, orderConfirmation);
 WorkflowManager.saveWorkflow(wkf);
 ```
 ### Link your objects to a workflow thanks to the WorkflowObject interface:
@@ -199,14 +201,14 @@ WorkflowManager.saveWorkflow(wkf);
 ```java
 public class Order implements WorkflowObject {
 
-	private Status status;
+	private Status<? extends WorkflowObject> status;
 	
 	private String workflow;
 
         ...
 
 	@Override
-	public void setStatus(Status status) {
+	public void setStatus(Status<? extends WorkflowObject> status) {
 		this.status = status;
 	}
 
@@ -220,7 +222,7 @@ public class Order implements WorkflowObject {
 	}
 
 	@Override
-	public Status getStatus() {
+	public Status<? extends WorkflowObject> getStatus() {
 		return status;
 	}
 
