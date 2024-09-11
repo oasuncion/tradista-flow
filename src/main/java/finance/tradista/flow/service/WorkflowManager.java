@@ -98,13 +98,13 @@ public final class WorkflowManager {
 	 * 
 	 * @return all workflows of the system in a set
 	 */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static <X extends WorkflowObject> Set<Workflow<X>> getAllWorkflows() {
 		Set<Workflow<X>> workflows = null;
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
 		List<Workflow> res = entityManager.createQuery("Select w from Workflow w", Workflow.class).getResultList();
 		if (res != null) {
-			workflows = new HashSet<>(res);
+			workflows = new HashSet(res);
 			workflows.forEach(w -> w.syncModel());
 		}
 		entityManager.close();

@@ -226,7 +226,8 @@ public class ConditionalAction<X extends WorkflowObject> extends Action<X> {
 		this.conditionalActions = conditionalActions;
 	}
 
-	public Set<Action<X>> getDepartureActions() {
+	@SuppressWarnings("rawtypes")
+	public Set<Action> getDepartureActions() {
 		if (conditionalActions == null || conditionalActions.isEmpty()) {
 			return null;
 		}

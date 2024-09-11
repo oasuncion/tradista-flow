@@ -1,6 +1,5 @@
 package finance.tradista.flow.model;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -49,8 +48,9 @@ public class Workflow<X extends WorkflowObject> extends TradistaFlowObject {
 
 	private String description;
 
+	@SuppressWarnings("rawtypes")
 	@Transient
-	private Graph<Status<X>, Action<X>> graph;
+	private Graph<Status, Action> graph;
 
 	@SuppressWarnings("rawtypes")
 	@OneToMany(mappedBy = "workflow", cascade = CascadeType.ALL)
@@ -83,14 +83,14 @@ public class Workflow<X extends WorkflowObject> extends TradistaFlowObject {
 		this.description = description;
 	}
 
-	@SuppressWarnings("unchecked")
-	public Set<Action<X>> getActions() {
-		return (Set<Action<X>>) TradistaFlowUtil.deepCopy(actions);
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Set<Action> getActions() {
+		return (Set<Action>) TradistaFlowUtil.deepCopy(actions);
 	}
 
 	@SuppressWarnings({ "unchecked"})
 	public void setActions(@SuppressWarnings("rawtypes") Set<Action> actions) {
-		graph.removeAllEdges((Collection<? extends Action<X>>) this.actions);
+		graph.removeAllEdges(this.actions);
 		this.actions = actions;
 		if (actions != null) {
 			for (Action<X> action : actions) {
@@ -117,7 +117,7 @@ public class Workflow<X extends WorkflowObject> extends TradistaFlowObject {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void setStatus(Set<Status> status) {
-		graph.removeAllVertices((Collection<? extends Status<X>>) this.status);
+		graph.removeAllVertices(this.status);
 		this.status = status;
 		if (status != null) {
 			for (Status<X> s : status) {
@@ -174,9 +174,9 @@ public class Workflow<X extends WorkflowObject> extends TradistaFlowObject {
 		return graph.outDegreeOf(status) == 0;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Set<String> getAvailableActionsFromStatus(Status<X> status) {
-		Set<Action<X>> actions = null;
+		Set<Action> actions = null;
 		Set<String> actionNames = null;
 		if (this.actions != null) {
 			actions = this.actions.stream().filter(a -> a.isDepartureStatus(status)).collect(Collectors.toSet());
@@ -199,6 +199,7 @@ public class Workflow<X extends WorkflowObject> extends TradistaFlowObject {
 		return actionNames;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Status<X> getTargetStatus(SimpleAction<X> action) {
 		return TradistaFlowUtil.clone(graph.getEdgeTarget(action));
 	}
@@ -230,11 +231,11 @@ public class Workflow<X extends WorkflowObject> extends TradistaFlowObject {
 		return status;
 	}
 
-	@SuppressWarnings("unchecked")
-	public Set<Status<X>> getFinalStatus() {
-		Set<Status<X>> status = null;
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Set<Status> getFinalStatus() {
+		Set<Status> status = null;
 		if (this.status != null) {
-			status = (Set<Status<X>>) TradistaFlowUtil
+			status = (Set<Status>) TradistaFlowUtil
 					.deepCopy(this.status.stream().filter(this::isFinalStatus).collect(Collectors.toSet()));
 		}
 		return status;
@@ -247,9 +248,9 @@ public class Workflow<X extends WorkflowObject> extends TradistaFlowObject {
 	 * @param actionName the name of the action to be searched
 	 * @return an Action object.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Action<X> getActionByDepartureStatusAndName(Status<X> status, String actionName) {
-		Set<Action<X>> actions = null;
+		Set<Action> actions = null;
 		if (this.actions != null) {
 			actions = this.actions.stream().filter(a -> a.isDepartureStatus(status)).collect(Collectors.toSet());
 		}
