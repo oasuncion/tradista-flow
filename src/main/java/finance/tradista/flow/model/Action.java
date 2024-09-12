@@ -14,6 +14,7 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 
 /********************************************************************************
  * Copyright (c) 2023 Olivier Asuncion
@@ -47,6 +48,7 @@ public abstract class Action<X extends WorkflowObject> extends TradistaFlowObjec
 
 	@SuppressWarnings("rawtypes")
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OrderBy
 	private Set<Guard> guards;
 
 	@SuppressWarnings("rawtypes")
