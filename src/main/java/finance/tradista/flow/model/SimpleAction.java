@@ -12,6 +12,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 
 /********************************************************************************
  * Copyright (c) 2023 Olivier Asuncion
@@ -47,6 +48,7 @@ public class SimpleAction<X extends WorkflowObject> extends Action<X> {
 
 	@SuppressWarnings("rawtypes")
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OrderBy
 	private Set<Process> processes;
 
 	private void init(Workflow<X> workflow, Status<X> arrivalStatus) {
