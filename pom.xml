@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>finance.tradista.flow</groupId>
 	<artifactId>tradista-flow</artifactId>
-	<version>5.0.1</version>
+	<version>6.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>tradista-flow</name>
 	<description>A simple Java workflow engine.</description>
@@ -36,9 +36,9 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.13.0</version>
+				<version>3.14.0</version>
 				<configuration>
-					<release>17</release>
+					<release>24</release>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -56,25 +56,25 @@
 		<dependency>
 			<groupId>org.hibernate.orm</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>6.6.0.Final</version>
+			<version>6.6.11.Final</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derbyclient</artifactId>
-			<version>10.16.1.1</version>
+			<version>10.17.1.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derbytools</artifactId>
-			<version>10.16.1.1</version>
+			<version>10.17.1.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derbyshared</artifactId>
-			<version>10.16.1.1</version>
+			<version>10.17.1.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -86,7 +86,7 @@
 		<dependency>
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derby</artifactId>
-			<version>10.16.1.1</version>
+			<version>10.17.1.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -143,7 +143,7 @@
 						<configuration>
 							<jreleaser>
 								<project>
-									<copyright>2024 Olivier Asuncion</copyright>
+									<copyright>2025 Olivier Asuncion</copyright>
 								</project>
 								<signing>
 									<active>ALWAYS</active>
