@@ -265,12 +265,10 @@ using Hibernate and Derby:
 	<class>finance.tradista.flow.model.Status</class>
         <class>finance.tradista.flow.model.PseudoStatus</class>
 	<class>finance.tradista.flow.model.TradistaFlowObject</class>
-        <properties>
-            <property name="jakarta.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver" />
+        <properties>            
             <property name="jakarta.persistence.jdbc.url" value="jdbc:derby:memory:TradistaFlow;create=true" />
             <property name="jakarta.persistence.jdbc.user" value="xxxxx" />
-            <property name="jakarta.persistence.jdbc.password" value="xxxxx" />
-            <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyDialect"/>
+            <property name="jakarta.persistence.jdbc.password" value="xxxxx" />            
             <property name="hibernate.show_sql" value="true"/>
             <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
         </properties>
@@ -288,8 +286,7 @@ using Hibernate and Derby:
 	<class>finance.tradista.flow.model.Status</class>
 	<class>finance.tradista.flow.model.PseudoStatus</class>
 	<class>finance.tradista.flow.model.TradistaFlowObject</class>
-        <properties>
-            <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyDialect"/>
+        <properties>            
             <property name="hibernate.show_sql" value="true"/>
             <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
         </properties>
