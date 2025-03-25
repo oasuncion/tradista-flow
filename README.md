@@ -12,7 +12,7 @@ Tradista Flow is available in Maven Central, it can be added to your project by 
 <dependency>
   <groupId>finance.tradista.flow</groupId>
   <artifactId>tradista-flow</artifactId>
-  <version>6.0.0-SNAPSHOT</version>
+  <version>6.0.0</version>
 </dependency>
 ```
 
