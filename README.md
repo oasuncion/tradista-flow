@@ -1,7 +1,7 @@
 # Tradista Flow
 
 ![License](https://img.shields.io/badge/License-Apache_2.0-33ff99.svg?link=https://www.apache.org/licenses/LICENSE-2.0)&emsp;
-![Version](https://img.shields.io/badge/Version%20-%206.0.0--SNAPSHOT%20-%2033ff99?color=33ff99)
+![Version](https://img.shields.io/badge/Version%20-%206.0.0%20-%2033ff99?color=33ff99)
 
 Tradista Flow is a simple Java Workflow engine that can be included in any Java application.
 Tradista Flow allows to create/update/delete workflows and execute them.
@@ -12,7 +12,7 @@ Tradista Flow is available in Maven Central, it can be added to your project by 
 <dependency>
   <groupId>finance.tradista.flow</groupId>
   <artifactId>tradista-flow</artifactId>
-  <version>6.0.0-SNAPSHOT</version>
+  <version>6.0.0</version>
 </dependency>
 ```
 
