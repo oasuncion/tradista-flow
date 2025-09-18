@@ -152,12 +152,11 @@
 								<deploy>
 									<maven>
 										<nexus3>
-											<deployer>
-      											<id>maven-central</id> 
+											<maven-central>      											
         										<active>ALWAYS</active>
       											<url>https://s01.oss.sonatype.org/service/rest</url>    											
 												<stagingRepositories>target/staging-deploy</stagingRepositories>
-      										</deployer>
+      										</maven-central>
 										</nexus3>
 									</maven>
 								</deploy>
