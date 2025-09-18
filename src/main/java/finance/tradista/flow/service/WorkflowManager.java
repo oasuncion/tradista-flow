@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -88,7 +89,7 @@ public final class WorkflowManager {
 	private static boolean isJTA(EntityManager entityManager) {
 		try {
 			entityManager.getTransaction();
-		} catch (IllegalStateException ise) {
+		} catch (IllegalStateException _) {
 			return true;
 		}
 		return false;
@@ -181,7 +182,7 @@ public final class WorkflowManager {
 		if (wkf == null) {
 			errMsg.append(String.format("The workflow %s doesn't exist.", object.getWorkflow()));
 		}
-		if (errMsg.length() > 0) {
+		if (!errMsg.isEmpty()) {
 			throw new TradistaFlowBusinessException(errMsg.toString());
 		}
 		if (!isValidAction(wkf, object.getStatus(), action)) {
@@ -268,34 +269,31 @@ public final class WorkflowManager {
 			if (res != null) {
 				res.syncModel();
 			}
-		} catch (NoResultException nre) {
+		} catch (NoResultException _) {
 			throw new TradistaFlowBusinessException(String.format("The workflow named %s doesn't exist.", name));
 		}
 
 		return res;
 	}
-	
-	public static Set<String> getStatusesByWorkflowNames(String... workkflowNames)
-			throws TradistaFlowBusinessException {
-		if (workkflowNames == null) {
-			throw new TradistaFlowBusinessException("At least one workflow name should be provided");
+
+	public static Set<String> getStatusesByWorkflowNames(String... workflowNames) throws TradistaFlowBusinessException {
+		if (ArrayUtils.isEmpty(workflowNames)) {
+			throw new TradistaFlowBusinessException("At least one workflow name should be provided.");
 		} else {
-			if (Arrays.asList(workkflowNames).stream().anyMatch(n -> StringUtils.isBlank(n))) {
-				throw new TradistaFlowBusinessException("Workflow names cannot be blank");
+			if (Arrays.asList(workflowNames).stream().anyMatch(StringUtils::isBlank)) {
+				throw new TradistaFlowBusinessException("Workflow names cannot be blank.");
 			}
 		}
-		Workflow<X> res;
+		List<String> res;
 		try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
-			res = entityManager.createQuery("Select w from Workflow w where w.name = :name", Workflow.class)
-					.setParameter("name", name).getSingleResult();
-			if (res != null) {
-				res.syncModel();
-			}
-		} catch (NoResultException nre) {
-			throw new TradistaFlowBusinessException(String.format("The workflow named %s doesn't exist.", name));
+			res = entityManager.createQuery("Select s.name from Status s where s.workflow.name in :names", String.class)
+					.setParameter("names", Arrays.asList(workflowNames)).getResultList();
+		} catch (NoResultException _) {
+			throw new TradistaFlowBusinessException(String
+					.format("No status were found for the following workflows: %s", String.join(", ", workflowNames)));
 		}
 
-		return res;
+		return res != null ? new HashSet<>(res) : null;
 	}
 
 	/**
@@ -311,7 +309,7 @@ public final class WorkflowManager {
 		Set<String> availableActions = null;
 		try {
 			availableActions = workflow.getAvailableActionsFromStatus(status);
-		} catch (IllegalArgumentException iae) {
+		} catch (IllegalArgumentException _) {
 			return false;
 		}
 		return (availableActions != null && availableActions.contains(action));
