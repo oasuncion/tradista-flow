@@ -152,17 +152,13 @@
 								<deploy>
 									<maven>
 										<nexus3>
-											<maven-central>
+											<app>
 												<active>ALWAYS</active>
-												<url>
-													https://s01.oss.sonatype.org/service/rest</url>
-												<closeRepository>false</closeRepository>
-												<snapshotUrl>
-													https://s01.oss.sonatype.org/content/repositories/snapshots/</snapshotUrl>
+												<url>https://s01.oss.sonatype.org/service/rest</url>
+												<snapshotUrl>https://s01.oss.sonatype.org/content/repositories/snapshots/</snapshotUrl>
 												<releaseRepository>false</releaseRepository>
-												<stagingRepositories>
-													target/staging-deploy</stagingRepositories>
-											</maven-central>
+												<stagingRepositories>target/staging-deploy</stagingRepositories>
+											</app>
 										</nexus3>
 									</maven>
 								</deploy>
