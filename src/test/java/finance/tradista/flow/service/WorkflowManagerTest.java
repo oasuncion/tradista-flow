@@ -1,6 +1,7 @@
 package finance.tradista.flow.service;
 
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -59,11 +60,7 @@ public class WorkflowManagerTest {
 		Workflow<WorkflowTestObject> wkf = new Workflow<>("TestSaveInvalidWorkflow");
 		new Status<WorkflowTestObject>(wkf, "s1");
 		new Status<WorkflowTestObject>(wkf, "s2");
-		try {
-			WorkflowManager.saveWorkflow(wkf);
-			Assertions.fail();
-		} catch (TradistaFlowBusinessException _) {
-		}
+		assertThrows(TradistaFlowBusinessException.class, () -> WorkflowManager.saveWorkflow(wkf));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -121,14 +118,9 @@ public class WorkflowManagerTest {
 		Workflow<WorkflowTestObject> wkf = new Workflow<>(workflowName);
 		Status<WorkflowTestObject> s1 = new Status<>(wkf, S1);
 		Status<WorkflowTestObject> s2 = new Status<>(wkf, S2);
-		Set<String> statuses = null;
 		new SimpleAction<WorkflowTestObject>(wkf, "a1", s1, s2);
 		saveWorkflow(wkf);
-		try {
-			statuses = WorkflowManager.getStatusesByWorkflowNames(workflowName);
-		} catch (TradistaFlowBusinessException _) {
-			fail();
-		}
+		Set<String> statuses = assertDoesNotThrow(() -> WorkflowManager.getStatusesByWorkflowNames(workflowName));
 		Assertions.assertEquals(statuses, Set.of(S1, S2));
 	}
 
@@ -154,14 +146,8 @@ public class WorkflowManagerTest {
 		new SimpleAction<WorkflowTestObject>(wkfTwo, "a1", s22, s3);
 		new SimpleAction<WorkflowTestObject>(wkfTwo, "a2", s3, s4);
 		saveWorkflow(wkfTwo);
-
-		Set<String> statuses = null;
-
-		try {
-			statuses = WorkflowManager.getStatusesByWorkflowNames(workflowNameOne, workflowNameTwo);
-		} catch (TradistaFlowBusinessException _) {
-			fail();
-		}
+		Set<String> statuses = assertDoesNotThrow(
+				() -> WorkflowManager.getStatusesByWorkflowNames(workflowNameOne, workflowNameTwo));
 		Assertions.assertEquals(statuses, Set.of(S1, S2, S3, S4));
 	}
 
@@ -174,11 +160,7 @@ public class WorkflowManagerTest {
 		Status<WorkflowTestObject> s2 = new Status<>(wkf, "s2");
 		new SimpleAction<WorkflowTestObject>(wkf, "a1", s1, s2);
 		saveWorkflow(wkf);
-		try {
-			WorkflowManager.getStatusesByWorkflowNames();
-			fail();
-		} catch (TradistaFlowBusinessException _) {
-		}
+		assertThrows(TradistaFlowBusinessException.class, WorkflowManager::getStatusesByWorkflowNames);
 	}
 
 	@Test
@@ -190,21 +172,14 @@ public class WorkflowManagerTest {
 		Status<WorkflowTestObject> s2 = new Status<>(wkf, "s2");
 		new SimpleAction<WorkflowTestObject>(wkf, "a1", s1, s2);
 		saveWorkflow(wkf);
-		try {
-			WorkflowManager.getStatusesByWorkflowNames(workflowName, " ");
-			fail();
-		} catch (TradistaFlowBusinessException _) {
-		}
+		assertThrows(TradistaFlowBusinessException.class,
+				() -> WorkflowManager.getStatusesByWorkflowNames(workflowName, " "));
 	}
 
 	@Test
 	@DisplayName("Workflow doesn't exist")
 	void testWorkflowDoesNotExist() {
-		try {
-			WorkflowManager.getWorkflowByName("DoesNotExist");
-			Assertions.fail();
-		} catch (TradistaFlowBusinessException _) {
-		}
+		assertThrows(TradistaFlowBusinessException.class, () -> WorkflowManager.getWorkflowByName("DoesNotExist"));
 	}
 
 	@Test
