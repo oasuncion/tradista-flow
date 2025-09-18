@@ -1,5 +1,6 @@
 package finance.tradista.flow.service;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -259,6 +260,29 @@ public final class WorkflowManager {
 			throws TradistaFlowBusinessException {
 		if (StringUtils.isEmpty(name)) {
 			throw new TradistaFlowBusinessException("The name is mandatory.");
+		}
+		Workflow<X> res;
+		try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
+			res = entityManager.createQuery("Select w from Workflow w where w.name = :name", Workflow.class)
+					.setParameter("name", name).getSingleResult();
+			if (res != null) {
+				res.syncModel();
+			}
+		} catch (NoResultException nre) {
+			throw new TradistaFlowBusinessException(String.format("The workflow named %s doesn't exist.", name));
+		}
+
+		return res;
+	}
+	
+	public static Set<String> getStatusesByWorkflowNames(String... workkflowNames)
+			throws TradistaFlowBusinessException {
+		if (workkflowNames == null) {
+			throw new TradistaFlowBusinessException("At least one workflow name should be provided");
+		} else {
+			if (Arrays.asList(workkflowNames).stream().anyMatch(n -> StringUtils.isBlank(n))) {
+				throw new TradistaFlowBusinessException("Workflow names cannot be blank");
+			}
 		}
 		Workflow<X> res;
 		try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
