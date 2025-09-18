@@ -151,7 +151,7 @@
 								</signing>
 								<deploy>
 									<maven>
-										<nexus2>
+										<nexus3>
 											<maven-central>
 												<active>ALWAYS</active>
 												<url>
@@ -163,7 +163,7 @@
 												<stagingRepositories>
 													target/staging-deploy</stagingRepositories>
 											</maven-central>
-										</nexus2>
+										</nexus3>
 									</maven>
 								</deploy>
 							</jreleaser>
