@@ -1,5 +1,6 @@
 package finance.tradista.flow.service;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -15,7 +16,6 @@ import org.junit.jupiter.api.Test;
 
 import finance.tradista.flow.exception.TradistaFlowBusinessException;
 import finance.tradista.flow.exception.TradistaFlowTechnicalException;
-import finance.tradista.flow.model.Action;
 import finance.tradista.flow.model.Condition;
 import finance.tradista.flow.model.ConditionalAction;
 import finance.tradista.flow.model.Guard;
@@ -59,11 +59,7 @@ public class WorkflowManagerTest {
 		Workflow<WorkflowTestObject> wkf = new Workflow<>("TestSaveInvalidWorkflow");
 		new Status<WorkflowTestObject>(wkf, "s1");
 		new Status<WorkflowTestObject>(wkf, "s2");
-		try {
-			WorkflowManager.saveWorkflow(wkf);
-			Assertions.fail();
-		} catch (TradistaFlowBusinessException tfbe) {
-		}
+		assertThrows(TradistaFlowBusinessException.class, () -> WorkflowManager.saveWorkflow(wkf));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -113,13 +109,76 @@ public class WorkflowManagerTest {
 	}
 
 	@Test
+	@DisplayName("Get status from workflow - one workflow")
+	void testStatusesByWorkflowNamesOneWorkflow() {
+		final String workflowName = "TestStatusesByWorkflowNamesOneWorkflow";
+		final String S1 = "s1";
+		final String S2 = "s2";
+		Workflow<WorkflowTestObject> wkf = new Workflow<>(workflowName);
+		Status<WorkflowTestObject> s1 = new Status<>(wkf, S1);
+		Status<WorkflowTestObject> s2 = new Status<>(wkf, S2);
+		new SimpleAction<WorkflowTestObject>(wkf, "a1", s1, s2);
+		saveWorkflow(wkf);
+		Set<String> statuses = assertDoesNotThrow(() -> WorkflowManager.getStatusesByWorkflowNames(workflowName));
+		Assertions.assertEquals(statuses, Set.of(S1, S2));
+	}
+
+	@Test
+	@DisplayName("Get status from workflow - several workflows")
+	void testStatusesByWorkflowNamesSeveralWorkflows() {
+		final String workflowNameOne = "TestStatusesByWorkflowNamesOneWorkflowWkfOne";
+		final String workflowNameTwo = "TestStatusesByWorkflowNamesOneWorkflowWkfTwo";
+		final String S1 = "s1";
+		final String S2 = "s2";
+		final String S3 = "s3";
+		final String S4 = "s4";
+		Workflow<WorkflowTestObject> wkfOne = new Workflow<>(workflowNameOne);
+		Status<WorkflowTestObject> s1 = new Status<>(wkfOne, S1);
+		Status<WorkflowTestObject> s2 = new Status<>(wkfOne, S2);
+		new SimpleAction<WorkflowTestObject>(wkfOne, "a1", s1, s2);
+		saveWorkflow(wkfOne);
+
+		Workflow<WorkflowTestObject> wkfTwo = new Workflow<>(workflowNameTwo);
+		Status<WorkflowTestObject> s22 = new Status<>(wkfTwo, S2);
+		Status<WorkflowTestObject> s3 = new Status<>(wkfTwo, S3);
+		Status<WorkflowTestObject> s4 = new Status<>(wkfTwo, S4);
+		new SimpleAction<WorkflowTestObject>(wkfTwo, "a1", s22, s3);
+		new SimpleAction<WorkflowTestObject>(wkfTwo, "a2", s3, s4);
+		saveWorkflow(wkfTwo);
+		Set<String> statuses = assertDoesNotThrow(
+				() -> WorkflowManager.getStatusesByWorkflowNames(workflowNameOne, workflowNameTwo));
+		Assertions.assertEquals(statuses, Set.of(S1, S2, S3, S4));
+	}
+
+	@Test
+	@DisplayName("Get status from workflows - empty workflow names")
+	void testStatusesByWorkflowNamesEmptyWkfNames() {
+		final String workflowName = "TestStatusesByWorkflowNamesEmptyWkfNames";
+		Workflow<WorkflowTestObject> wkf = new Workflow<>(workflowName);
+		Status<WorkflowTestObject> s1 = new Status<>(wkf, "s1");
+		Status<WorkflowTestObject> s2 = new Status<>(wkf, "s2");
+		new SimpleAction<WorkflowTestObject>(wkf, "a1", s1, s2);
+		saveWorkflow(wkf);
+		assertThrows(TradistaFlowBusinessException.class, WorkflowManager::getStatusesByWorkflowNames);
+	}
+
+	@Test
+	@DisplayName("Get status from workflows - one blank workflow name")
+	void testStatusesByWorkflowNamesOneBlankWkfName() {
+		final String workflowName = "TestStatusesByWorkflowNamesOneBlankWkfName";
+		Workflow<WorkflowTestObject> wkf = new Workflow<>(workflowName);
+		Status<WorkflowTestObject> s1 = new Status<>(wkf, "s1");
+		Status<WorkflowTestObject> s2 = new Status<>(wkf, "s2");
+		new SimpleAction<WorkflowTestObject>(wkf, "a1", s1, s2);
+		saveWorkflow(wkf);
+		assertThrows(TradistaFlowBusinessException.class,
+				() -> WorkflowManager.getStatusesByWorkflowNames(workflowName, " "));
+	}
+
+	@Test
 	@DisplayName("Workflow doesn't exist")
 	void testWorkflowDoesNotExist() {
-		try {
-			WorkflowManager.getWorkflowByName("DoesNotExist");
-			Assertions.fail();
-		} catch (TradistaFlowBusinessException tfbe) {
-		}
+		assertThrows(TradistaFlowBusinessException.class, () -> WorkflowManager.getWorkflowByName("DoesNotExist"));
 	}
 
 	@Test
@@ -337,12 +396,13 @@ public class WorkflowManagerTest {
 		final String actionNameOne = "a1";
 		final String actionNameTwo = "a2";
 		final String actionNameThree = "a3";
-		Set<Action<WorkflowTestObject>> actions = new HashSet<>();
-		actions.add(new ConditionalAction<WorkflowTestObject>(wkf, s1, actionNameOne, new TestCondition(),
-				(Map<Integer, Status>) null, (Guard<WorkflowTestObject>[]) null, s2));
-		actions.add(new ConditionalAction<WorkflowTestObject>(wkf, s1, actionNameTwo, new TestCondition(),
-				(Map<Integer, Status>) null, (Guard<WorkflowTestObject>[]) null, s2));
-		actions.add(new SimpleAction<WorkflowTestObject>(wkf, actionNameThree, s1, s2));
+
+		// Building actions and setting them to the workflow.
+		new ConditionalAction<WorkflowTestObject>(wkf, s1, actionNameOne, new TestCondition(),
+				(Map<Integer, Status>) null, (Guard<WorkflowTestObject>[]) null, s2);
+		new ConditionalAction<WorkflowTestObject>(wkf, s1, actionNameTwo, new TestCondition(),
+				(Map<Integer, Status>) null, (Guard<WorkflowTestObject>[]) null, s2);
+		new SimpleAction<WorkflowTestObject>(wkf, actionNameThree, s1, s2);
 		HashSet<String> resActionNames = new HashSet<String>();
 		resActionNames.add(actionNameOne);
 		resActionNames.add(actionNameTwo);
@@ -622,7 +682,7 @@ public class WorkflowManagerTest {
 		try {
 			WorkflowManager.applyAction(obj, actionName);
 			Assertions.fail();
-		} catch (TradistaFlowBusinessException tfbe) {
+		} catch (TradistaFlowBusinessException _) {
 		}
 	}
 
