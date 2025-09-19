@@ -151,13 +151,13 @@
 								</signing>
 								<deploy>
 									<maven>
-										<nexus3>
-											<maven-central>      											
-        										<active>ALWAYS</active>
-      											<url>https://s01.oss.sonatype.org/service/rest/v1/components?repository=maven-releases</url>    											
+										<mavenCentral>
+    										<sonatype>
+       									 		<active>ALWAYS</active>
+      									  		<url>https://central.sonatype.com/api/v1/publisher</url>
 												<stagingRepositories>target/staging-deploy</stagingRepositories>
-      										</maven-central>
-										</nexus3>
+     										</sonatype>
+   										</mavenCentral>
 									</maven>
 								</deploy>
 							</jreleaser>
